@@ -116,6 +116,22 @@ undefined   { printf("Found KW_UNDEFINED: %s\n", yytext); }
 "n"     { printf("Found OPERATOR_ENTER: \\n\n", yytext); }
 
 
+// One-line comment
+\/\/ {BEGIN(ONELINECOMMENT);}
+<ONELINECOMMENT>[^\n]* {}
+<ONELINECOMMENT>\n {BEGIN(INITIAL);}
+<ONELINECOMMENT><<EOF>> {BEGIN(INITIAL);}
+
+// Multi-line comment
+"/*" {BEGIN(MULTILINECOMMENT);}
+<MULTILINECOMMENT>[^*]+ {}
+<MULTILINECOMMENT>"*"+[^*/] {}
+<MULTILINECOMMENT>"*"+"/" {BEGIN(INITIAL);}
+<MULTILINECOMMENT><<EOF>> {
+    printf("ERROR! No closing comment at the end. \n");
+    exit(1);
+    }
+
 
 %%
 
