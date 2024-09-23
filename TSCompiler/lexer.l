@@ -1,9 +1,33 @@
 %option noyywrap
 %option never-interactive
 
+%{
+    #include <stdio.h>
+    #include <string.h>
+    #include <typeinfo>
+    #include <iostream>
+
+    using namespace std;
+
+    char* removeUnderline(const char* str);
+
+%}
+
+%x STR_DOUBLE_Q
+%x STR_SINGLE_Q
+%x STR_BACK_Q
+
+%x COMMENT
+%x COMMENTONE
+
 DIGIT [0-9]
 
 %%
+
+%{
+    std::string currentString;
+    std::string currentComment;
+%}
 
 abstract    { printf("Found KW_ABSTRACT: %s\n", yytext); } 
 any         { printf("Found TYPE_ANY: %s\n", yytext); } 
@@ -110,30 +134,75 @@ undefined   { printf("Found KW_UNDEFINED: %s\n", yytext); }
 "{"     { printf("Found LEFT_FIGURE_BRACKET: %s\n", yytext); }
 "}"     { printf("Found RIGHT_FIGURE_BRACKET: %s\n", yytext); }
 ":"     { printf("Found COLON: %s\n", yytext); }
-","     { printf("Found : %s\n", yytext); }
-"."     { printf("Found : %s\n", yytext); }
+","     { printf("Found COMMA: %s\n", yytext); }
+"."     { printf("Found DOT: %s\n", yytext); }
 ";"     { printf("Found SEMICOLON: %s\n", yytext); }
 "n"     { printf("Found OPERATOR_ENTER: \\n\n", yytext); }
 
+\"  {
+        currentString.clear();
+        BEGIN(STR_DOUBLE_Q);
+    }
+<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\[xX][^0-9a-fA-F] { printf("invalid hexadecimal escape sequence. \n"); }
+<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\[xX][0-9a-fA-F]{1,2} {
+    char* end;
+    long int num = strtol(yytext+2, &end, 16);
+    char asciiChar = static_cast<char>(num);
+    currentString.push_back(asciiChar);
+    }
+<STR_DOUBLE_Q,STR_SINGLE_Q>\\[0-7]{1,2} {
+    char* end;
+    long int num = strtol(yytext+1, &end, 8);
+    char asciiChar = static_cast<char>(num);
+    currentString.push_back(asciiChar);
+    }
+<STR_DOUBLE_Q,STR_SINGLE_Q>[^\\\"\'\n]+     { currentString += yytext; }
+<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\n   { currentString += "\n"; }
+<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\t   { currentString += "\t"; }
+<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\\\  { currentString += "\\"; }
+<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\\"  { currentString += "\""; }
+<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\\'  { currentString += "\'"; }
+<STR_DOUBLE_Q>\" {
+    printf("Detected string literal: %s\n", str);
+    BEGIN(INITIAL);
+    }
+<STR_DOUBLE_Q,STR_SINGLE_Q>\n {
+    printf(invalid line break inside string literal.\n");
+    exit(1);
+    }
+<STR_DOUBLE_Q,STR_SINGLE_Q,STRINGB><<EOF>> {
+    printf("unterminated string literal.\n");
+    exit(1);
+    }
+
+
+\' {
+    BEGIN(STR_SINGLE_Q);
+    str[0] = 0;
+    }
+<STR_SINGLE_Q>\' {
+    printf("Detected string literal : %s\n", str);
+    BEGIN(INITIAL);
+    }
 
 
 %%
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
+        printf("Usage: %s <input_file>\n", argv[0]);
         return 1;
     }
 
     FILE *input_file = fopen(argv[1], "r");
     if (!input_file) {
-        fprintf(stderr, "Error: could not open file '%s'\n", argv[1]);
+        printf("Error: could not open file '%s'\n", argv[1]);
         return 1;
     }
     
 	FILE* output_file = fopen("output.txt", "w");
 	if (!output_file) {
-		fprintf(stderr, "Error: could not create output file\n");
+		printf("Error: could not create output file\n");
 		fclose(input_file);
 		return 1;
 	}
