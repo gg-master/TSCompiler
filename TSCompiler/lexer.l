@@ -18,9 +18,9 @@ void Print(const std::string& message)
 
 void PrintError(const std::string& errorMessage, const int line = -1) 
 {
-    std::cerr << errorMessage << std::endl;
+    std::cerr << "error: " <<errorMessage << std::endl;
     if (line >= 0)
-        std::cerr << "Line: " << line << std::endl;
+        std::cerr << "error line: " << line << std::endl;
     std::cerr << std::endl;
 }
 
@@ -67,9 +67,6 @@ HEX_DIGITS {HEX_DIGIT}(_?{HEX_DIGIT})*
 %x STR_BACK_Q
 
 %x MULTILINE_COMMENT
-
-%x COMMENT
-%x COMMENTONE
 
 %%
 
@@ -196,6 +193,29 @@ undefined   { Print("Found KW_UNDEFINED: " + std::string{yytext}); }
 ";"     { Print("Found SEMICOLON: " + std::string{yytext}); }
 "n"     { Print("Found OPERATOR_ENTER: \\n" + std::string{yytext}); }
 
+
+"/*" {
+    currentComment.clear();
+    BEGIN(MULTILINE_COMMENT);
+}
+<MULTILINE_COMMENT>[^*]+ {
+    currentComment += yytext;
+}
+<MULTILINE_COMMENT>\*+[^*/]+ {
+    currentComment += yytext;
+}
+<MULTILINE_COMMENT>\*+\/ {
+    Print("Found multiline comment: \n" + currentComment);
+    BEGIN(INITIAL);
+}
+<MULTILINE_COMMENT><<EOF>> {
+    PrintError("Expected end of multiline comment but found end of file!", yylineno);
+    BEGIN(INITIAL);
+}
+
+\/\/.*  { 
+    Print("Found single-line comment: " + std::string{yytext + 2}); 
+}
 
 
 {DEC_INT_LIT}(\.|(\.?{EXPONENT_PART})) { /* Decimal literal */

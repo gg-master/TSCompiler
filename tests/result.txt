@@ -1,6 +1,42 @@
+29.09.2024 19:20:17,34 
  
-29.09.2024 16:59:00,04 
-Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal.test: 
+Input data from .\multiline-comments.test: 
+/* multiline
+comment
+1
+
+3
+4
+*
+**
+/
+let a
+*/
+
+/* multiline in one line /* 123 for */
+
+/* not closed multiline comment 
+Output data for .\multiline-comments.test: 
+Found multiline comment: 
+ multiline
+comment
+1
+
+3
+4
+*
+**
+/
+let a
+
+Found multiline comment: 
+ multiline in one line /* 123 for 
+error: Expected end of multiline comment but found end of file!
+error line: 15
+
+--------------- 
+ 
+Input data from .\numeric-literal.test: 
 123
 1_2_3
 
@@ -25,7 +61,7 @@ Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal
 0xA
 0X1_AB_F
  
-Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal.test: 
+Output data for .\numeric-literal.test: 
 Found decimal integer literal: 123
 Found decimal integer literal: 123
 Found floating point literal: 123000000000000005037873582401030516801036545468854257201174691946296000497351649188019982429645907670728107364273344904953856.000000
@@ -44,3 +80,18 @@ Found octal integer literal: 671
 Found hexadecimal integer literal: 10
 Found hexadecimal integer literal: 6847
 --------------- 
+ 
+Input data from .\singleline-comments.test: 
+// single line comment
+
+//* single line comment */ // other comment inside
+
+// comment
+// 
+Output data for .\singleline-comments.test: 
+Found single-line comment:  single line comment
+Found single-line comment: * single line comment */ // other comment inside
+Found single-line comment:  comment
+Found single-line comment: 
+--------------- 
+ 
