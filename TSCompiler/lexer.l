@@ -1,224 +1,274 @@
 %option noyywrap
 %option never-interactive
+%option yylineno
 
 %{
-    #include <stdio.h>
-    #include <string.h>
-    #include <typeinfo>
-    #include <iostream>
 
-    using namespace std;
+#include <string>
+#include <algorithm>
+#include <charconv>
+#include <iostream>
+#include <cstdio>
 
-    char* removeUnderline(const char* str);
+
+void Print(const std::string& message)
+{
+    std::cout << message << std::endl;
+}
+
+void PrintError(const std::string& errorMessage, const int line = -1) 
+{
+    std::cerr << errorMessage << std::endl;
+    if (line >= 0)
+        std::cerr << "Line: " << line << std::endl;
+    std::cerr << std::endl;
+}
+
+void PrintIntegerLiteral(const std::string& type, const int integer) {
+    Print("Found " + type + " integer literal: " + std::to_string(integer));
+}
+
+void PrintFloatingPointLiteral(const double floatingPoint) {
+    Print("Found floating point literal: " + std::to_string(floatingPoint));
+}
+
+void RemoveCharacterFromString(std::string& str, char ch) {
+    const auto newLast = std::remove(str.begin(), str.end(), ch);
+    str.erase(newLast, str.end());
+}
+
+void RemoveUnderline(std::string& str) {
+    RemoveCharacterFromString(str, '_');
+}
 
 %}
+
+DEC_DIGIT [0-9]
+NON_ZERO_DIGIT [1-9]
+
+DEC_DIGITS  {DEC_DIGIT}(_?{DEC_DIGIT})*
+
+DEC_INT_LIT 0|{NON_ZERO_DIGIT}_?{DEC_DIGITS}
+
+EXPONENT_PART [eE][+-]?{DEC_DIGITS}
+
+BIN_DIGIT [01]
+BIN_DIGITS  {BIN_DIGIT}(_?{BIN_DIGIT})*
+
+OCTAL_DIGIT [0-7]
+OCTAL_DIGITS {OCTAL_DIGIT}(_?{OCTAL_DIGIT})*
+
+HEX_DIGIT [0-9a-fA-F]
+HEX_DIGITS {HEX_DIGIT}(_?{HEX_DIGIT})*
+
 
 %x STR_DOUBLE_Q
 %x STR_SINGLE_Q
 %x STR_BACK_Q
 
+%x MULTILINE_COMMENT
+
 %x COMMENT
 %x COMMENTONE
-
-DIGIT [0-9]
 
 %%
 
 %{
-    std::string currentString;
-    std::string currentComment;
+
+std::string currentString;
+std::string currentComment;
+
+int currentInteger;
+char currentCharacter;
+double currentFloatingPoint;
+char buffer[10];    
+char bufferString[1000];
+
 %}
 
-abstract    { printf("Found KW_ABSTRACT: %s\n", yytext); } 
-any         { printf("Found TYPE_ANY: %s\n", yytext); } 
-as          { printf("Found KW_AS: %s\n", yytext); } 
-boolean     { printf("Found TYPE_BOOLEAN: %s\n", yytext); } 
-break       { printf("Found KW_BREAK: %s\n", yytext); } 
-case        { printf("Found KW_CASE: %s\n", yytext); } 
-catch       { printf("Found KW_CATCH: %s\n", yytext); } 
-class       { printf("Found KW_CLASS: %s\n", yytext); } 
-continue    { printf("Found KW_CONTINUE: %s\n", yytext); } 
-const       { printf("Found KW_CONST: %s\n", yytext); } 
-constructor { printf("Found KW_CONSTRUCTOR: %s\n", yytext); } 
-debugger    { printf("Found KW_DEBUGGER: %s\n", yytext); } 
-declare     { printf("Found KW_DECLARE: %s\n", yytext); } 
-default     { printf("Found KW_DEFAULT: %s\n", yytext); } 
-delete      { printf("Found KW_DELETE: %s\n", yytext); } 
-do          { printf("Found KW_DO: %s\n", yytext); } 
-else        { printf("Found KW_ELSE: %s\n", yytext); } 
-enum        { printf("Found KW_ENUM: %s\n", yytext); } 
-export      { printf("Found KW_EXPORT: %s\n", yytext); } 
-extends     { printf("Found KW_EXTENDS: %s\n", yytext); } 
-false       { printf("Found KW_FALSE: %s\n", yytext); } 
-finally     { printf("Found KW_FINALLY: %s\n", yytext); } 
-for         { printf("Found KW_FOR: %s\n", yytext); } 
-from        { printf("Found KW_FROM: %s\n", yytext); } 
-function    { printf("Found KW_FUNCTION: %s\n", yytext); } 
-get         { printf("Found KW_GET: %s\n", yytext); } 
-if          { printf("Found KW_IF: %s\n", yytext); } 
-implements  { printf("Found KW_IMPLEMENTS: %s\n", yytext); } 
-import      { printf("Found KW_IMPORT: %s\n", yytext); } 
-in          { printf("Found KW_IN: %s\n", yytext); } 
-infer       { printf("Found KW_INFER: %s\n", yytext); } 
-instanceof  { printf("Found KW_INSTANCEOF: %s\n", yytext); } 
-interface   { printf("Found KW_INTARFACE: %s\n", yytext); } 
-is          { printf("Found KW_IS: %s\n", yytext); } 
-keyof       { printf("Found KW_KEYOF: %s\n", yytext); } 
-let         { printf("Found KW_LET: %s\n", yytext); } 
-module      { printf("Found KW_MODULE: %s\n", yytext); } 
-namespace   { printf("Found KW_NAMESPACE: %s\n", yytext); } 
-never       { printf("Found TYPE_NEVER: %s\n", yytext); } 
-new         { printf("Found KW_NEW: %s\n", yytext); } 
-null        { printf("Found KW_NULL: %s\n", yytext); } 
-number      { printf("Found TYPE_NUMBER: %s\n", yytext); } 
-object      { printf("Found TYPE_OBJECT: %s\n", yytext); } 
-of          { printf("Found KW_OF: %s\n", yytext); } 
-package     { printf("Found KW_PACKAGE: %s\n", yytext); } 
-private     { printf("Found KW_PRIVATE: %s\n", yytext); } 
-protected   { printf("Found KW_PROTECTED: %s\n", yytext); } 
-public      { printf("Found KW_PUBLIC: %s\n", yytext); } 
-readonly    { printf("Found KW_READONLY: %s\n", yytext); } 
-require     { printf("Found KW_REQUIRE: %s\n", yytext); } 
-return      { printf("Found KW_RETURN: %s\n", yytext); } 
-set         { printf("Found KW_SET: %s\n", yytext); } 
-static      { printf("Found KW_STATIC: %s\n", yytext); } 
-string      { printf("Found TYPE_STRING: %s\n", yytext); } 
-super       { printf("Found KW_SUPER: %s\n", yytext); } 
-switch      { printf("Found KW_SWITCH: %s\n", yytext); }
-symbol      { printf("Found TYPE_SYMBOL: %s\n", yytext); }
-this        { printf("Found KW_THIS: %s\n", yytext); }
-throw       { printf("Found KW_THROW: %s\n", yytext); }
-true        { printf("Found KW_TRUE: %s\n", yytext); }
-try         { printf("Found KW_TRY: %s\n", yytext); }
-type        { printf("Found KW_TYPE: %s\n", yytext); }
-typeof      { printf("Found KW_TYPEOF: %s\n", yytext); }
-unique      { printf("Found KW_UNIQUE: %s\n", yytext); } 
-unknown     { printf("Found TYPE_UNKNOWN: %s\n", yytext); } 
-var         { printf("Found KW_VAR: %s\n", yytext); }
-while       { printf("Found KW_WHILE: %s\n", yytext); }
-undefined   { printf("Found KW_UNDEFINED: %s\n", yytext); }
+abstract    { Print("Found KW_ABSTRACT: " + std::string{yytext}); } 
+any         { Print("Found TYPE_ANY: " + std::string{yytext}); } 
+as          { Print("Found KW_AS: " + std::string{yytext}); } 
+boolean     { Print("Found TYPE_BOOLEAN: " + std::string{yytext}); } 
+break       { Print("Found KW_BREAK: " + std::string{yytext}); } 
+case        { Print("Found KW_CASE: " + std::string{yytext}); } 
+catch       { Print("Found KW_CATCH: " + std::string{yytext}); } 
+class       { Print("Found KW_CLASS: " + std::string{yytext}); } 
+continue    { Print("Found KW_CONTINUE: " + std::string{yytext}); } 
+const       { Print("Found KW_CONST: " + std::string{yytext}); } 
+constructor { Print("Found KW_CONSTRUCTOR: " + std::string{yytext}); } 
+debugger    { Print("Found KW_DEBUGGER: " + std::string{yytext}); } 
+declare     { Print("Found KW_DECLARE: " + std::string{yytext}); } 
+default     { Print("Found KW_DEFAULT: " + std::string{yytext}); } 
+delete      { Print("Found KW_DELETE: " + std::string{yytext}); } 
+do          { Print("Found KW_DO: " + std::string{yytext}); } 
+else        { Print("Found KW_ELSE: " + std::string{yytext}); } 
+enum        { Print("Found KW_ENUM: " + std::string{yytext}); } 
+export      { Print("Found KW_EXPORT: " + std::string{yytext}); } 
+extends     { Print("Found KW_EXTENDS: " + std::string{yytext}); } 
+false       { Print("Found KW_FALSE: " + std::string{yytext}); } 
+finally     { Print("Found KW_FINALLY: " + std::string{yytext}); } 
+for         { Print("Found KW_FOR: " + std::string{yytext}); } 
+from        { Print("Found KW_FROM: " + std::string{yytext}); } 
+function    { Print("Found KW_FUNCTION: " + std::string{yytext}); } 
+get         { Print("Found KW_GET: " + std::string{yytext}); } 
+if          { Print("Found KW_IF: " + std::string{yytext}); } 
+implements  { Print("Found KW_IMPLEMENTS: " + std::string{yytext}); } 
+import      { Print("Found KW_IMPORT: " + std::string{yytext}); } 
+in          { Print("Found KW_IN: " + std::string{yytext}); } 
+infer       { Print("Found KW_INFER: " + std::string{yytext}); } 
+instanceof  { Print("Found KW_INSTANCEOF: " + std::string{yytext}); } 
+interface   { Print("Found KW_INTARFACE: " + std::string{yytext}); } 
+is          { Print("Found KW_IS: " + std::string{yytext}); } 
+keyof       { Print("Found KW_KEYOF: " + std::string{yytext}); } 
+let         { Print("Found KW_LET: " + std::string{yytext}); } 
+module      { Print("Found KW_MODULE: " + std::string{yytext}); } 
+namespace   { Print("Found KW_NAMESPACE: " + std::string{yytext}); } 
+never       { Print("Found TYPE_NEVER: " + std::string{yytext}); } 
+new         { Print("Found KW_NEW: " + std::string{yytext}); } 
+null        { Print("Found KW_NULL: " + std::string{yytext}); } 
+number      { Print("Found TYPE_NUMBER: " + std::string{yytext}); } 
+object      { Print("Found TYPE_OBJECT: " + std::string{yytext}); } 
+of          { Print("Found KW_OF: " + std::string{yytext}); } 
+package     { Print("Found KW_PACKAGE: " + std::string{yytext}); } 
+private     { Print("Found KW_PRIVATE: " + std::string{yytext}); } 
+protected   { Print("Found KW_PROTECTED: " + std::string{yytext}); } 
+public      { Print("Found KW_PUBLIC: " + std::string{yytext}); } 
+readonly    { Print("Found KW_READONLY: " + std::string{yytext}); } 
+require     { Print("Found KW_REQUIRE: " + std::string{yytext}); } 
+return      { Print("Found KW_RETURN: " + std::string{yytext}); } 
+set         { Print("Found KW_SET: " + std::string{yytext}); } 
+static      { Print("Found KW_STATIC: " + std::string{yytext}); } 
+string      { Print("Found TYPE_STRING: " + std::string{yytext}); } 
+super       { Print("Found KW_SUPER: " + std::string{yytext}); } 
+switch      { Print("Found KW_SWITCH: " + std::string{yytext}); }
+symbol      { Print("Found TYPE_SYMBOL: " + std::string{yytext}); }
+this        { Print("Found KW_THIS: " + std::string{yytext}); }
+throw       { Print("Found KW_THROW: " + std::string{yytext}); }
+true        { Print("Found KW_TRUE: " + std::string{yytext}); }
+try         { Print("Found KW_TRY: " + std::string{yytext}); }
+type        { Print("Found KW_TYPE: " + std::string{yytext}); }
+typeof      { Print("Found KW_TYPEOF: " + std::string{yytext}); }
+unique      { Print("Found KW_UNIQUE: " + std::string{yytext}); } 
+unknown     { Print("Found TYPE_UNKNOWN: " + std::string{yytext}); } 
+var         { Print("Found KW_VAR: " + std::string{yytext}); }
+while       { Print("Found KW_WHILE: " + std::string{yytext}); }
+undefined   { Print("Found KW_UNDEFINED: " + std::string{yytext}); }
 
-"?"     { printf("Found OPERATOR_OPT_PARAM: %s\n", yytext); }
-"%"     { printf("Found OPERATOR_MOD: %s\n", yytext); }
-"%="    { printf("Found OPERATOR_MOD_ASSIGNMENT: %s\n", yytext); }
-"+"     { printf("Found OPERATOR_PLUS: %s\n", yytext); }
-"+="    { printf("Found OPERATOR_PLUS_ASSIGNMENT: %s\n", yytext); }
-"++"    { printf("Found OPERATOR_INCREMENT: %s\n", yytext); }
-"-"     { printf("Found OPERATOR_MINUS: %s\n", yytext); }
-"-="    { printf("Found OPERATOR_MINUS_ASSIGNMENT: %s\n", yytext); }
-"--"    { printf("Found OPERATOR_DICREMENT: %s\n", yytext); }
-"*"     { printf("Found OPERATOR_MUL: %s\n", yytext); }
-"*="    { printf("Found OPERATOR_MUL_ASSIGNMENT: %s\n", yytext); }
-"="     { printf("Found OPERATOR_ASSIGNMENT: %s\n", yytext); }
-"=="    { printf("Found OPERATOR_EQUAL: %s\n", yytext); }
-"==="   { printf("Found OPERATOR_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext); }
-"!"     { printf("Found OPERATOR_BIT_NOT: %s\n", yytext); }
-"!="    { printf("Found OPERATOR_NOT_EQUAL: %s\n", yytext); }
-"!=="   { printf("Found OPERATOR_NOT_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext); }
-">"     { printf("Found OPERATOR_MORE: %s\n", yytext); }
-">="    { printf("Found OPERATOR_MORE_OR_EQUAL: %s\n", yytext); }
-"<"     { printf("Found OPERATOR_LESS: %s\n", yytext); }
-"<="    { printf("Found OPERATOR_LESS_OR_EQUA: %s\n", yytext); }
-"/"     { printf("Found OPERATOR_DIV: %s\n", yytext); }
-"/="    { printf("Found OPERATOR_DIV_ASSIGNMENT: %s\n", yytext); }
-"^"     { printf("Found OPERATOR_BIT_XOR: %s\n", yytext); }
-"~"     { printf("Found UNARY_BITWISE_NOT: %s\n", yytext); }
-"&"     { printf("Found OPERATOR_AMPERSAND: %s\n", yytext); }
-"&&"    { printf("Found OPERATOR_AND: %s\n", yytext); }
-"|"     { printf("Found OPERATOR_BIT_OR: %s\n", yytext); }
-"||"    { printf("Found OPERATOR_OR: %s\n", yytext); }
-"["     { printf("Found LEFT_SQUARE_BRACKET: %s\n", yytext); }
-"]"     { printf("Found RIGHT_SQUARE_BRACKET: %s\n", yytext); }
-"("     { printf("Found LEFT_ROUND_BRACKET: %s\n", yytext); }
-")"     { printf("Found RIGHT_ROUND_BRACKET: %s\n", yytext); }
-"{"     { printf("Found LEFT_FIGURE_BRACKET: %s\n", yytext); }
-"}"     { printf("Found RIGHT_FIGURE_BRACKET: %s\n", yytext); }
-":"     { printf("Found COLON: %s\n", yytext); }
-","     { printf("Found COMMA: %s\n", yytext); }
-"."     { printf("Found DOT: %s\n", yytext); }
-";"     { printf("Found SEMICOLON: %s\n", yytext); }
-"n"     { printf("Found OPERATOR_ENTER: \\n\n", yytext); }
-
-\"  {
-        currentString.clear();
-        BEGIN(STR_DOUBLE_Q);
-    }
-<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\[xX][^0-9a-fA-F] { printf("invalid hexadecimal escape sequence. \n"); }
-<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\[xX][0-9a-fA-F]{1,2} {
-    char* end;
-    long int num = strtol(yytext+2, &end, 16);
-    char asciiChar = static_cast<char>(num);
-    currentString.push_back(asciiChar);
-    }
-<STR_DOUBLE_Q,STR_SINGLE_Q>\\[0-7]{1,2} {
-    char* end;
-    long int num = strtol(yytext+1, &end, 8);
-    char asciiChar = static_cast<char>(num);
-    currentString.push_back(asciiChar);
-    }
-<STR_DOUBLE_Q,STR_SINGLE_Q>[^\\\"\'\n]+     { currentString += yytext; }
-<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\n   { currentString += "\n"; }
-<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\t   { currentString += "\t"; }
-<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\\\  { currentString += "\\"; }
-<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\\"  { currentString += "\""; }
-<STR_DOUBLE_Q,STR_SINGLE_Q,STR_BACK_Q>\\\'  { currentString += "\'"; }
-<STR_DOUBLE_Q>\" {
-    printf("Detected string literal: %s\n", str);
-    BEGIN(INITIAL);
-    }
-<STR_DOUBLE_Q,STR_SINGLE_Q>\n {
-    printf(invalid line break inside string literal.\n");
-    exit(1);
-    }
-<STR_DOUBLE_Q,STR_SINGLE_Q,STRINGB><<EOF>> {
-    printf("unterminated string literal.\n");
-    exit(1);
-    }
+"?"     { Print("Found OPERATOR_OPT_PARAM: " + std::string{yytext}); }
+"%"     { Print("Found OPERATOR_MOD: " + std::string{yytext}); }
+"%="    { Print("Found OPERATOR_MOD_ASSIGNMENT: " + std::string{yytext}); }
+"+"     { Print("Found OPERATOR_PLUS: " + std::string{yytext}); }
+"+="    { Print("Found OPERATOR_PLUS_ASSIGNMENT: " + std::string{yytext}); }
+"++"    { Print("Found OPERATOR_INCREMENT: " + std::string{yytext}); }
+"-"     { Print("Found OPERATOR_MINUS: " + std::string{yytext}); }
+"-="    { Print("Found OPERATOR_MINUS_ASSIGNMENT: " + std::string{yytext}); }
+"--"    { Print("Found OPERATOR_DICREMENT: " + std::string{yytext}); }
+"*"     { Print("Found OPERATOR_MUL: " + std::string{yytext}); }
+"*="    { Print("Found OPERATOR_MUL_ASSIGNMENT: " + std::string{yytext}); }
+"="     { Print("Found OPERATOR_ASSIGNMENT: " + std::string{yytext}); }
+"=="    { Print("Found OPERATOR_EQUAL: " + std::string{yytext}); }
+"==="   { Print("Found OPERATOR_EQUAL_BY_TYPE_AND_VALUE: " + std::string{yytext}); }
+"!"     { Print("Found OPERATOR_BIT_NOT: " + std::string{yytext}); }
+"!="    { Print("Found OPERATOR_NOT_EQUAL: " + std::string{yytext}); }
+"!=="   { Print("Found OPERATOR_NOT_EQUAL_BY_TYPE_AND_VALUE: " + std::string{yytext}); }
+">"     { Print("Found OPERATOR_MORE: " + std::string{yytext}); }
+">="    { Print("Found OPERATOR_MORE_OR_EQUAL: " + std::string{yytext}); }
+"<"     { Print("Found OPERATOR_LESS: " + std::string{yytext}); }
+"<="    { Print("Found OPERATOR_LESS_OR_EQUA: " + std::string{yytext}); }
+"/"     { Print("Found OPERATOR_DIV: " + std::string{yytext}); }
+"/="    { Print("Found OPERATOR_DIV_ASSIGNMENT: " + std::string{yytext}); }
+"^"     { Print("Found OPERATOR_BIT_XOR: " + std::string{yytext}); }
+"~"     { Print("Found UNARY_BITWISE_NOT: " + std::string{yytext}); }
+"&"     { Print("Found OPERATOR_AMPERSAND: " + std::string{yytext}); }
+"&&"    { Print("Found OPERATOR_AND: " + std::string{yytext}); }
+"|"     { Print("Found OPERATOR_BIT_OR: " + std::string{yytext}); }
+"||"    { Print("Found OPERATOR_OR: " + std::string{yytext}); }
+"["     { Print("Found LEFT_SQUARE_BRACKET: " + std::string{yytext}); }
+"]"     { Print("Found RIGHT_SQUARE_BRACKET: " + std::string{yytext}); }
+"("     { Print("Found LEFT_ROUND_BRACKET: " + std::string{yytext}); }
+")"     { Print("Found RIGHT_ROUND_BRACKET: " + std::string{yytext}); }
+"{"     { Print("Found LEFT_FIGURE_BRACKET: " + std::string{yytext}); }
+"}"     { Print("Found RIGHT_FIGURE_BRACKET: " + std::string{yytext}); }
+":"     { Print("Found COLON: " + std::string{yytext}); }
+","     { Print("Found COMMA: " + std::string{yytext}); }
+"."     { Print("Found DOT: " + std::string{yytext}); }
+";"     { Print("Found SEMICOLON: " + std::string{yytext}); }
+"n"     { Print("Found OPERATOR_ENTER: \\n" + std::string{yytext}); }
 
 
-\' {
-    BEGIN(STR_SINGLE_Q);
-    str[0] = 0;
-    }
-<STR_SINGLE_Q>\' {
-    printf("Detected string literal : %s\n", str);
-    BEGIN(INITIAL);
-    }
 
-// One-line comment
-\/\/ {BEGIN(ONELINECOMMENT);}
-<ONELINECOMMENT>[^\n]* {}
-<ONELINECOMMENT>\n {BEGIN(INITIAL);}
-<ONELINECOMMENT><<EOF>> {BEGIN(INITIAL);}
+{DEC_INT_LIT}(\.|(\.?{EXPONENT_PART})) { /* Decimal literal */
+    std::string number_string = yytext;
+    RemoveCharacterFromString(number_string, '_');
+    std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
+    PrintFloatingPointLiteral(currentFloatingPoint);
+}
 
-// Multi-line comment
-"/*" {BEGIN(MULTILINECOMMENT);}
-<MULTILINECOMMENT>[^*]+ {}
-<MULTILINECOMMENT>"*"+[^*/] {}
-<MULTILINECOMMENT>"*"+"/" {BEGIN(INITIAL);}
-<MULTILINECOMMENT><<EOF>> {
-    printf("ERROR! No closing comment at the end. \n");
-    exit(1);
-    }
+({DEC_INT_LIT}?\.{DEC_DIGITS}){EXPONENT_PART}? {
+    std::string number_string = yytext;
+    RemoveCharacterFromString(number_string, '_');
+    std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
+    PrintFloatingPointLiteral(currentFloatingPoint);
+}
 
+{DEC_INT_LIT} {
+    std::string number_string = yytext;
+    RemoveCharacterFromString(number_string, '_');
+    std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentInteger);
+    PrintIntegerLiteral("decimal", currentInteger); 
+}
+
+
+0[bB]{BIN_DIGITS} { /* Binary integer literal */
+    currentInteger = 0;
+    std::string number_string = yytext;
+    RemoveCharacterFromString(number_string, '_');
+    std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 2);
+    PrintIntegerLiteral("binary", currentInteger); 
+}
+
+
+0[oO]{OCTAL_DIGITS} {  /* Octal integer literal */
+    currentInteger = 0;
+    std::string number_string = yytext;
+    RemoveCharacterFromString(number_string, '_');
+    std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 8);
+    PrintIntegerLiteral("octal", currentInteger); 
+}
+
+
+0[xX]{HEX_DIGITS} {  /* Hexadecimal integer literal */
+    currentInteger = 0;
+    std::string number_string = yytext;
+    RemoveCharacterFromString(number_string, '_');
+    std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 16);
+    PrintIntegerLiteral("hexadecimal", currentInteger); 
+}
+
+
+[[:alpha:]_][[:alnum:]_]*   { Print("Found identifier: " + std::string{yytext}); }
+
+
+[[:space:]]+    { /* ignoring */ }
 
 %%
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        printf("Usage: %s <input_file>\n", argv[0]);
+        Print("Usage: %s <input_file>\n" + std::string{argv[0]});
         return 1;
     }
 
     FILE *input_file = fopen(argv[1], "r");
     if (!input_file) {
-        printf("Error: could not open file '%s'\n", argv[1]);
+        PrintError("could not open file: " + std::string{argv[1]});
         return 1;
     }
     
 	FILE* output_file = fopen("output.txt", "w");
 	if (!output_file) {
-		printf("Error: could not create output file\n");
+		PrintError("could not create output file\n");
 		fclose(input_file);
 		return 1;
 	}
