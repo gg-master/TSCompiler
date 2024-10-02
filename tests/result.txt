@@ -1,4 +1,286 @@
-02.10.2024 22:15:40,58 
+03.10.2024  1:50:58,50 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex.test: 
+/* Объявление переменных разных типов данных */
+// Числа
+let myDec: number = 7777753;
+let myMinusDec: number = -7777753;
+let myBin: number = 0b1011;
+let myMinusBin: number = -0b1011;
+let myOctal: number = 0o2343;
+let myMinusOctal: number = -0o2343;
+let myHex: number = 0x234abcd;
+let myMinusHex: number = -0x234abcd;
+let myFloat: number = 0.2345;
+let myMinusFloat: number = -0.2345;
+let myFloatWithPlusE: number = 3e+5;
+let myFloatWithMinusE: number = 3e-5;
+// Строки
+let myDQString: string = "Это строка\nс \'одинарными кавычками\', а также шестнадцатеричным числом: ${0x1A }(оно не должно преобразоваться).";
+let mySQString: string = 'Это строка\nс \"двойными кавычками\", а также шестнадцатеричным числом: ${0x1A }(оно не должно преобразоваться).';
+let myBQString = `Это строка\nсо слешем \\\\ и \"двойными кавычками\", а также шестнадцатеричным числом: ${0x1A }(преобразовано).`;
+// Другие типы
+let myBoolean: boolean = true;
+let myArray: string[] = ["apple", "banana", "orange"];
+let myTuple: [number, string] = [1, "Hello"];
+
+// Функция, возвращающая строку
+function sayHello(name: string): string {
+    return `Hello, ${name}!`;
+}
+
+// Класс с конструктором и методом
+class Person {
+    constructor(public name: string, private age: number) { }
+
+    sayHello(): void {
+        console.log(`Hello, my name is ${this.name} and I am ${this.age} years old.`);
+    }
+}
+
+// Создание экземпляра класса и вызов его метода
+const person = new Person("John", 30);
+person.sayHello();
+
+// Этот фрагмент кода содержит примеры следующих типов лексем:
+
+// Ключевые слова: let, number, string, boolean, function, return, class, constructor, public, private, void, new, const
+// Идентификаторы: myNumber, myString, myBoolean, myArray, myTuple, sayHello, Person, name, age, person
+// Знаки препинания: ,, =, :, ;, (), {}, [], . $
+// Литералы: 42, "Hello, world!", true, "apple", "banana", "orange", [1, "Hello"]
+// Строки: "Hello, ${name}!", `Hello, my name is ${this.name} and I am ${this.age} years old.`
+// Комментарии: // Объявление переменных разных типов данных, // Функция, возвращающая строку, // Класс с конструктором и методом, // Создание экземпляра класса и вызов его метода. 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex.test: 
+Found multiline comment: 
+ Объявление переменных разных типов данных 
+Found singleline comment:  Числа
+Found KW_LET: let
+Found identifier: myDec
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found decimal integer literal: 7777753
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myMinusDec
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_MINUS: -
+Found decimal integer literal: 7777753
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myBin
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found binary integer literal: 11
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myMinusBin
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_MINUS: -
+Found binary integer literal: 11
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myOctal
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found octal integer literal: 1251
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myMinusOctal
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_MINUS: -
+Found octal integer literal: 1251
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myHex
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found hexadecimal integer literal: 37006285
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myMinusHex
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_MINUS: -
+Found hexadecimal integer literal: 37006285
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myFloat
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found floating point literal: 0.000000
+Found floating point literal: 0.234500
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myMinusFloat
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_MINUS: -
+Found floating point literal: 0.000000
+Found floating point literal: 0.234500
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myFloatWithPlusE
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found identifier: e
+Found OPERATOR_PLUS: +
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myFloatWithMinusE
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGNMENT: =
+Found identifier: e
+Found OPERATOR_MINUS: -
+Found SEMICOLON: ;
+Found singleline comment:  Строки
+Found KW_LET: let
+Found identifier: myDQString
+Found COLON: :
+Found TYPE_STRING: string
+Found OPERATOR_ASSIGNMENT: =
+Found string literal: "Это строка
+с 'одинарными кавычками', а также шестнадцатеричным числом: ${0x1A }(оно не должно преобразоваться)."
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: mySQString
+Found COLON: :
+Found TYPE_STRING: string
+Found OPERATOR_ASSIGNMENT: =
+Found string literal: "Это строка
+с "двойными кавычками", а также шестнадцатеричным числом: ${0x1A }(оно не должно преобразоваться)."
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myBQString
+Found OPERATOR_ASSIGNMENT: =
+Found string literal: "Это строка
+со слешем \\ и "двойными кавычками", а также шестнадцатеричным числом: ${0x1A }(преобразовано)."
+Found SEMICOLON: ;
+Found singleline comment:  Другие типы
+Found KW_LET: let
+Found identifier: myBoolean
+Found COLON: :
+Found TYPE_BOOLEAN: boolean
+Found OPERATOR_ASSIGNMENT: =
+Found KW_TRUE: true
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myArray
+Found COLON: :
+Found TYPE_STRING: string
+Found LEFT_SQUARE_BRACKET: [
+Found RIGHT_SQUARE_BRACKET: ]
+Found OPERATOR_ASSIGNMENT: =
+Found LEFT_SQUARE_BRACKET: [
+Found string literal: "apple"
+Found COMMA: ,
+Found string literal: "banana"
+Found COMMA: ,
+Found string literal: "orange"
+Found RIGHT_SQUARE_BRACKET: ]
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: myTuple
+Found COLON: :
+Found LEFT_SQUARE_BRACKET: [
+Found TYPE_NUMBER: number
+Found COMMA: ,
+Found TYPE_STRING: string
+Found RIGHT_SQUARE_BRACKET: ]
+Found OPERATOR_ASSIGNMENT: =
+Found LEFT_SQUARE_BRACKET: [
+Found COMMA: ,
+Found string literal: "Hello"
+Found RIGHT_SQUARE_BRACKET: ]
+Found SEMICOLON: ;
+Found singleline comment:  Функция, возвращающая строку
+Found KW_FUNCTION: function
+Found identifier: sayHello
+Found LEFT_ROUND_BRACKET: (
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found RIGHT_ROUND_BRACKET: )
+Found COLON: :
+Found TYPE_STRING: string
+Found LEFT_FIGURE_BRACKET: {
+Found KW_RETURN: return
+Found string literal: "Hello, ${name}!"
+Found SEMICOLON: ;
+Found RIGHT_FIGURE_BRACKET: }
+Found singleline comment:  Класс с конструктором и методом
+Found KW_CLASS: class
+Found identifier: Person
+Found LEFT_FIGURE_BRACKET: {
+Found KW_CONSTRUCTOR: constructor
+Found LEFT_ROUND_BRACKET: (
+Found KW_PUBLIC: public
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found COMMA: ,
+Found KW_PRIVATE: private
+Found identifier: age
+Found COLON: :
+Found TYPE_NUMBER: number
+Found RIGHT_ROUND_BRACKET: )
+Found LEFT_FIGURE_BRACKET: {
+Found RIGHT_FIGURE_BRACKET: }
+Found identifier: sayHello
+Found LEFT_ROUND_BRACKET: (
+Found RIGHT_ROUND_BRACKET: )
+Found COLON: :
+Found VOID_OPERATOR: void
+Found LEFT_FIGURE_BRACKET: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found LEFT_ROUND_BRACKET: (
+Found string literal: "Hello, my name is ${this.name} and I am ${this.age} years old."
+Found RIGHT_ROUND_BRACKET: )
+Found SEMICOLON: ;
+Found RIGHT_FIGURE_BRACKET: }
+Found RIGHT_FIGURE_BRACKET: }
+Found singleline comment:  Создание экземпляра класса и вызов его метода
+Found KW_CONST: const
+Found identifier: person
+Found OPERATOR_ASSIGNMENT: =
+Found KW_NEW: new
+Found identifier: Person
+Found LEFT_ROUND_BRACKET: (
+Found string literal: "John"
+Found COMMA: ,
+Found decimal integer literal: 30
+Found RIGHT_ROUND_BRACKET: )
+Found SEMICOLON: ;
+Found identifier: person
+Found DOT: .
+Found identifier: sayHello
+Found LEFT_ROUND_BRACKET: (
+Found RIGHT_ROUND_BRACKET: )
+Found SEMICOLON: ;
+Found singleline comment:  Этот фрагмент кода содержит примеры следующих типов лексем:
+Found singleline comment:  Ключевые слова: let, number, string, boolean, function, return, class, constructor, public, private, void, new, const
+Found singleline comment:  Идентификаторы: myNumber, myString, myBoolean, myArray, myTuple, sayHello, Person, name, age, person
+Found singleline comment:  Знаки препинания: ,, =, :, ;, (), {}, [], . $
+Found singleline comment:  Литералы: 42, "Hello, world!", true, "apple", "banana", "orange", [1, "Hello"]
+Found singleline comment:  Строки: "Hello, ${name}!", `Hello, my name is ${this.name} and I am ${this.age} years old.`
+Found singleline comment:  Комментарии: // Объявление переменных разных типов данных, // Функция, возвращающая строку, // Класс с конструктором и методом, // Создание экземпляра класса и вызов его метода.
+--------------- 
  
 Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\double-quoted-strings.test: 
 "a123 \n"
@@ -22,13 +304,17 @@ asd
 \u
 \x3F
 `
- 
+
+"${ 0xA }"
+'${ 0xA }'
+`${ 0xA }` 
 Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\double-quoted-strings.test: 
 Found string literal: "a123 
 "
 Found string literal: "?"
 Found string literal: "
-	a"
+	a
+"
 error: invalid hexadecimal escape sequence
 error line: 5
 
@@ -65,6 +351,9 @@ asd
 
 ?
 "
+Found string literal: "${ 0xA }"
+Found string literal: "${ 0xA }"
+Found string literal: "${ 0xA }"
 --------------- 
  
 Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\multiline-comments.test: 
@@ -115,6 +404,11 @@ Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal
 123.e123
 123.E2
 
+.111
+.1_1_1e1_3_2
+.111e+2
+.111e-2
+
 123.222e123
 123.2_2_2e123
 123.2E2
@@ -127,6 +421,36 @@ Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal
 
 0xA
 0X1_AB_F
+
+123_
+1__23
+
+_.123
+.1__23
+.1_23_
+
+.1_e1
+.1e_1
+.1e1__1
+.1e1_
+
+.1e_+1
+.1e+_1
+
+0b1_
+0b1__1
+0B_1
+0_B1
+
+0o1_
+0o1__1
+0O_1
+0_O1
+
+0xA_
+0XA__A
+0X_A
+0_xA
  
 Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal.test: 
 Found decimal integer literal: 123
@@ -137,6 +461,10 @@ Found floating point literal: 12300.000000
 Found floating point literal: 333.000000
 Found floating point literal: 123000000000000005037873582401030516801036545468854257201174691946296000497351649188019982429645907670728107364273344904953856.000000
 Found floating point literal: 12300.000000
+Found floating point literal: 0.111000
+Found floating point literal: 110999999999999994569057287665920026793961091131971079061303438851331249024672698342794927264818525832628029555406576312131495395328.000000
+Found floating point literal: 11.100000
+Found floating point literal: 0.001110
 Found floating point literal: 123221999999999993422024234270417484055683532531036733574403172959807172770921041758929374767223903935867237894674724402757632.000000
 Found floating point literal: 123221999999999993422024234270417484055683532531036733574403172959807172770921041758929374767223903935867237894674724402757632.000000
 Found floating point literal: 12320.000000
@@ -146,6 +474,75 @@ Found octal integer literal: 342391
 Found octal integer literal: 671
 Found hexadecimal integer literal: 10
 Found hexadecimal integer literal: 6847
+error: illegal underscore in decimal number
+error line: 30
+
+error: illegal underscore in decimal number
+error line: 31
+
+error: illegal underscore in decimal number
+error line: 33
+
+error: illegal underscore in decimal number
+error line: 34
+
+error: illegal underscore in decimal number
+error line: 35
+
+error: illegal underscore in decimal number
+error line: 37
+
+error: illegal underscore in decimal number
+error line: 38
+
+error: illegal underscore in decimal number
+error line: 39
+
+error: illegal underscore in decimal number
+error line: 40
+
+error: illegal underscore in decimal number
+error line: 42
+
+error: illegal underscore in decimal number
+error line: 43
+
+error: illegal underscore in binary number
+error line: 45
+
+error: illegal underscore in binary number
+error line: 46
+
+error: illegal underscore in binary number
+error line: 47
+
+error: illegal underscore in binary number
+error line: 48
+
+error: illegal underscore in octal number
+error line: 50
+
+error: illegal underscore in octal number
+error line: 51
+
+error: illegal underscore in octal number
+error line: 52
+
+error: illegal underscore in octal number
+error line: 53
+
+error: illegal underscore in hexadecimal number
+error line: 55
+
+error: illegal underscore in hexadecimal number
+error line: 56
+
+error: illegal underscore in hexadecimal number
+error line: 57
+
+error: illegal underscore in hexadecimal number
+error line: 58
+
 --------------- 
  
 Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\singleline-comments.test: 

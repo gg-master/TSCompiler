@@ -51,21 +51,25 @@ DEC_DIGIT [0-9]
 NON_ZERO_DIGIT [1-9]
 
 DEC_DIGITS  {DEC_DIGIT}(_?{DEC_DIGIT})*
+INVALID_DEC_DIGITS {DEC_DIGIT}((_?|_{2,}){DEC_DIGIT})*(_+|_?)
 
 DEC_INT_LIT 0|({NON_ZERO_DIGIT}_?{DEC_DIGITS})
+INVALID_DEC_INT_LIT (0(_?|_+))|({NON_ZERO_DIGIT}(_?|_{2,}){INVALID_DEC_DIGITS})
 
 EXPONENT_PART [eE][+-]?{DEC_DIGITS}
+INVALID_EXPONENT_PART (_?|_+)[eE](_?|_+)([+-](_+|_?))?{INVALID_DEC_DIGITS}
 
 BIN_DIGIT [01]
 BIN_DIGITS  {BIN_DIGIT}(_?{BIN_DIGIT})*
+INVALID_BIN_DIGITS {BIN_DIGIT}((_?|_{2,}){BIN_DIGIT})*(_+|_?)
 
 OCTAL_DIGIT [0-7]
 OCTAL_DIGITS {OCTAL_DIGIT}(_?{OCTAL_DIGIT})*
+INVALID_OCTAL_DIGITS {OCTAL_DIGIT}((_?|_{2,}){OCTAL_DIGIT})*(_+|_?)
 
 HEX_DIGIT [0-9a-fA-F]
 HEX_DIGITS {HEX_DIGIT}(_?{HEX_DIGIT})*
-
-LINE_TERMINATOR [\n\r]
+INVALID_HEX_DIGITS {HEX_DIGIT}((_?|_{2,}){HEX_DIGIT})*(_+|_?)
 
 SINGLE_ESCAPE_CHAR [\'\"\\\b\f\n\r\t\v]
 ESCAPE_CHAR ({SINGLE_ESCAPE_CHAR}|{DEC_DIGIT}|x|u)
@@ -204,7 +208,7 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     currentString.clear();
     BEGIN(DOUBLE_STR);
 }
-<DOUBLE_STR>[^\"\\{LINE_TERMINATOR}]+ {
+<DOUBLE_STR>[^\"\\\n\r]+ {
     currentString += yytext;
 }
 <DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\x[^{HEX_DIGIT}] {
@@ -272,7 +276,7 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     currentString.clear();
     BEGIN(SINGLE_STR);
 }
-<SINGLE_STR>[^\'\\{LINE_TERMINATOR}]+ {
+<SINGLE_STR>[^\'\\\n\r]+ {
     currentString += yytext;
 }
 <SINGLE_STR>\' {
@@ -326,21 +330,29 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
 }
+{INVALID_DEC_INT_LIT}(_?|_+)(\.|(\.?{INVALID_EXPONENT_PART})) {
+    PrintError("illegal underscore in decimal number", yylineno);
+}
 
-({DEC_INT_LIT}?\.{DEC_DIGITS}){EXPONENT_PART}? {
+{DEC_INT_LIT}?\.{DEC_DIGITS}({EXPONENT_PART})? {
     std::string number_string = yytext;
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
 }
+{INVALID_DEC_INT_LIT}?(_?|_+)\.{INVALID_DEC_DIGITS}({INVALID_EXPONENT_PART})? {
+    PrintError("illegal underscore in decimal number", yylineno);
+}
 
-{DEC_INT_LIT} {
+{DEC_INT_LIT} { 
     std::string number_string = yytext;
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentInteger);
     PrintIntegerLiteral("decimal", currentInteger); 
 }
-
+{INVALID_DEC_INT_LIT} {
+    PrintError("illegal underscore in decimal number", yylineno);
+}
 
 0[bB]{BIN_DIGITS} { /* Binary integer literal */
     currentInteger = 0;
@@ -348,6 +360,9 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 2);
     PrintIntegerLiteral("binary", currentInteger); 
+}
+0(_?|_+)[bB](_?|_+){INVALID_BIN_DIGITS} {
+    PrintError("illegal underscore in binary number", yylineno);
 }
 
 
@@ -358,6 +373,9 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 8);
     PrintIntegerLiteral("octal", currentInteger); 
 }
+0(_?|_+)[oO](_?|_+){INVALID_OCTAL_DIGITS} {
+    PrintError("illegal underscore in octal number", yylineno);
+}
 
 
 0[xX]{HEX_DIGITS} {  /* Hexadecimal integer literal */
@@ -366,6 +384,9 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 16);
     PrintIntegerLiteral("hexadecimal", currentInteger); 
+}
+0(_?|_+)[xX](_?|_+){INVALID_HEX_DIGITS} {
+    PrintError("illegal underscore in hexadecimal number", yylineno);
 }
 
 
