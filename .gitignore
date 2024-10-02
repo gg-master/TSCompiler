@@ -35,3 +35,5 @@ x64/
 *.user
 .vs
 /TSCompiler/output.txt
+/tests/test.ts
+/tests/test.js

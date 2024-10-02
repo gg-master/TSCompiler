@@ -18,7 +18,7 @@ void Print(const std::string& message)
 
 void PrintError(const std::string& errorMessage, const int line = -1) 
 {
-    std::cerr << "error: " <<errorMessage << std::endl;
+    std::cerr << "error: " << errorMessage << std::endl;
     if (line >= 0)
         std::cerr << "error line: " << line << std::endl;
     std::cerr << std::endl;
@@ -30,6 +30,10 @@ void PrintIntegerLiteral(const std::string& type, const int integer) {
 
 void PrintFloatingPointLiteral(const double floatingPoint) {
     Print("Found floating point literal: " + std::to_string(floatingPoint));
+}
+
+void PrintStringLiteral(const std::string& literal) {
+    Print("Found string literal: \"" + literal + "\"");
 }
 
 void RemoveCharacterFromString(std::string& str, char ch) {
@@ -48,7 +52,7 @@ NON_ZERO_DIGIT [1-9]
 
 DEC_DIGITS  {DEC_DIGIT}(_?{DEC_DIGIT})*
 
-DEC_INT_LIT 0|{NON_ZERO_DIGIT}_?{DEC_DIGITS}
+DEC_INT_LIT 0|({NON_ZERO_DIGIT}_?{DEC_DIGITS})
 
 EXPONENT_PART [eE][+-]?{DEC_DIGITS}
 
@@ -61,10 +65,14 @@ OCTAL_DIGITS {OCTAL_DIGIT}(_?{OCTAL_DIGIT})*
 HEX_DIGIT [0-9a-fA-F]
 HEX_DIGITS {HEX_DIGIT}(_?{HEX_DIGIT})*
 
+LINE_TERMINATOR [\n\r]
 
-%x STR_DOUBLE_Q
-%x STR_SINGLE_Q
-%x STR_BACK_Q
+SINGLE_ESCAPE_CHAR [\'\"\\\b\f\n\r\t\v]
+ESCAPE_CHAR ({SINGLE_ESCAPE_CHAR}|{DEC_DIGIT}|x|u)
+
+%x DOUBLE_STR
+%x SINGLE_STR
+%x TEMPLATE_STR
 
 %x MULTILINE_COMMENT
 
@@ -74,12 +82,10 @@ HEX_DIGITS {HEX_DIGIT}(_?{HEX_DIGIT})*
 
 std::string currentString;
 std::string currentComment;
-
 int currentInteger;
 char currentCharacter;
 double currentFloatingPoint;
 char buffer[10];    
-char bufferString[1000];
 
 %}
 
@@ -146,11 +152,12 @@ true        { Print("Found KW_TRUE: " + std::string{yytext}); }
 try         { Print("Found KW_TRY: " + std::string{yytext}); }
 type        { Print("Found KW_TYPE: " + std::string{yytext}); }
 typeof      { Print("Found KW_TYPEOF: " + std::string{yytext}); }
+undefined   { Print("Found KW_UNDEFINED: " + std::string{yytext}); }
 unique      { Print("Found KW_UNIQUE: " + std::string{yytext}); } 
 unknown     { Print("Found TYPE_UNKNOWN: " + std::string{yytext}); } 
 var         { Print("Found KW_VAR: " + std::string{yytext}); }
+void        { Print("Found VOID_OPERATOR: " + std::string{yytext}); }
 while       { Print("Found KW_WHILE: " + std::string{yytext}); }
-undefined   { Print("Found KW_UNDEFINED: " + std::string{yytext}); }
 
 "?"     { Print("Found OPERATOR_OPT_PARAM: " + std::string{yytext}); }
 "%"     { Print("Found OPERATOR_MOD: " + std::string{yytext}); }
@@ -193,6 +200,101 @@ undefined   { Print("Found KW_UNDEFINED: " + std::string{yytext}); }
 ";"     { Print("Found SEMICOLON: " + std::string{yytext}); }
 "n"     { Print("Found OPERATOR_ENTER: \\n" + std::string{yytext}); }
 
+\" {
+    currentString.clear();
+    BEGIN(DOUBLE_STR);
+}
+<DOUBLE_STR>[^\"\\{LINE_TERMINATOR}]+ {
+    currentString += yytext;
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\x[^{HEX_DIGIT}] {
+    PrintError("invalid hexadecimal escape sequence", yylineno);
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\x({HEX_DIGIT}{2}) {
+    std::fill(std::begin(buffer), std::end(buffer), 0);
+    std::copy(yytext, yytext + yyleng, buffer);
+    std::sscanf(buffer + 2, "%x", &currentInteger);
+    currentString += static_cast<char>(currentInteger);
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\({OCTAL_DIGIT}{1,3}) {
+    PrintError("octal escape sequence are not allowed", yylineno);
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\u[({HEX_DIGIT}{0,4})(\{{HEX_DIGITS}\})] {
+    PrintError("unicode escape sequence is not supported yet", yylineno);
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\\' {
+    currentString += "\'";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\\" {
+    currentString += "\"";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\\\ {
+    currentString += "\\";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\b {
+    currentString += "\b";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\f {
+    currentString += "\f";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\n {
+    currentString += "\n";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\r {
+    currentString += "\r";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\t {
+    currentString += "\t";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\v {
+    currentString += "\v";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\0[^{DEC_DIGIT}]? {
+    currentString += "\0";
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\{ESCAPE_CHAR} {
+    PrintError("invalid escape character", yylineno);
+}
+<DOUBLE_STR,SINGLE_STR>\n {
+    PrintError("unexpected appearing \n in end of a line", yylineno);
+    BEGIN(INITIAL);
+}
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR><<EOF>> {
+    PrintError("unexpected appearing <<EOF>> in string literal", yylineno);
+    BEGIN(INITIAL);
+}
+<DOUBLE_STR>\" {
+    PrintStringLiteral(currentString);
+    BEGIN(INITIAL);
+}
+
+\' {
+    currentString.clear();
+    BEGIN(SINGLE_STR);
+}
+<SINGLE_STR>[^\'\\{LINE_TERMINATOR}]+ {
+    currentString += yytext;
+}
+<SINGLE_STR>\' {
+    PrintStringLiteral(currentString);
+    BEGIN(INITIAL);
+}
+
+\` {
+    currentString.clear();
+    BEGIN(TEMPLATE_STR);
+}
+<TEMPLATE_STR>[^\`\\]+ {
+    currentString += yytext;
+}
+<TEMPLATE_STR>\\\` {
+    currentString += "\`";
+}
+<TEMPLATE_STR>\` {
+    PrintStringLiteral(currentString);
+    BEGIN(INITIAL);
+}
+
 
 "/*" {
     currentComment.clear();
@@ -209,12 +311,12 @@ undefined   { Print("Found KW_UNDEFINED: " + std::string{yytext}); }
     BEGIN(INITIAL);
 }
 <MULTILINE_COMMENT><<EOF>> {
-    PrintError("Expected end of multiline comment but found end of file!", yylineno);
+    PrintError("no closing */ of multiline comment", yylineno);
     BEGIN(INITIAL);
 }
 
 \/\/.*  { 
-    Print("Found single-line comment: " + std::string{yytext + 2}); 
+    Print("Found singleline comment: " + std::string{yytext + 2}); 
 }
 
 
@@ -267,7 +369,7 @@ undefined   { Print("Found KW_UNDEFINED: " + std::string{yytext}); }
 }
 
 
-[[:alpha:]_][[:alnum:]_]*   { Print("Found identifier: " + std::string{yytext}); }
+[[:alpha:]_$][[:alnum:]_]* { Print("Found identifier: " + std::string{yytext}); }
 
 
 [[:space:]]+    { /* ignoring */ }

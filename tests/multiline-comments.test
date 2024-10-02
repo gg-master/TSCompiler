@@ -1,0 +1,15 @@
+/* multiline
+comment
+1
+
+3
+4
+*
+**
+/
+let a
+*/
+
+/* multiline in one line /* 123 for */
+
+/* not closed multiline comment
