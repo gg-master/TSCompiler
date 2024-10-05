@@ -1,6 +1,6 @@
-// single line comment
+// single line comment \n \t \b \x3F \u1234
 
 //* single line comment */ // other comment inside
 
-// comment
-//
+// comment // inside comment
+//\n

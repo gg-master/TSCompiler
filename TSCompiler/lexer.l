@@ -4,11 +4,11 @@
 
 %{
 
-#include <string>
 #include <algorithm>
 #include <charconv>
-#include <iostream>
 #include <cstdio>
+#include <iostream>
+#include <string>
 
 
 void Print(const std::string& message)
@@ -51,25 +51,25 @@ DEC_DIGIT [0-9]
 NON_ZERO_DIGIT [1-9]
 
 DEC_DIGITS  {DEC_DIGIT}(_?{DEC_DIGIT})*
-INVALID_DEC_DIGITS {DEC_DIGIT}((_?|_{2,}){DEC_DIGIT})*(_+|_?)
+INVALID_UNDERLINE_DEC_DIGITS {DEC_DIGIT}((_?|_{2,}){DEC_DIGIT})*(_+|_?)
 
-DEC_INT_LIT 0|({NON_ZERO_DIGIT}_?{DEC_DIGITS})
-INVALID_DEC_INT_LIT (0(_?|_+))|({NON_ZERO_DIGIT}(_?|_{2,}){INVALID_DEC_DIGITS})
+DEC_INT_LIT {DEC_DIGIT}|({NON_ZERO_DIGIT}_?{DEC_DIGITS})
+INVALID_UNDERLINE_DEC_INT_LIT ({DEC_DIGIT}(_?|_+))|({NON_ZERO_DIGIT}(_?|_{2,}){INVALID_UNDERLINE_DEC_DIGITS})
 
 EXPONENT_PART [eE][+-]?{DEC_DIGITS}
-INVALID_EXPONENT_PART (_?|_+)[eE](_?|_+)([+-](_+|_?))?{INVALID_DEC_DIGITS}
+INVALID_UNDERLINE_EXPONENT_PART (_?|_+)[eE](_?|_+)([+-](_+|_?))?{INVALID_UNDERLINE_DEC_DIGITS}
 
 BIN_DIGIT [01]
 BIN_DIGITS  {BIN_DIGIT}(_?{BIN_DIGIT})*
-INVALID_BIN_DIGITS {BIN_DIGIT}((_?|_{2,}){BIN_DIGIT})*(_+|_?)
+INVALID_UNDERLINE_BIN_DIGITS {BIN_DIGIT}((_?|_{2,}){BIN_DIGIT})*(_+|_?)
 
 OCTAL_DIGIT [0-7]
 OCTAL_DIGITS {OCTAL_DIGIT}(_?{OCTAL_DIGIT})*
-INVALID_OCTAL_DIGITS {OCTAL_DIGIT}((_?|_{2,}){OCTAL_DIGIT})*(_+|_?)
+INVALID_UNDERLINE_OCTAL_DIGITS {OCTAL_DIGIT}((_?|_{2,}){OCTAL_DIGIT})*(_+|_?)
 
 HEX_DIGIT [0-9a-fA-F]
 HEX_DIGITS {HEX_DIGIT}(_?{HEX_DIGIT})*
-INVALID_HEX_DIGITS {HEX_DIGIT}((_?|_{2,}){HEX_DIGIT})*(_+|_?)
+INVALID_UNDERLINE_HEX_DIGITS {HEX_DIGIT}((_?|_{2,}){HEX_DIGIT})*(_+|_?)
 
 SINGLE_ESCAPE_CHAR [\'\"\\\b\f\n\r\t\v]
 ESCAPE_CHAR ({SINGLE_ESCAPE_CHAR}|{DEC_DIGIT}|x|u)
@@ -86,16 +86,18 @@ ESCAPE_CHAR ({SINGLE_ESCAPE_CHAR}|{DEC_DIGIT}|x|u)
 
 std::string currentString;
 std::string currentComment;
+
 int currentInteger;
-char currentCharacter;
 double currentFloatingPoint;
+
 char buffer[10];    
 
 %}
 
 abstract    { Print("Found KW_ABSTRACT: " + std::string{yytext}); } 
 any         { Print("Found TYPE_ANY: " + std::string{yytext}); } 
-as          { Print("Found KW_AS: " + std::string{yytext}); } 
+as          { Print("Found KW_AS: " + std::string{yytext}); }
+await       { Print("Found KW_AWAIT: " + std::string{yytext}); }
 boolean     { Print("Found TYPE_BOOLEAN: " + std::string{yytext}); } 
 break       { Print("Found KW_BREAK: " + std::string{yytext}); } 
 case        { Print("Found KW_CASE: " + std::string{yytext}); } 
@@ -162,47 +164,85 @@ unknown     { Print("Found TYPE_UNKNOWN: " + std::string{yytext}); }
 var         { Print("Found KW_VAR: " + std::string{yytext}); }
 void        { Print("Found VOID_OPERATOR: " + std::string{yytext}); }
 while       { Print("Found KW_WHILE: " + std::string{yytext}); }
+with        { Print("Found KW_WITH: " + std::string{yytext}); }
+yield       { Print("Found KW_YIELD: " + std::string{yytext}); }
 
-"?"     { Print("Found OPERATOR_OPT_PARAM: " + std::string{yytext}); }
+"?"     { Print("Found QUESTION_MARK: " + std::string{yytext}); }
+"?."    { Print("Found OPTIONAL_CHAINING_OPERATOR: " + std::string{yytext}); }
+"??"    { Print("Found OPERATOR_NULLISH_COALESCING: " + std::string{yytext}); }
+"??="   { Print("Found OPERATOR_ASSIGN_NULLISH_COALESCING: " + std::string{yytext}); }
+
 "%"     { Print("Found OPERATOR_MOD: " + std::string{yytext}); }
-"%="    { Print("Found OPERATOR_MOD_ASSIGNMENT: " + std::string{yytext}); }
+"%="    { Print("Found OPERATOR_ASSIGN_MOD: " + std::string{yytext}); }
+
 "+"     { Print("Found OPERATOR_PLUS: " + std::string{yytext}); }
-"+="    { Print("Found OPERATOR_PLUS_ASSIGNMENT: " + std::string{yytext}); }
+"+="    { Print("Found OPERATOR_ASSIGN_PLUS: " + std::string{yytext}); }
 "++"    { Print("Found OPERATOR_INCREMENT: " + std::string{yytext}); }
+
 "-"     { Print("Found OPERATOR_MINUS: " + std::string{yytext}); }
-"-="    { Print("Found OPERATOR_MINUS_ASSIGNMENT: " + std::string{yytext}); }
-"--"    { Print("Found OPERATOR_DICREMENT: " + std::string{yytext}); }
-"*"     { Print("Found OPERATOR_MUL: " + std::string{yytext}); }
-"*="    { Print("Found OPERATOR_MUL_ASSIGNMENT: " + std::string{yytext}); }
-"="     { Print("Found OPERATOR_ASSIGNMENT: " + std::string{yytext}); }
+"-="    { Print("Found OPERATOR_ASSIGN_MINUS: " + std::string{yytext}); }
+"--"    { Print("Found OPERATOR_DECREMENT: " + std::string{yytext}); }
+
+"*"     { Print("Found OPERATOR_MULTIPLY: " + std::string{yytext}); }
+"**"    { Print("Found OPERATOR_POWER: " + std::string{yytext}); }
+"*="    { Print("Found OPERATOR_ASSIGN_MULTIPLY: " + std::string{yytext}); }
+"**="   { Print("Found OPERATOR_ASSIGN_POWER: " + std::string{yytext}); }
+
+"="     { Print("Found OPERATOR_ASSIGN: " + std::string{yytext}); }
 "=="    { Print("Found OPERATOR_EQUAL: " + std::string{yytext}); }
-"==="   { Print("Found OPERATOR_EQUAL_BY_TYPE_AND_VALUE: " + std::string{yytext}); }
-"!"     { Print("Found OPERATOR_BIT_NOT: " + std::string{yytext}); }
+"==="   { Print("Found OPERATOR_STRICT_EQUAL: " + std::string{yytext}); }
+
+"!"     { Print("Found OPERATOR_NOT: " + std::string{yytext}); }
 "!="    { Print("Found OPERATOR_NOT_EQUAL: " + std::string{yytext}); }
-"!=="   { Print("Found OPERATOR_NOT_EQUAL_BY_TYPE_AND_VALUE: " + std::string{yytext}); }
-">"     { Print("Found OPERATOR_MORE: " + std::string{yytext}); }
-">="    { Print("Found OPERATOR_MORE_OR_EQUAL: " + std::string{yytext}); }
-"<"     { Print("Found OPERATOR_LESS: " + std::string{yytext}); }
-"<="    { Print("Found OPERATOR_LESS_OR_EQUA: " + std::string{yytext}); }
-"/"     { Print("Found OPERATOR_DIV: " + std::string{yytext}); }
-"/="    { Print("Found OPERATOR_DIV_ASSIGNMENT: " + std::string{yytext}); }
-"^"     { Print("Found OPERATOR_BIT_XOR: " + std::string{yytext}); }
-"~"     { Print("Found UNARY_BITWISE_NOT: " + std::string{yytext}); }
-"&"     { Print("Found OPERATOR_AMPERSAND: " + std::string{yytext}); }
-"&&"    { Print("Found OPERATOR_AND: " + std::string{yytext}); }
-"|"     { Print("Found OPERATOR_BIT_OR: " + std::string{yytext}); }
-"||"    { Print("Found OPERATOR_OR: " + std::string{yytext}); }
-"["     { Print("Found LEFT_SQUARE_BRACKET: " + std::string{yytext}); }
-"]"     { Print("Found RIGHT_SQUARE_BRACKET: " + std::string{yytext}); }
-"("     { Print("Found LEFT_ROUND_BRACKET: " + std::string{yytext}); }
-")"     { Print("Found RIGHT_ROUND_BRACKET: " + std::string{yytext}); }
-"{"     { Print("Found LEFT_FIGURE_BRACKET: " + std::string{yytext}); }
-"}"     { Print("Found RIGHT_FIGURE_BRACKET: " + std::string{yytext}); }
+"!=="   { Print("Found OPERATOR_STRICT_NOT_EQUAL: " + std::string{yytext}); }
+
+"=>"    { Print("Found ARROW_FUNCTION: " + std::string{yytext}); }
+
+">"     { Print("Found OPERATOR_GREATER_THAN: " + std::string{yytext}); }
+">="    { Print("Found OPERATOR_GREATER_THAN_EQUAL: " + std::string{yytext}); }
+">>"    { Print("Found OPERATOR_SHIFT_RIGHT: " + std::string{yytext}); }
+">>="   { Print("Found OPERATOR_ASSIGN_SHIFT_RIGHT: " + std::string{yytext}); }
+">>>"   { Print("Found OPERATOR_UNSIGNED_SHIFT_RIGHT: " + std::string{yytext}); }
+">>>="  { Print("Found OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT: " + std::string{yytext}); }
+
+"<"     { Print("Found OPERATOR_LESS_THAN: " + std::string{yytext}); }
+"<="    { Print("Found OPERATOR_LESS_THAN_EQUAL: " + std::string{yytext}); }
+"<<"    { Print("Found OPERATOR_SHIFT_LEFT: " + std::string{yytext}); }
+"<<="   { Print("Found OPERATOR_ASSIGN_SHIFT_LEFT: " + std::string{yytext}); }
+
+"/"     { Print("Found OPERATOR_DIVIDE: " + std::string{yytext}); }
+"/="    { Print("Found OPERATOR_ASSIGN_DIVIDE: " + std::string{yytext}); }
+
+"^"     { Print("Found OPERATOR_BITWISE_XOR: " + std::string{yytext}); }
+"^="    { Print("Found OPERATOR_ASSIGN_BITWISE_XOR: " + std::string{yytext}); }
+
+"~"     { Print("Found OPERATOR_BITWISE_NOT: " + std::string{yytext}); }
+
+"&"     { Print("Found OPERATOR_BITWISE_AND: " + std::string{yytext}); }
+"&="    { Print("Found OPERATOR_ASSIGN_BITWISE_AND: " + std::string{yytext}); }
+"&&"    { Print("Found OPERATOR_LOGICAL_AND: " + std::string{yytext}); }
+"&&="   { Print("Found OPERATOR_ASSIGN_LOGICAL_AND: " + std::string{yytext}); }
+
+"|"     { Print("Found OPERATOR_BITWISE_OR: " + std::string{yytext}); }
+"|="    { Print("Found OPERATOR_ASSIGN_BITWISE_OR: " + std::string{yytext}); }
+"||"    { Print("Found OPERATOR_LOGICAL_OR: " + std::string{yytext}); }
+"||="   { Print("Found OPERATOR_ASSIGN_LOGICAL_OR: " + std::string{yytext}); }
+
+"["     { Print("Found BRACKET_OPEN: " + std::string{yytext}); }
+"]"     { Print("Found BRACKET_CLOSE: " + std::string{yytext}); }
+"("     { Print("Found PARENTHESIS_OPEN: " + std::string{yytext}); }
+")"     { Print("Found PARENTHESIS_CLOSE: " + std::string{yytext}); }
+"{"     { Print("Found BRACE_OPEN: " + std::string{yytext}); }
+"}"     { Print("Found BRACE_CLOSE: " + std::string{yytext}); }
+
 ":"     { Print("Found COLON: " + std::string{yytext}); }
 ","     { Print("Found COMMA: " + std::string{yytext}); }
 "."     { Print("Found DOT: " + std::string{yytext}); }
+"..."   { Print("Found DOTS_ELLIPSIS: " + std::string{yytext}); }
 ";"     { Print("Found SEMICOLON: " + std::string{yytext}); }
-"n"     { Print("Found OPERATOR_ENTER: \\n" + std::string{yytext}); }
+
+"@"     { Print("Found DECORATOR_AT: " + std::string{yytext}); }
+
 
 \" {
     currentString.clear();
@@ -211,7 +251,7 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
 <DOUBLE_STR>[^\"\\\n\r]+ {
     currentString += yytext;
 }
-<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\x[^{HEX_DIGIT}] {
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\x {
     PrintError("invalid hexadecimal escape sequence", yylineno);
 }
 <DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\x({HEX_DIGIT}{2}) {
@@ -220,8 +260,11 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     std::sscanf(buffer + 2, "%x", &currentInteger);
     currentString += static_cast<char>(currentInteger);
 }
+<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\0 {
+    currentString += "\0";
+}
 <DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\({OCTAL_DIGIT}{1,3}) {
-    PrintError("octal escape sequence are not allowed", yylineno);
+    PrintError("octal escape sequence not allowed", yylineno);
 }
 <DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\u[({HEX_DIGIT}{0,4})(\{{HEX_DIGITS}\})] {
     PrintError("unicode escape sequence is not supported yet", yylineno);
@@ -252,9 +295,6 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
 }
 <DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\v {
     currentString += "\v";
-}
-<DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\0[^{DEC_DIGIT}]? {
-    currentString += "\0";
 }
 <DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\{ESCAPE_CHAR} {
     PrintError("invalid escape character", yylineno);
@@ -323,6 +363,15 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     Print("Found singleline comment: " + std::string{yytext + 2}); 
 }
 
+{DEC_INT_LIT} { 
+    std::string number_string = yytext;
+    RemoveCharacterFromString(number_string, '_');
+    std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentInteger);
+    PrintIntegerLiteral("decimal", currentInteger); 
+}
+{INVALID_UNDERLINE_DEC_INT_LIT} {
+    PrintError("illegal underscore in decimal number", yylineno);
+}
 
 {DEC_INT_LIT}(\.|(\.?{EXPONENT_PART})) { /* Decimal literal */
     std::string number_string = yytext;
@@ -330,29 +379,20 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
 }
-{INVALID_DEC_INT_LIT}(_?|_+)(\.|(\.?{INVALID_EXPONENT_PART})) {
+{INVALID_UNDERLINE_DEC_INT_LIT}(_?|_+)(\.|(\.?{INVALID_UNDERLINE_EXPONENT_PART})) {
     PrintError("illegal underscore in decimal number", yylineno);
 }
 
-{DEC_INT_LIT}?\.{DEC_DIGITS}({EXPONENT_PART})? {
+({DEC_INT_LIT})?\.{DEC_DIGITS}({EXPONENT_PART})? {
     std::string number_string = yytext;
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
 }
-{INVALID_DEC_INT_LIT}?(_?|_+)\.{INVALID_DEC_DIGITS}({INVALID_EXPONENT_PART})? {
+({INVALID_UNDERLINE_DEC_INT_LIT})?(_?|_+)\.{INVALID_UNDERLINE_DEC_DIGITS}({INVALID_UNDERLINE_EXPONENT_PART})? {
     PrintError("illegal underscore in decimal number", yylineno);
 }
 
-{DEC_INT_LIT} { 
-    std::string number_string = yytext;
-    RemoveCharacterFromString(number_string, '_');
-    std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentInteger);
-    PrintIntegerLiteral("decimal", currentInteger); 
-}
-{INVALID_DEC_INT_LIT} {
-    PrintError("illegal underscore in decimal number", yylineno);
-}
 
 0[bB]{BIN_DIGITS} { /* Binary integer literal */
     currentInteger = 0;
@@ -361,8 +401,11 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 2);
     PrintIntegerLiteral("binary", currentInteger); 
 }
-0(_?|_+)[bB](_?|_+){INVALID_BIN_DIGITS} {
+0(_?|_+)[bB](_?|_+){INVALID_UNDERLINE_BIN_DIGITS} {
     PrintError("illegal underscore in binary number", yylineno);
+}
+0[bB][^01[:space:]]+ {
+    PrintError("binary digit expected", yylineno);
 }
 
 
@@ -373,8 +416,11 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 8);
     PrintIntegerLiteral("octal", currentInteger); 
 }
-0(_?|_+)[oO](_?|_+){INVALID_OCTAL_DIGITS} {
+0(_?|_+)[oO](_?|_+){INVALID_UNDERLINE_OCTAL_DIGITS} {
     PrintError("illegal underscore in octal number", yylineno);
+}
+0[oO][^0-7[:space:]]+ {
+    PrintError("octal digit expected", yylineno);
 }
 
 
@@ -385,12 +431,15 @@ while       { Print("Found KW_WHILE: " + std::string{yytext}); }
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 16);
     PrintIntegerLiteral("hexadecimal", currentInteger); 
 }
-0(_?|_+)[xX](_?|_+){INVALID_HEX_DIGITS} {
+0(_?|_+)[xX](_?|_+){INVALID_UNDERLINE_HEX_DIGITS} {
     PrintError("illegal underscore in hexadecimal number", yylineno);
+}
+0[xX][^1-9a-fA-F[:space:]]+ {
+    PrintError("hexadecimal digit expected", yylineno);
 }
 
 
-[[:alpha:]_$][[:alnum:]_]* { Print("Found identifier: " + std::string{yytext}); }
+[[:alpha:]_$][[:alnum:]_$]* { Print("Found identifier: " + std::string{yytext}); }
 
 
 [[:space:]]+    { /* ignoring */ }

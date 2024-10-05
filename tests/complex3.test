@@ -1,0 +1,138 @@
+// Basic types and variables
+let num: number = 42;
+const PI: number = 3.14159;
+let str: string = "Hello, TypeScript!";
+let bool: boolean = true;
+let arr: number[] = [1, 2, 3];
+let tuple: [string, number] = ["age", 30];
+
+// Template string
+let name: string = "Alice";
+console.log(`Hello, ${name}!`);
+
+// Object and interface
+interface Person {
+    name: string;
+    age: number;
+}
+
+let person: Person = {
+    name: "Bob",
+    age: 30
+};
+
+// Class
+class Animal {
+    private name: string;
+    
+    constructor(name: string) {
+        this.name = name;
+    }
+    
+    public makeSound(): void {
+        console.log("Some generic animal sound");
+    }
+}
+
+// Inheritance
+class Dog extends Animal {
+    constructor(name: string) {
+        super(name);
+    }
+    
+    public makeSound(): void {
+        console.log("Woof! Woof!");
+    }
+}
+
+// Function with optional and default parameters
+function greet(name: string, greeting: string = "Hello"): string {
+    return `${greeting}, ${name}!`;
+}
+
+// Arrow function
+const multiply = (a: number, b: number): number => a * b;
+
+// Generics
+function identity<T>(arg: T): T {
+    return arg;
+}
+
+// Enum
+enum Color {
+    Red,
+    Green,
+    Blue
+}
+
+// Union types
+let id: number | string = 10;
+
+// Null and undefined
+let nullableNum: number | null = null;
+let undefinedVar: undefined = undefined;
+
+// Type assertion
+let someValue: any = "this is a string";
+let strLength: number = (someValue as string).length;
+
+// Literal types
+type Direction = "north" | "south" | "east" | "west";
+let dir: Direction = "north";
+
+// Conditional types
+type CheckNumber<T> = T extends number ? "Is a number" : "Not a number";
+type Result = CheckNumber<string>; // "Not a number"
+
+// Decorators
+function logged(constructor: Function) {
+    console.log(`Class ${constructor.name} was created.`);
+}
+
+@logged
+class Example {
+    constructor() {
+        console.log("Example instance created");
+    }
+}
+
+// Async/await
+async function fetchData(): Promise<string> {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve("Data fetched"), 1000);
+    });
+}
+
+// Binary, octal, and hexadecimal literals
+let binary: number = 0b1010;
+let octal: number = 0o744;
+let hex: number = 0xf00d;
+
+// Numeric separators
+let bigNumber: number = 1_000_000;
+
+// Comments
+// This is a single-line comment
+
+/*
+This is a
+multi-line comment
+*/
+
+/**
+ * This is a JSDoc comment
+ * @param {string} param - This is a parameter
+ * @returns {void}
+ */
+function docCommentExample(param: string): void {
+    console.log(param);
+}
+
+// Error handling
+try {
+    throw new Error("This is an error");
+} catch (error) {
+    console.error(error);
+} finally {
+    console.log("Cleanup code");
+}

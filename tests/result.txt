@@ -1,6 +1,6 @@
-03.10.2024  1:50:58,50 
+06.10.2024  2:22:27,96 
  
-Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex.test: 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex1.test: 
 /* Объявление переменных разных типов данных */
 // Числа
 let myDec: number = 7777753;
@@ -50,7 +50,7 @@ person.sayHello();
 // Литералы: 42, "Hello, world!", true, "apple", "banana", "orange", [1, "Hello"]
 // Строки: "Hello, ${name}!", `Hello, my name is ${this.name} and I am ${this.age} years old.`
 // Комментарии: // Объявление переменных разных типов данных, // Функция, возвращающая строку, // Класс с конструктором и методом, // Создание экземпляра класса и вызов его метода. 
-Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex.test: 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex1.test: 
 Found multiline comment: 
  Объявление переменных разных типов данных 
 Found singleline comment:  Числа
@@ -58,14 +58,14 @@ Found KW_LET: let
 Found identifier: myDec
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found decimal integer literal: 7777753
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myMinusDec
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found OPERATOR_MINUS: -
 Found decimal integer literal: 7777753
 Found SEMICOLON: ;
@@ -73,14 +73,14 @@ Found KW_LET: let
 Found identifier: myBin
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found binary integer literal: 11
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myMinusBin
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found OPERATOR_MINUS: -
 Found binary integer literal: 11
 Found SEMICOLON: ;
@@ -88,14 +88,14 @@ Found KW_LET: let
 Found identifier: myOctal
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found octal integer literal: 1251
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myMinusOctal
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found OPERATOR_MINUS: -
 Found octal integer literal: 1251
 Found SEMICOLON: ;
@@ -103,14 +103,14 @@ Found KW_LET: let
 Found identifier: myHex
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found hexadecimal integer literal: 37006285
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myMinusHex
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found OPERATOR_MINUS: -
 Found hexadecimal integer literal: 37006285
 Found SEMICOLON: ;
@@ -118,41 +118,43 @@ Found KW_LET: let
 Found identifier: myFloat
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
-Found floating point literal: 0.000000
+Found OPERATOR_ASSIGN: =
 Found floating point literal: 0.234500
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myMinusFloat
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found OPERATOR_MINUS: -
-Found floating point literal: 0.000000
 Found floating point literal: 0.234500
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myFloatWithPlusE
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 3
 Found identifier: e
 Found OPERATOR_PLUS: +
+Found decimal integer literal: 5
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myFloatWithMinusE
 Found COLON: :
 Found TYPE_NUMBER: number
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 3
 Found identifier: e
 Found OPERATOR_MINUS: -
+Found decimal integer literal: 5
 Found SEMICOLON: ;
 Found singleline comment:  Строки
 Found KW_LET: let
 Found identifier: myDQString
 Found COLON: :
 Found TYPE_STRING: string
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found string literal: "Это строка
 с 'одинарными кавычками', а также шестнадцатеричным числом: ${0x1A }(оно не должно преобразоваться)."
 Found SEMICOLON: ;
@@ -160,13 +162,13 @@ Found KW_LET: let
 Found identifier: mySQString
 Found COLON: :
 Found TYPE_STRING: string
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found string literal: "Это строка
 с "двойными кавычками", а также шестнадцатеричным числом: ${0x1A }(оно не должно преобразоваться)."
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myBQString
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found string literal: "Это строка
 со слешем \\ и "двойными кавычками", а также шестнадцатеричным числом: ${0x1A }(преобразовано)."
 Found SEMICOLON: ;
@@ -175,59 +177,60 @@ Found KW_LET: let
 Found identifier: myBoolean
 Found COLON: :
 Found TYPE_BOOLEAN: boolean
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found KW_TRUE: true
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myArray
 Found COLON: :
 Found TYPE_STRING: string
-Found LEFT_SQUARE_BRACKET: [
-Found RIGHT_SQUARE_BRACKET: ]
-Found OPERATOR_ASSIGNMENT: =
-Found LEFT_SQUARE_BRACKET: [
+Found BRACKET_OPEN: [
+Found BRACKET_CLOSE: ]
+Found OPERATOR_ASSIGN: =
+Found BRACKET_OPEN: [
 Found string literal: "apple"
 Found COMMA: ,
 Found string literal: "banana"
 Found COMMA: ,
 Found string literal: "orange"
-Found RIGHT_SQUARE_BRACKET: ]
+Found BRACKET_CLOSE: ]
 Found SEMICOLON: ;
 Found KW_LET: let
 Found identifier: myTuple
 Found COLON: :
-Found LEFT_SQUARE_BRACKET: [
+Found BRACKET_OPEN: [
 Found TYPE_NUMBER: number
 Found COMMA: ,
 Found TYPE_STRING: string
-Found RIGHT_SQUARE_BRACKET: ]
-Found OPERATOR_ASSIGNMENT: =
-Found LEFT_SQUARE_BRACKET: [
+Found BRACKET_CLOSE: ]
+Found OPERATOR_ASSIGN: =
+Found BRACKET_OPEN: [
+Found decimal integer literal: 1
 Found COMMA: ,
 Found string literal: "Hello"
-Found RIGHT_SQUARE_BRACKET: ]
+Found BRACKET_CLOSE: ]
 Found SEMICOLON: ;
 Found singleline comment:  Функция, возвращающая строку
 Found KW_FUNCTION: function
 Found identifier: sayHello
-Found LEFT_ROUND_BRACKET: (
+Found PARENTHESIS_OPEN: (
 Found identifier: name
 Found COLON: :
 Found TYPE_STRING: string
-Found RIGHT_ROUND_BRACKET: )
+Found PARENTHESIS_CLOSE: )
 Found COLON: :
 Found TYPE_STRING: string
-Found LEFT_FIGURE_BRACKET: {
+Found BRACE_OPEN: {
 Found KW_RETURN: return
 Found string literal: "Hello, ${name}!"
 Found SEMICOLON: ;
-Found RIGHT_FIGURE_BRACKET: }
+Found BRACE_CLOSE: }
 Found singleline comment:  Класс с конструктором и методом
 Found KW_CLASS: class
 Found identifier: Person
-Found LEFT_FIGURE_BRACKET: {
+Found BRACE_OPEN: {
 Found KW_CONSTRUCTOR: constructor
-Found LEFT_ROUND_BRACKET: (
+Found PARENTHESIS_OPEN: (
 Found KW_PUBLIC: public
 Found identifier: name
 Found COLON: :
@@ -237,41 +240,41 @@ Found KW_PRIVATE: private
 Found identifier: age
 Found COLON: :
 Found TYPE_NUMBER: number
-Found RIGHT_ROUND_BRACKET: )
-Found LEFT_FIGURE_BRACKET: {
-Found RIGHT_FIGURE_BRACKET: }
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found BRACE_CLOSE: }
 Found identifier: sayHello
-Found LEFT_ROUND_BRACKET: (
-Found RIGHT_ROUND_BRACKET: )
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
 Found COLON: :
 Found VOID_OPERATOR: void
-Found LEFT_FIGURE_BRACKET: {
+Found BRACE_OPEN: {
 Found identifier: console
 Found DOT: .
 Found identifier: log
-Found LEFT_ROUND_BRACKET: (
+Found PARENTHESIS_OPEN: (
 Found string literal: "Hello, my name is ${this.name} and I am ${this.age} years old."
-Found RIGHT_ROUND_BRACKET: )
+Found PARENTHESIS_CLOSE: )
 Found SEMICOLON: ;
-Found RIGHT_FIGURE_BRACKET: }
-Found RIGHT_FIGURE_BRACKET: }
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
 Found singleline comment:  Создание экземпляра класса и вызов его метода
 Found KW_CONST: const
 Found identifier: person
-Found OPERATOR_ASSIGNMENT: =
+Found OPERATOR_ASSIGN: =
 Found KW_NEW: new
 Found identifier: Person
-Found LEFT_ROUND_BRACKET: (
+Found PARENTHESIS_OPEN: (
 Found string literal: "John"
 Found COMMA: ,
 Found decimal integer literal: 30
-Found RIGHT_ROUND_BRACKET: )
+Found PARENTHESIS_CLOSE: )
 Found SEMICOLON: ;
 Found identifier: person
 Found DOT: .
 Found identifier: sayHello
-Found LEFT_ROUND_BRACKET: (
-Found RIGHT_ROUND_BRACKET: )
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
 Found SEMICOLON: ;
 Found singleline comment:  Этот фрагмент кода содержит примеры следующих типов лексем:
 Found singleline comment:  Ключевые слова: let, number, string, boolean, function, return, class, constructor, public, private, void, new, const
@@ -282,9 +285,2137 @@ Found singleline comment:  Строки: "Hello, ${name}!", `Hello, my name is $
 Found singleline comment:  Комментарии: // Объявление переменных разных типов данных, // Функция, возвращающая строку, // Класс с конструктором и методом, // Создание экземпляра класса и вызов его метода.
 --------------- 
  
-Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\double-quoted-strings.test: 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex2.test: 
+interface Animal {
+  name: string;
+  age: number;
+  makeSound(): void;
+}
+
+class Dog implements Animal {
+  name: string;
+  age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+
+  makeSound() {
+    console.log("Woof!");
+  }
+}
+
+class Cat implements Animal {
+  name: string;
+  age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+
+  makeSound() {
+    console.log("Meow!");
+  }
+}
+
+class Tiger extends Cat {
+  constructor(name: string, age: number) {
+    super(name, age);
+  }
+
+  makeSound() {
+    console.log("Roar!");
+  }
+}
+
+const animals: Animal[] = [
+  new Dog("Rex", 5),
+  new Cat("Whiskers", 3),
+  new Tiger("Shera", 7),
+];
+
+animals.forEach((animal) => {
+  console.log(`${animal.name} is ${animal.age} years old.`);
+  animal.makeSound();
+});
+
+let numbers: number[] = [1, 2, 3, 4, 5];
+let squaredNumbers = numbers.map(n => n * n);
+console.log("Squared numbers:", squaredNumbers);
+
+let uniqueNames: Set<string> = new Set();
+uniqueNames.add("Alice");
+uniqueNames.add("Bob");
+uniqueNames.add("Alice"); // Дубликат, не будет добавлен
+
+console.log("Unique names:");
+uniqueNames.forEach(name => console.log(name));
+
+let personInfo: Map<string, number> = new Map();
+personInfo.set("Alice", 30);
+personInfo.set("Bob", 25);
+
+console.log("Person info:");
+personInfo.forEach((age, name) => {
+  console.log(`${name} is ${age} years old`);
+});
+
+// Итерация по массиву с использованием reduce
+let sum = numbers.reduce((acc, current) => acc + current, 0);
+console.log("Sum of numbers:", sum);
+
+function getData(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (url === "valid_url") {
+        resolve("Data fetched successfully");
+      } else {
+        reject("Error: Invalid URL");
+      }
+    }, 2000);
+  });
+}
+
+async function fetchData() {
+  try {
+    console.log("Fetching data...");
+    let data = await getData("valid_url");
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+fetchData();
+
+function* numberGenerator() {
+  let i = 0;
+  while (i < 5) {
+    yield i++;
+  }
+}
+
+let generator = numberGenerator();
+
+for (let num of generator) {
+  console.log(num);
+}
+
+function* fibonacci(limit: number) {
+  let a = 0, b = 1;
+  for (let i = 0; i < limit; i++) {
+    yield a;
+    [a, b] = [b, a + b];
+  }
+}
+
+let fibSequence = fibonacci(10);
+console.log("Fibonacci sequence:");
+for (let num of fibSequence) {
+  console.log(num);
+}
+
+function throwError(message: string): never {
+  throw new Error(message);
+}
+
+function processValue(value: unknown) {
+  if (typeof value === "string") {
+    console.log("String value:", value.toUpperCase());
+  } else if (typeof value === "number") {
+    console.log("Number value:", value * 2);
+  } else {
+    throwError("Unknown value type");
+  }
+}
+
+try {
+  processValue("hello");
+  processValue(42);
+  processValue(true); // Это вызовет ошибку
+} catch (error) {
+  console.error("Caught an error:", error);
+}
+
+function divide(a: number, b: number): number {
+  if (b === 0) {
+    throw new Error("Division by zero");
+  }
+  return a / b;
+}
+
+try {
+  console.log(divide(10, 2));
+  console.log(divide(10, 0)); // Ошибка
+} catch (error) {
+  console.error(error.message);
+}
+ 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex2.test: 
+Found KW_INTARFACE: interface
+Found identifier: Animal
+Found BRACE_OPEN: {
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found SEMICOLON: ;
+Found identifier: age
+Found COLON: :
+Found TYPE_NUMBER: number
+Found SEMICOLON: ;
+Found identifier: makeSound
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found VOID_OPERATOR: void
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_CLASS: class
+Found identifier: Dog
+Found KW_IMPLEMENTS: implements
+Found identifier: Animal
+Found BRACE_OPEN: {
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found SEMICOLON: ;
+Found identifier: age
+Found COLON: :
+Found TYPE_NUMBER: number
+Found SEMICOLON: ;
+Found KW_CONSTRUCTOR: constructor
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found COMMA: ,
+Found identifier: age
+Found COLON: :
+Found TYPE_NUMBER: number
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_THIS: this
+Found DOT: .
+Found identifier: name
+Found OPERATOR_ASSIGN: =
+Found identifier: name
+Found SEMICOLON: ;
+Found KW_THIS: this
+Found DOT: .
+Found identifier: age
+Found OPERATOR_ASSIGN: =
+Found identifier: age
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found identifier: makeSound
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Woof!"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found KW_CLASS: class
+Found identifier: Cat
+Found KW_IMPLEMENTS: implements
+Found identifier: Animal
+Found BRACE_OPEN: {
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found SEMICOLON: ;
+Found identifier: age
+Found COLON: :
+Found TYPE_NUMBER: number
+Found SEMICOLON: ;
+Found KW_CONSTRUCTOR: constructor
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found COMMA: ,
+Found identifier: age
+Found COLON: :
+Found TYPE_NUMBER: number
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_THIS: this
+Found DOT: .
+Found identifier: name
+Found OPERATOR_ASSIGN: =
+Found identifier: name
+Found SEMICOLON: ;
+Found KW_THIS: this
+Found DOT: .
+Found identifier: age
+Found OPERATOR_ASSIGN: =
+Found identifier: age
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found identifier: makeSound
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Meow!"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found KW_CLASS: class
+Found identifier: Tiger
+Found KW_EXTENDS: extends
+Found identifier: Cat
+Found BRACE_OPEN: {
+Found KW_CONSTRUCTOR: constructor
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found COMMA: ,
+Found identifier: age
+Found COLON: :
+Found TYPE_NUMBER: number
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_SUPER: super
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found COMMA: ,
+Found identifier: age
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found identifier: makeSound
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Roar!"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found KW_CONST: const
+Found identifier: animals
+Found COLON: :
+Found identifier: Animal
+Found BRACKET_OPEN: [
+Found BRACKET_CLOSE: ]
+Found OPERATOR_ASSIGN: =
+Found BRACKET_OPEN: [
+Found KW_NEW: new
+Found identifier: Dog
+Found PARENTHESIS_OPEN: (
+Found string literal: "Rex"
+Found COMMA: ,
+Found decimal integer literal: 5
+Found PARENTHESIS_CLOSE: )
+Found COMMA: ,
+Found KW_NEW: new
+Found identifier: Cat
+Found PARENTHESIS_OPEN: (
+Found string literal: "Whiskers"
+Found COMMA: ,
+Found decimal integer literal: 3
+Found PARENTHESIS_CLOSE: )
+Found COMMA: ,
+Found KW_NEW: new
+Found identifier: Tiger
+Found PARENTHESIS_OPEN: (
+Found string literal: "Shera"
+Found COMMA: ,
+Found decimal integer literal: 7
+Found PARENTHESIS_CLOSE: )
+Found COMMA: ,
+Found BRACKET_CLOSE: ]
+Found SEMICOLON: ;
+Found identifier: animals
+Found DOT: .
+Found identifier: forEach
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_OPEN: (
+Found identifier: animal
+Found PARENTHESIS_CLOSE: )
+Found ARROW_FUNCTION: =>
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "${animal.name} is ${animal.age} years old."
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: animal
+Found DOT: .
+Found identifier: makeSound
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: numbers
+Found COLON: :
+Found TYPE_NUMBER: number
+Found BRACKET_OPEN: [
+Found BRACKET_CLOSE: ]
+Found OPERATOR_ASSIGN: =
+Found BRACKET_OPEN: [
+Found decimal integer literal: 1
+Found COMMA: ,
+Found decimal integer literal: 2
+Found COMMA: ,
+Found decimal integer literal: 3
+Found COMMA: ,
+Found decimal integer literal: 4
+Found COMMA: ,
+Found decimal integer literal: 5
+Found BRACKET_CLOSE: ]
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: squaredNumbers
+Found OPERATOR_ASSIGN: =
+Found identifier: numbers
+Found DOT: .
+Found identifier: map
+Found PARENTHESIS_OPEN: (
+Found identifier: n
+Found ARROW_FUNCTION: =>
+Found identifier: n
+Found OPERATOR_MULTIPLY: *
+Found identifier: n
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Squared numbers:"
+Found COMMA: ,
+Found identifier: squaredNumbers
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: uniqueNames
+Found COLON: :
+Found identifier: Set
+Found OPERATOR_LESS_THAN: <
+Found TYPE_STRING: string
+Found OPERATOR_GREATER_THAN: >
+Found OPERATOR_ASSIGN: =
+Found KW_NEW: new
+Found identifier: Set
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: uniqueNames
+Found DOT: .
+Found identifier: add
+Found PARENTHESIS_OPEN: (
+Found string literal: "Alice"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: uniqueNames
+Found DOT: .
+Found identifier: add
+Found PARENTHESIS_OPEN: (
+Found string literal: "Bob"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: uniqueNames
+Found DOT: .
+Found identifier: add
+Found PARENTHESIS_OPEN: (
+Found string literal: "Alice"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found singleline comment:  Дубликат, не будет добавлен
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Unique names:"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: uniqueNames
+Found DOT: .
+Found identifier: forEach
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found ARROW_FUNCTION: =>
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found PARENTHESIS_CLOSE: )
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: personInfo
+Found COLON: :
+Found identifier: Map
+Found OPERATOR_LESS_THAN: <
+Found TYPE_STRING: string
+Found COMMA: ,
+Found TYPE_NUMBER: number
+Found OPERATOR_GREATER_THAN: >
+Found OPERATOR_ASSIGN: =
+Found KW_NEW: new
+Found identifier: Map
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: personInfo
+Found DOT: .
+Found KW_SET: set
+Found PARENTHESIS_OPEN: (
+Found string literal: "Alice"
+Found COMMA: ,
+Found decimal integer literal: 30
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: personInfo
+Found DOT: .
+Found KW_SET: set
+Found PARENTHESIS_OPEN: (
+Found string literal: "Bob"
+Found COMMA: ,
+Found decimal integer literal: 25
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Person info:"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: personInfo
+Found DOT: .
+Found identifier: forEach
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_OPEN: (
+Found identifier: age
+Found COMMA: ,
+Found identifier: name
+Found PARENTHESIS_CLOSE: )
+Found ARROW_FUNCTION: =>
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "${name} is ${age} years old"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found singleline comment:  Итерация по массиву с использованием reduce
+Found KW_LET: let
+Found identifier: sum
+Found OPERATOR_ASSIGN: =
+Found identifier: numbers
+Found DOT: .
+Found identifier: reduce
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_OPEN: (
+Found identifier: acc
+Found COMMA: ,
+Found identifier: current
+Found PARENTHESIS_CLOSE: )
+Found ARROW_FUNCTION: =>
+Found identifier: acc
+Found OPERATOR_PLUS: +
+Found identifier: current
+Found COMMA: ,
+Found decimal integer literal: 0
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Sum of numbers:"
+Found COMMA: ,
+Found identifier: sum
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found KW_FUNCTION: function
+Found identifier: getData
+Found PARENTHESIS_OPEN: (
+Found identifier: url
+Found COLON: :
+Found TYPE_STRING: string
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found identifier: Promise
+Found OPERATOR_LESS_THAN: <
+Found TYPE_STRING: string
+Found OPERATOR_GREATER_THAN: >
+Found BRACE_OPEN: {
+Found KW_RETURN: return
+Found KW_NEW: new
+Found identifier: Promise
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_OPEN: (
+Found identifier: resolve
+Found COMMA: ,
+Found identifier: reject
+Found PARENTHESIS_CLOSE: )
+Found ARROW_FUNCTION: =>
+Found BRACE_OPEN: {
+Found identifier: setTimeout
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found ARROW_FUNCTION: =>
+Found BRACE_OPEN: {
+Found KW_IF: if
+Found PARENTHESIS_OPEN: (
+Found identifier: url
+Found OPERATOR_STRICT_EQUAL: ===
+Found string literal: "valid_url"
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: resolve
+Found PARENTHESIS_OPEN: (
+Found string literal: "Data fetched successfully"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_ELSE: else
+Found BRACE_OPEN: {
+Found identifier: reject
+Found PARENTHESIS_OPEN: (
+Found string literal: "Error: Invalid URL"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found COMMA: ,
+Found decimal integer literal: 2000
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found identifier: async
+Found KW_FUNCTION: function
+Found identifier: fetchData
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_TRY: try
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Fetching data..."
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: data
+Found OPERATOR_ASSIGN: =
+Found KW_AWAIT: await
+Found identifier: getData
+Found PARENTHESIS_OPEN: (
+Found string literal: "valid_url"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found identifier: data
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_CATCH: catch
+Found PARENTHESIS_OPEN: (
+Found identifier: error
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: error
+Found PARENTHESIS_OPEN: (
+Found identifier: error
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found identifier: fetchData
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found KW_FUNCTION: function
+Found OPERATOR_MULTIPLY: *
+Found identifier: numberGenerator
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_LET: let
+Found identifier: i
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 0
+Found SEMICOLON: ;
+Found KW_WHILE: while
+Found PARENTHESIS_OPEN: (
+Found identifier: i
+Found OPERATOR_LESS_THAN: <
+Found decimal integer literal: 5
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_YIELD: yield
+Found identifier: i
+Found OPERATOR_INCREMENT: ++
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found KW_LET: let
+Found identifier: generator
+Found OPERATOR_ASSIGN: =
+Found identifier: numberGenerator
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found KW_FOR: for
+Found PARENTHESIS_OPEN: (
+Found KW_LET: let
+Found identifier: num
+Found KW_OF: of
+Found identifier: generator
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found identifier: num
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_FUNCTION: function
+Found OPERATOR_MULTIPLY: *
+Found identifier: fibonacci
+Found PARENTHESIS_OPEN: (
+Found identifier: limit
+Found COLON: :
+Found TYPE_NUMBER: number
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_LET: let
+Found identifier: a
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 0
+Found COMMA: ,
+Found identifier: b
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 1
+Found SEMICOLON: ;
+Found KW_FOR: for
+Found PARENTHESIS_OPEN: (
+Found KW_LET: let
+Found identifier: i
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 0
+Found SEMICOLON: ;
+Found identifier: i
+Found OPERATOR_LESS_THAN: <
+Found identifier: limit
+Found SEMICOLON: ;
+Found identifier: i
+Found OPERATOR_INCREMENT: ++
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_YIELD: yield
+Found identifier: a
+Found SEMICOLON: ;
+Found BRACKET_OPEN: [
+Found identifier: a
+Found COMMA: ,
+Found identifier: b
+Found BRACKET_CLOSE: ]
+Found OPERATOR_ASSIGN: =
+Found BRACKET_OPEN: [
+Found identifier: b
+Found COMMA: ,
+Found identifier: a
+Found OPERATOR_PLUS: +
+Found identifier: b
+Found BRACKET_CLOSE: ]
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found KW_LET: let
+Found identifier: fibSequence
+Found OPERATOR_ASSIGN: =
+Found identifier: fibonacci
+Found PARENTHESIS_OPEN: (
+Found decimal integer literal: 10
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Fibonacci sequence:"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found KW_FOR: for
+Found PARENTHESIS_OPEN: (
+Found KW_LET: let
+Found identifier: num
+Found KW_OF: of
+Found identifier: fibSequence
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found identifier: num
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_FUNCTION: function
+Found identifier: throwError
+Found PARENTHESIS_OPEN: (
+Found identifier: message
+Found COLON: :
+Found TYPE_STRING: string
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found TYPE_NEVER: never
+Found BRACE_OPEN: {
+Found KW_THROW: throw
+Found KW_NEW: new
+Found identifier: Error
+Found PARENTHESIS_OPEN: (
+Found identifier: message
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_FUNCTION: function
+Found identifier: processValue
+Found PARENTHESIS_OPEN: (
+Found identifier: value
+Found COLON: :
+Found TYPE_UNKNOWN: unknown
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_IF: if
+Found PARENTHESIS_OPEN: (
+Found KW_TYPEOF: typeof
+Found identifier: value
+Found OPERATOR_STRICT_EQUAL: ===
+Found string literal: "string"
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "String value:"
+Found COMMA: ,
+Found identifier: value
+Found DOT: .
+Found identifier: toUpperCase
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_ELSE: else
+Found KW_IF: if
+Found PARENTHESIS_OPEN: (
+Found KW_TYPEOF: typeof
+Found identifier: value
+Found OPERATOR_STRICT_EQUAL: ===
+Found string literal: "number"
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Number value:"
+Found COMMA: ,
+Found identifier: value
+Found OPERATOR_MULTIPLY: *
+Found decimal integer literal: 2
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_ELSE: else
+Found BRACE_OPEN: {
+Found identifier: throwError
+Found PARENTHESIS_OPEN: (
+Found string literal: "Unknown value type"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found KW_TRY: try
+Found BRACE_OPEN: {
+Found identifier: processValue
+Found PARENTHESIS_OPEN: (
+Found string literal: "hello"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: processValue
+Found PARENTHESIS_OPEN: (
+Found decimal integer literal: 42
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: processValue
+Found PARENTHESIS_OPEN: (
+Found KW_TRUE: true
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found singleline comment:  Это вызовет ошибку
+Found BRACE_CLOSE: }
+Found KW_CATCH: catch
+Found PARENTHESIS_OPEN: (
+Found identifier: error
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: error
+Found PARENTHESIS_OPEN: (
+Found string literal: "Caught an error:"
+Found COMMA: ,
+Found identifier: error
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_FUNCTION: function
+Found identifier: divide
+Found PARENTHESIS_OPEN: (
+Found identifier: a
+Found COLON: :
+Found TYPE_NUMBER: number
+Found COMMA: ,
+Found identifier: b
+Found COLON: :
+Found TYPE_NUMBER: number
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found TYPE_NUMBER: number
+Found BRACE_OPEN: {
+Found KW_IF: if
+Found PARENTHESIS_OPEN: (
+Found identifier: b
+Found OPERATOR_STRICT_EQUAL: ===
+Found decimal integer literal: 0
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_THROW: throw
+Found KW_NEW: new
+Found identifier: Error
+Found PARENTHESIS_OPEN: (
+Found string literal: "Division by zero"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_RETURN: return
+Found identifier: a
+Found OPERATOR_DIVIDE: /
+Found identifier: b
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_TRY: try
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found identifier: divide
+Found PARENTHESIS_OPEN: (
+Found decimal integer literal: 10
+Found COMMA: ,
+Found decimal integer literal: 2
+Found PARENTHESIS_CLOSE: )
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found identifier: divide
+Found PARENTHESIS_OPEN: (
+Found decimal integer literal: 10
+Found COMMA: ,
+Found decimal integer literal: 0
+Found PARENTHESIS_CLOSE: )
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found singleline comment:  Ошибка
+Found BRACE_CLOSE: }
+Found KW_CATCH: catch
+Found PARENTHESIS_OPEN: (
+Found identifier: error
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: error
+Found PARENTHESIS_OPEN: (
+Found identifier: error
+Found DOT: .
+Found identifier: message
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+--------------- 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex3.test: 
+// Basic types and variables
+let num: number = 42;
+const PI: number = 3.14159;
+let str: string = "Hello, TypeScript!";
+let bool: boolean = true;
+let arr: number[] = [1, 2, 3];
+let tuple: [string, number] = ["age", 30];
+
+// Template string
+let name: string = "Alice";
+console.log(`Hello, ${name}!`);
+
+// Object and interface
+interface Person {
+    name: string;
+    age: number;
+}
+
+let person: Person = {
+    name: "Bob",
+    age: 30
+};
+
+// Class
+class Animal {
+    private name: string;
+    
+    constructor(name: string) {
+        this.name = name;
+    }
+    
+    public makeSound(): void {
+        console.log("Some generic animal sound");
+    }
+}
+
+// Inheritance
+class Dog extends Animal {
+    constructor(name: string) {
+        super(name);
+    }
+    
+    public makeSound(): void {
+        console.log("Woof! Woof!");
+    }
+}
+
+// Function with optional and default parameters
+function greet(name: string, greeting: string = "Hello"): string {
+    return `${greeting}, ${name}!`;
+}
+
+// Arrow function
+const multiply = (a: number, b: number): number => a * b;
+
+// Generics
+function identity<T>(arg: T): T {
+    return arg;
+}
+
+// Enum
+enum Color {
+    Red,
+    Green,
+    Blue
+}
+
+// Union types
+let id: number | string = 10;
+
+// Null and undefined
+let nullableNum: number | null = null;
+let undefinedVar: undefined = undefined;
+
+// Type assertion
+let someValue: any = "this is a string";
+let strLength: number = (someValue as string).length;
+
+// Literal types
+type Direction = "north" | "south" | "east" | "west";
+let dir: Direction = "north";
+
+// Conditional types
+type CheckNumber<T> = T extends number ? "Is a number" : "Not a number";
+type Result = CheckNumber<string>; // "Not a number"
+
+// Decorators
+function logged(constructor: Function) {
+    console.log(`Class ${constructor.name} was created.`);
+}
+
+@logged
+class Example {
+    constructor() {
+        console.log("Example instance created");
+    }
+}
+
+// Async/await
+async function fetchData(): Promise<string> {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve("Data fetched"), 1000);
+    });
+}
+
+// Binary, octal, and hexadecimal literals
+let binary: number = 0b1010;
+let octal: number = 0o744;
+let hex: number = 0xf00d;
+
+// Numeric separators
+let bigNumber: number = 1_000_000;
+
+// Comments
+// This is a single-line comment
+
+/*
+This is a
+multi-line comment
+*/
+
+/**
+ * This is a JSDoc comment
+ * @param {string} param - This is a parameter
+ * @returns {void}
+ */
+function docCommentExample(param: string): void {
+    console.log(param);
+}
+
+// Error handling
+try {
+    throw new Error("This is an error");
+} catch (error) {
+    console.error(error);
+} finally {
+    console.log("Cleanup code");
+} 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex3.test: 
+Found singleline comment:  Basic types and variables
+Found KW_LET: let
+Found identifier: num
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 42
+Found SEMICOLON: ;
+Found KW_CONST: const
+Found identifier: PI
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGN: =
+Found floating point literal: 3.141590
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: str
+Found COLON: :
+Found TYPE_STRING: string
+Found OPERATOR_ASSIGN: =
+Found string literal: "Hello, TypeScript!"
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: bool
+Found COLON: :
+Found TYPE_BOOLEAN: boolean
+Found OPERATOR_ASSIGN: =
+Found KW_TRUE: true
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: arr
+Found COLON: :
+Found TYPE_NUMBER: number
+Found BRACKET_OPEN: [
+Found BRACKET_CLOSE: ]
+Found OPERATOR_ASSIGN: =
+Found BRACKET_OPEN: [
+Found decimal integer literal: 1
+Found COMMA: ,
+Found decimal integer literal: 2
+Found COMMA: ,
+Found decimal integer literal: 3
+Found BRACKET_CLOSE: ]
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: tuple
+Found COLON: :
+Found BRACKET_OPEN: [
+Found TYPE_STRING: string
+Found COMMA: ,
+Found TYPE_NUMBER: number
+Found BRACKET_CLOSE: ]
+Found OPERATOR_ASSIGN: =
+Found BRACKET_OPEN: [
+Found string literal: "age"
+Found COMMA: ,
+Found decimal integer literal: 30
+Found BRACKET_CLOSE: ]
+Found SEMICOLON: ;
+Found singleline comment:  Template string
+Found KW_LET: let
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found OPERATOR_ASSIGN: =
+Found string literal: "Alice"
+Found SEMICOLON: ;
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Hello, ${name}!"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found singleline comment:  Object and interface
+Found KW_INTARFACE: interface
+Found identifier: Person
+Found BRACE_OPEN: {
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found SEMICOLON: ;
+Found identifier: age
+Found COLON: :
+Found TYPE_NUMBER: number
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_LET: let
+Found identifier: person
+Found COLON: :
+Found identifier: Person
+Found OPERATOR_ASSIGN: =
+Found BRACE_OPEN: {
+Found identifier: name
+Found COLON: :
+Found string literal: "Bob"
+Found COMMA: ,
+Found identifier: age
+Found COLON: :
+Found decimal integer literal: 30
+Found BRACE_CLOSE: }
+Found SEMICOLON: ;
+Found singleline comment:  Class
+Found KW_CLASS: class
+Found identifier: Animal
+Found BRACE_OPEN: {
+Found KW_PRIVATE: private
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found SEMICOLON: ;
+Found KW_CONSTRUCTOR: constructor
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_THIS: this
+Found DOT: .
+Found identifier: name
+Found OPERATOR_ASSIGN: =
+Found identifier: name
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_PUBLIC: public
+Found identifier: makeSound
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found VOID_OPERATOR: void
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Some generic animal sound"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found singleline comment:  Inheritance
+Found KW_CLASS: class
+Found identifier: Dog
+Found KW_EXTENDS: extends
+Found identifier: Animal
+Found BRACE_OPEN: {
+Found KW_CONSTRUCTOR: constructor
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found KW_SUPER: super
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_PUBLIC: public
+Found identifier: makeSound
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found VOID_OPERATOR: void
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Woof! Woof!"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found singleline comment:  Function with optional and default parameters
+Found KW_FUNCTION: function
+Found identifier: greet
+Found PARENTHESIS_OPEN: (
+Found identifier: name
+Found COLON: :
+Found TYPE_STRING: string
+Found COMMA: ,
+Found identifier: greeting
+Found COLON: :
+Found TYPE_STRING: string
+Found OPERATOR_ASSIGN: =
+Found string literal: "Hello"
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found TYPE_STRING: string
+Found BRACE_OPEN: {
+Found KW_RETURN: return
+Found string literal: "${greeting}, ${name}!"
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found singleline comment:  Arrow function
+Found KW_CONST: const
+Found identifier: multiply
+Found OPERATOR_ASSIGN: =
+Found PARENTHESIS_OPEN: (
+Found identifier: a
+Found COLON: :
+Found TYPE_NUMBER: number
+Found COMMA: ,
+Found identifier: b
+Found COLON: :
+Found TYPE_NUMBER: number
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found TYPE_NUMBER: number
+Found ARROW_FUNCTION: =>
+Found identifier: a
+Found OPERATOR_MULTIPLY: *
+Found identifier: b
+Found SEMICOLON: ;
+Found singleline comment:  Generics
+Found KW_FUNCTION: function
+Found identifier: identity
+Found OPERATOR_LESS_THAN: <
+Found identifier: T
+Found OPERATOR_GREATER_THAN: >
+Found PARENTHESIS_OPEN: (
+Found identifier: arg
+Found COLON: :
+Found identifier: T
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found identifier: T
+Found BRACE_OPEN: {
+Found KW_RETURN: return
+Found identifier: arg
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found singleline comment:  Enum
+Found KW_ENUM: enum
+Found identifier: Color
+Found BRACE_OPEN: {
+Found identifier: Red
+Found COMMA: ,
+Found identifier: Green
+Found COMMA: ,
+Found identifier: Blue
+Found BRACE_CLOSE: }
+Found singleline comment:  Union types
+Found KW_LET: let
+Found identifier: id
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_BITWISE_OR: |
+Found TYPE_STRING: string
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 10
+Found SEMICOLON: ;
+Found singleline comment:  Null and undefined
+Found KW_LET: let
+Found identifier: nullableNum
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_BITWISE_OR: |
+Found KW_NULL: null
+Found OPERATOR_ASSIGN: =
+Found KW_NULL: null
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: undefinedVar
+Found COLON: :
+Found KW_UNDEFINED: undefined
+Found OPERATOR_ASSIGN: =
+Found KW_UNDEFINED: undefined
+Found SEMICOLON: ;
+Found singleline comment:  Type assertion
+Found KW_LET: let
+Found identifier: someValue
+Found COLON: :
+Found TYPE_ANY: any
+Found OPERATOR_ASSIGN: =
+Found string literal: "this is a string"
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: strLength
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGN: =
+Found PARENTHESIS_OPEN: (
+Found identifier: someValue
+Found KW_AS: as
+Found TYPE_STRING: string
+Found PARENTHESIS_CLOSE: )
+Found DOT: .
+Found identifier: length
+Found SEMICOLON: ;
+Found singleline comment:  Literal types
+Found KW_TYPE: type
+Found identifier: Direction
+Found OPERATOR_ASSIGN: =
+Found string literal: "north"
+Found OPERATOR_BITWISE_OR: |
+Found string literal: "south"
+Found OPERATOR_BITWISE_OR: |
+Found string literal: "east"
+Found OPERATOR_BITWISE_OR: |
+Found string literal: "west"
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: dir
+Found COLON: :
+Found identifier: Direction
+Found OPERATOR_ASSIGN: =
+Found string literal: "north"
+Found SEMICOLON: ;
+Found singleline comment:  Conditional types
+Found KW_TYPE: type
+Found identifier: CheckNumber
+Found OPERATOR_LESS_THAN: <
+Found identifier: T
+Found OPERATOR_GREATER_THAN: >
+Found OPERATOR_ASSIGN: =
+Found identifier: T
+Found KW_EXTENDS: extends
+Found TYPE_NUMBER: number
+Found QUESTION_MARK: ?
+Found string literal: "Is a number"
+Found COLON: :
+Found string literal: "Not a number"
+Found SEMICOLON: ;
+Found KW_TYPE: type
+Found identifier: Result
+Found OPERATOR_ASSIGN: =
+Found identifier: CheckNumber
+Found OPERATOR_LESS_THAN: <
+Found TYPE_STRING: string
+Found OPERATOR_GREATER_THAN: >
+Found SEMICOLON: ;
+Found singleline comment:  "Not a number"
+Found singleline comment:  Decorators
+Found KW_FUNCTION: function
+Found identifier: logged
+Found PARENTHESIS_OPEN: (
+Found KW_CONSTRUCTOR: constructor
+Found COLON: :
+Found identifier: Function
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Class ${constructor.name} was created."
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found DECORATOR_AT: @
+Found identifier: logged
+Found KW_CLASS: class
+Found identifier: Example
+Found BRACE_OPEN: {
+Found KW_CONSTRUCTOR: constructor
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Example instance created"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found BRACE_CLOSE: }
+Found singleline comment:  Async/await
+Found identifier: async
+Found KW_FUNCTION: function
+Found identifier: fetchData
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found identifier: Promise
+Found OPERATOR_LESS_THAN: <
+Found TYPE_STRING: string
+Found OPERATOR_GREATER_THAN: >
+Found BRACE_OPEN: {
+Found KW_RETURN: return
+Found KW_NEW: new
+Found identifier: Promise
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_OPEN: (
+Found identifier: resolve
+Found PARENTHESIS_CLOSE: )
+Found ARROW_FUNCTION: =>
+Found BRACE_OPEN: {
+Found identifier: setTimeout
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found ARROW_FUNCTION: =>
+Found identifier: resolve
+Found PARENTHESIS_OPEN: (
+Found string literal: "Data fetched"
+Found PARENTHESIS_CLOSE: )
+Found COMMA: ,
+Found decimal integer literal: 1000
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found singleline comment:  Binary, octal, and hexadecimal literals
+Found KW_LET: let
+Found identifier: binary
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGN: =
+Found binary integer literal: 10
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: octal
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGN: =
+Found octal integer literal: 484
+Found SEMICOLON: ;
+Found KW_LET: let
+Found identifier: hex
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGN: =
+Found hexadecimal integer literal: 61453
+Found SEMICOLON: ;
+Found singleline comment:  Numeric separators
+Found KW_LET: let
+Found identifier: bigNumber
+Found COLON: :
+Found TYPE_NUMBER: number
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 1000000
+Found SEMICOLON: ;
+Found singleline comment:  Comments
+Found singleline comment:  This is a single-line comment
+Found multiline comment: 
+
+This is a
+multi-line comment
+
+Found multiline comment: 
+*
+ * This is a JSDoc comment
+ * @param {string} param - This is a parameter
+ * @returns {void}
+ 
+Found KW_FUNCTION: function
+Found identifier: docCommentExample
+Found PARENTHESIS_OPEN: (
+Found identifier: param
+Found COLON: :
+Found TYPE_STRING: string
+Found PARENTHESIS_CLOSE: )
+Found COLON: :
+Found VOID_OPERATOR: void
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found identifier: param
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found singleline comment:  Error handling
+Found KW_TRY: try
+Found BRACE_OPEN: {
+Found KW_THROW: throw
+Found KW_NEW: new
+Found identifier: Error
+Found PARENTHESIS_OPEN: (
+Found string literal: "This is an error"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_CATCH: catch
+Found PARENTHESIS_OPEN: (
+Found identifier: error
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: error
+Found PARENTHESIS_OPEN: (
+Found identifier: error
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+Found KW_FINALLY: finally
+Found BRACE_OPEN: {
+Found identifier: console
+Found DOT: .
+Found identifier: log
+Found PARENTHESIS_OPEN: (
+Found string literal: "Cleanup code"
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+Found BRACE_CLOSE: }
+--------------- 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\identifier.test: 
+asd123ASD
+_asd1__23___
+$_asd_asd
+_asd$__$$123
+
+123sad
+ 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\identifier.test: 
+Found identifier: asd123ASD
+Found identifier: _asd1__23___
+Found identifier: $_asd_asd
+Found identifier: _asd$__$$123
+Found decimal integer literal: 123
+Found identifier: sad
+--------------- 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\multiline-comments.test: 
+/* multiline
+comment
+1
+
+3
+4
+*
+**
+/
+let a
+*/
+
+/* 123 some text *** // // */ /*
+
+other comment
+\x3F
+\123
+\u1234
+\n
+\t\t\t
+\v
+\b
+*/
+
+/* multiline in one line /* 123 for */
+
+/* not closed multiline comment 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\multiline-comments.test: 
+Found multiline comment: 
+ multiline
+comment
+1
+
+3
+4
+*
+**
+/
+let a
+
+Found multiline comment: 
+ 123 some text *** // // 
+Found multiline comment: 
+
+
+other comment
+\x3F
+\123
+\u1234
+\n
+\t\t\t
+\v
+\b
+
+Found multiline comment: 
+ multiline in one line /* 123 for 
+error: no closing */ of multiline comment
+error line: 27
+
+--------------- 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal.test: 
+123
+1_2_3
+
+123e123
+123e1_2_3
+123E2
+123e
+
+333.
+333.123
+3.123456789
+
+123.e123
+123.E2
+123.e
+
+.111
+.1_1_1e1_3_2
+.111e+2
+.111e-2
+
+.e123
+
+123.222e123
+123.2_2_2e123
+123.2E2
+
+0b101
+0B1_0_1
+
+0b187
+0b987
+0BXZ
+0b\\
+0b
+0b;
+
+0o1234567
+0O1_2_3_7
+
+0o798
+0o98
+0OXZ
+0O%#
+0o
+
+0xA
+0X1_AB_F
+
+0xAZC
+0XZZ
+0x%
+0x  
+
+0xZX
+
+123_
+1__23
+1__2__3_
+_123
+
+_.123
+.1__23
+.1_23_
+
+.1_e1
+.1e_1
+.1e1__1
+.1e1_
+
+.1e_+1
+.1e+_1
+
+0b1_
+0b1__1
+0B_1
+0_B1
+0b1__1_
+
+0o1_
+0o1__1
+0O_1
+0_O1
+0o1__1_
+
+0xA_
+0XA__A
+0X_A
+0_xA
+0XA__A_
+ 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal.test: 
+Found decimal integer literal: 123
+Found decimal integer literal: 123
+Found floating point literal: 123000000000000005037873582401030516801036545468854257201174691946296000497351649188019982429645907670728107364273344904953856.000000
+Found floating point literal: 123000000000000005037873582401030516801036545468854257201174691946296000497351649188019982429645907670728107364273344904953856.000000
+Found floating point literal: 12300.000000
+Found decimal integer literal: 123
+Found identifier: e
+Found floating point literal: 333.000000
+Found floating point literal: 333.123000
+Found floating point literal: 3.123457
+Found floating point literal: 123000000000000005037873582401030516801036545468854257201174691946296000497351649188019982429645907670728107364273344904953856.000000
+Found floating point literal: 12300.000000
+Found floating point literal: 123.000000
+Found identifier: e
+Found floating point literal: 0.111000
+Found floating point literal: 110999999999999994569057287665920026793961091131971079061303438851331249024672698342794927264818525832628029555406576312131495395328.000000
+Found floating point literal: 11.100000
+Found floating point literal: 0.001110
+Found DOT: .
+Found identifier: e123
+Found floating point literal: 123221999999999993422024234270417484055683532531036733574403172959807172770921041758929374767223903935867237894674724402757632.000000
+Found floating point literal: 123221999999999993422024234270417484055683532531036733574403172959807172770921041758929374767223903935867237894674724402757632.000000
+Found floating point literal: 12320.000000
+Found binary integer literal: 5
+Found binary integer literal: 5
+Found binary integer literal: 1
+Found decimal integer literal: 87
+error: binary digit expected
+error line: 32
+
+error: binary digit expected
+error line: 33
+
+error: binary digit expected
+error line: 34
+
+Found decimal integer literal: 0
+Found identifier: b
+error: binary digit expected
+error line: 36
+
+Found octal integer literal: 342391
+Found octal integer literal: 671
+Found octal integer literal: 7
+Found decimal integer literal: 98
+error: octal digit expected
+error line: 42
+
+error: octal digit expected
+error line: 43
+
+error: octal digit expected
+error line: 44
+
+Found decimal integer literal: 0
+Found identifier: o
+Found hexadecimal integer literal: 10
+Found hexadecimal integer literal: 6847
+Found hexadecimal integer literal: 10
+Found identifier: ZC
+error: hexadecimal digit expected
+error line: 51
+
+error: hexadecimal digit expected
+error line: 52
+
+Found decimal integer literal: 0
+Found identifier: x
+error: hexadecimal digit expected
+error line: 55
+
+error: illegal underscore in decimal number
+error line: 57
+
+error: illegal underscore in decimal number
+error line: 58
+
+error: illegal underscore in decimal number
+error line: 59
+
+Found identifier: _123
+error: illegal underscore in decimal number
+error line: 62
+
+error: illegal underscore in decimal number
+error line: 63
+
+error: illegal underscore in decimal number
+error line: 64
+
+error: illegal underscore in decimal number
+error line: 66
+
+error: illegal underscore in decimal number
+error line: 67
+
+error: illegal underscore in decimal number
+error line: 68
+
+error: illegal underscore in decimal number
+error line: 69
+
+error: illegal underscore in decimal number
+error line: 71
+
+error: illegal underscore in decimal number
+error line: 72
+
+error: illegal underscore in binary number
+error line: 74
+
+error: illegal underscore in binary number
+error line: 75
+
+error: illegal underscore in binary number
+error line: 76
+
+error: illegal underscore in binary number
+error line: 77
+
+error: illegal underscore in binary number
+error line: 78
+
+error: illegal underscore in octal number
+error line: 80
+
+error: illegal underscore in octal number
+error line: 81
+
+error: illegal underscore in octal number
+error line: 82
+
+error: illegal underscore in octal number
+error line: 83
+
+error: illegal underscore in octal number
+error line: 84
+
+error: illegal underscore in hexadecimal number
+error line: 86
+
+error: illegal underscore in hexadecimal number
+error line: 87
+
+error: illegal underscore in hexadecimal number
+error line: 88
+
+error: illegal underscore in hexadecimal number
+error line: 89
+
+error: illegal underscore in hexadecimal number
+error line: 90
+
+--------------- 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\punctuators.test: 
+?
+?.
+??
+??=
+
+%
+%=
+
++
++=
+++
+
+-
+-=
+--
+
+*
+**
+*=
+**=
+
+=
+==
+===
+
+!
+!=
+!==
+
+=>
+
+>
+>=
+>>
+>>=
+>>>
+>>>=
+
+<
+<=
+<<
+<<=
+
+/
+/=
+
+^
+^=
+
+~
+
+&&=
+&=
+&
+&&
+
+||=
+|=
+|
+||
+
+[
+]
+(
+)
+{
+}
+
+:
+,
+...
+.
+; 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\punctuators.test: 
+Found QUESTION_MARK: ?
+Found OPTIONAL_CHAINING_OPERATOR: ?.
+Found OPERATOR_NULLISH_COALESCING: ??
+Found OPERATOR_ASSIGN_NULLISH_COALESCING: ??=
+Found OPERATOR_MOD: %
+Found OPERATOR_ASSIGN_MOD: %=
+Found OPERATOR_PLUS: +
+Found OPERATOR_ASSIGN_PLUS: +=
+Found OPERATOR_INCREMENT: ++
+Found OPERATOR_MINUS: -
+Found OPERATOR_ASSIGN_MINUS: -=
+Found OPERATOR_DECREMENT: --
+Found OPERATOR_MULTIPLY: *
+Found OPERATOR_POWER: **
+Found OPERATOR_ASSIGN_MULTIPLY: *=
+Found OPERATOR_ASSIGN_POWER: **=
+Found OPERATOR_ASSIGN: =
+Found OPERATOR_EQUAL: ==
+Found OPERATOR_STRICT_EQUAL: ===
+Found OPERATOR_NOT: !
+Found OPERATOR_NOT_EQUAL: !=
+Found OPERATOR_STRICT_NOT_EQUAL: !==
+Found ARROW_FUNCTION: =>
+Found OPERATOR_GREATER_THAN: >
+Found OPERATOR_GREATER_THAN_EQUAL: >=
+Found OPERATOR_SHIFT_RIGHT: >>
+Found OPERATOR_ASSIGN_SHIFT_RIGHT: >>=
+Found OPERATOR_UNSIGNED_SHIFT_RIGHT: >>>
+Found OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT: >>>=
+Found OPERATOR_LESS_THAN: <
+Found OPERATOR_LESS_THAN_EQUAL: <=
+Found OPERATOR_SHIFT_LEFT: <<
+Found OPERATOR_ASSIGN_SHIFT_LEFT: <<=
+Found OPERATOR_DIVIDE: /
+Found OPERATOR_ASSIGN_DIVIDE: /=
+Found OPERATOR_BITWISE_XOR: ^
+Found OPERATOR_ASSIGN_BITWISE_XOR: ^=
+Found OPERATOR_BITWISE_NOT: ~
+Found OPERATOR_ASSIGN_LOGICAL_AND: &&=
+Found OPERATOR_ASSIGN_BITWISE_AND: &=
+Found OPERATOR_BITWISE_AND: &
+Found OPERATOR_LOGICAL_AND: &&
+Found OPERATOR_ASSIGN_LOGICAL_OR: ||=
+Found OPERATOR_ASSIGN_BITWISE_OR: |=
+Found OPERATOR_BITWISE_OR: |
+Found OPERATOR_LOGICAL_OR: ||
+Found BRACKET_OPEN: [
+Found BRACKET_CLOSE: ]
+Found PARENTHESIS_OPEN: (
+Found PARENTHESIS_CLOSE: )
+Found BRACE_OPEN: {
+Found BRACE_CLOSE: }
+Found COLON: :
+Found COMMA: ,
+Found DOTS_ELLIPSIS: ...
+Found DOT: .
+Found SEMICOLON: ;
+--------------- 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\singleline-comments.test: 
+// single line comment \n \t \b \x3F \u1234
+
+//* single line comment */ // other comment inside
+
+// comment // inside comment
+//\n
+ 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\singleline-comments.test: 
+Found singleline comment:  single line comment \n \t \b \x3F \u1234
+Found singleline comment: * single line comment */ // other comment inside
+Found singleline comment:  comment // inside comment
+Found singleline comment: \n
+--------------- 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\string-literal.test: 
 "a123 \n"
 "\x3F"
+"\x3"
+"\x3F3F"
 
 "\n\t\v\a\r"
 "\x\u\a"
@@ -307,46 +2438,63 @@ asd
 
 "${ 0xA }"
 '${ 0xA }'
-`${ 0xA }` 
-Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\double-quoted-strings.test: 
+`${ 0xA }`
+
+"asd\0"
+"asd\01"
+
+'qwe\0'
+'qwe\0123'
+
+`zxc\0`
+`zxc\0123` 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\string-literal.test: 
 Found string literal: "a123 
 "
 Found string literal: "?"
-Found string literal: "
-	a
-"
 error: invalid hexadecimal escape sequence
-error line: 5
+error line: 3
 
-Found string literal: "ua"
-error: octal escape sequence are not allowed
-error line: 6
+Found string literal: "3"
+Found string literal: "?3F"
+Found string literal: "
+	a"
+error: invalid hexadecimal escape sequence
+error line: 7
+
+error: invalid escape character
+error line: 7
+
+Found string literal: "a"
+error: octal escape sequence not allowed
+error line: 8
 
 Found string literal: " q p"
 Found string literal: "'123'"
 error: invalid escape character
-error line: 8
+error line: 10
 
 error: invalid escape character
-error line: 8
+error line: 10
 
 Found string literal: ""
 Found string literal: " ' ' ` ` " "
 Found string literal: " ` ` " " ' "
 error: invalid hexadecimal escape sequence
-error line: 18
+error line: 19
 
-error: octal escape sequence are not allowed
-error line: 18
+error: octal escape sequence not allowed
+error line: 20
 
 error: invalid escape character
-error line: 19
+error line: 21
 
 Found string literal: "123
 asd
 
 
 	
+
 456
 
 ?
@@ -354,208 +2502,20 @@ asd
 Found string literal: "${ 0xA }"
 Found string literal: "${ 0xA }"
 Found string literal: "${ 0xA }"
---------------- 
- 
-Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\multiline-comments.test: 
-/* multiline
-comment
-1
-
-3
-4
-*
-**
-/
-let a
-*/
-
-/* multiline in one line /* 123 for */
-
-/* not closed multiline comment 
-Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\multiline-comments.test: 
-Found multiline comment: 
- multiline
-comment
-1
-
-3
-4
-*
-**
-/
-let a
-
-Found multiline comment: 
- multiline in one line /* 123 for 
-error: no closing */ of multiline comment
-error line: 15
-
---------------- 
- 
-Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal.test: 
-123
-1_2_3
-
-123e123
-123e1_2_3
-123E2
-
-333.
-123.e123
-123.E2
-
-.111
-.1_1_1e1_3_2
-.111e+2
-.111e-2
-
-123.222e123
-123.2_2_2e123
-123.2E2
-
-0b101
-0B1_0_1
-
-0o1234567
-0O1_2_3_7
-
-0xA
-0X1_AB_F
-
-123_
-1__23
-
-_.123
-.1__23
-.1_23_
-
-.1_e1
-.1e_1
-.1e1__1
-.1e1_
-
-.1e_+1
-.1e+_1
-
-0b1_
-0b1__1
-0B_1
-0_B1
-
-0o1_
-0o1__1
-0O_1
-0_O1
-
-0xA_
-0XA__A
-0X_A
-0_xA
- 
-Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\numeric-literal.test: 
-Found decimal integer literal: 123
-Found decimal integer literal: 123
-Found floating point literal: 123000000000000005037873582401030516801036545468854257201174691946296000497351649188019982429645907670728107364273344904953856.000000
-Found floating point literal: 123000000000000005037873582401030516801036545468854257201174691946296000497351649188019982429645907670728107364273344904953856.000000
-Found floating point literal: 12300.000000
-Found floating point literal: 333.000000
-Found floating point literal: 123000000000000005037873582401030516801036545468854257201174691946296000497351649188019982429645907670728107364273344904953856.000000
-Found floating point literal: 12300.000000
-Found floating point literal: 0.111000
-Found floating point literal: 110999999999999994569057287665920026793961091131971079061303438851331249024672698342794927264818525832628029555406576312131495395328.000000
-Found floating point literal: 11.100000
-Found floating point literal: 0.001110
-Found floating point literal: 123221999999999993422024234270417484055683532531036733574403172959807172770921041758929374767223903935867237894674724402757632.000000
-Found floating point literal: 123221999999999993422024234270417484055683532531036733574403172959807172770921041758929374767223903935867237894674724402757632.000000
-Found floating point literal: 12320.000000
-Found binary integer literal: 5
-Found binary integer literal: 5
-Found octal integer literal: 342391
-Found octal integer literal: 671
-Found hexadecimal integer literal: 10
-Found hexadecimal integer literal: 6847
-error: illegal underscore in decimal number
+Found string literal: "asd"
+error: octal escape sequence not allowed
 error line: 30
 
-error: illegal underscore in decimal number
-error line: 31
-
-error: illegal underscore in decimal number
+Found string literal: "asd"
+Found string literal: "qwe"
+error: octal escape sequence not allowed
 error line: 33
 
-error: illegal underscore in decimal number
-error line: 34
+Found string literal: "qwe3"
+Found string literal: "zxc"
+error: octal escape sequence not allowed
+error line: 36
 
-error: illegal underscore in decimal number
-error line: 35
-
-error: illegal underscore in decimal number
-error line: 37
-
-error: illegal underscore in decimal number
-error line: 38
-
-error: illegal underscore in decimal number
-error line: 39
-
-error: illegal underscore in decimal number
-error line: 40
-
-error: illegal underscore in decimal number
-error line: 42
-
-error: illegal underscore in decimal number
-error line: 43
-
-error: illegal underscore in binary number
-error line: 45
-
-error: illegal underscore in binary number
-error line: 46
-
-error: illegal underscore in binary number
-error line: 47
-
-error: illegal underscore in binary number
-error line: 48
-
-error: illegal underscore in octal number
-error line: 50
-
-error: illegal underscore in octal number
-error line: 51
-
-error: illegal underscore in octal number
-error line: 52
-
-error: illegal underscore in octal number
-error line: 53
-
-error: illegal underscore in hexadecimal number
-error line: 55
-
-error: illegal underscore in hexadecimal number
-error line: 56
-
-error: illegal underscore in hexadecimal number
-error line: 57
-
-error: illegal underscore in hexadecimal number
-error line: 58
-
---------------- 
- 
-Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\singleline-comments.test: 
-// single line comment
-
-//* single line comment */ // other comment inside
-
-// comment
-// 
-Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\singleline-comments.test: 
-Found singleline comment:  single line comment
-Found singleline comment: * single line comment */ // other comment inside
-Found singleline comment:  comment
-Found singleline comment: 
+Found string literal: "zxc3"
 --------------- 
  

@@ -10,6 +10,18 @@ comment
 let a
 */
 
+/* 123 some text *** // // */ /*
+
+other comment
+\x3F
+\123
+\u1234
+\n
+\t\t\t
+\v
+\b
+*/
+
 /* multiline in one line /* 123 for */
 
 /* not closed multiline comment
