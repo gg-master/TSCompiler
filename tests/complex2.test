@@ -1,0 +1,166 @@
+interface Animal {
+  name: string;
+  age: number;
+  makeSound(): void;
+}
+
+class Dog implements Animal {
+  name: string;
+  age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+
+  makeSound() {
+    console.log("Woof!");
+  }
+}
+
+class Cat implements Animal {
+  name: string;
+  age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+
+  makeSound() {
+    console.log("Meow!");
+  }
+}
+
+class Tiger extends Cat {
+  constructor(name: string, age: number) {
+    super(name, age);
+  }
+
+  makeSound() {
+    console.log("Roar!");
+  }
+}
+
+const animals: Animal[] = [
+  new Dog("Rex", 5),
+  new Cat("Whiskers", 3),
+  new Tiger("Shera", 7),
+];
+
+animals.forEach((animal) => {
+  console.log(`${animal.name} is ${animal.age} years old.`);
+  animal.makeSound();
+});
+
+let numbers: number[] = [1, 2, 3, 4, 5];
+let squaredNumbers = numbers.map(n => n * n);
+console.log("Squared numbers:", squaredNumbers);
+
+let uniqueNames: Set<string> = new Set();
+uniqueNames.add("Alice");
+uniqueNames.add("Bob");
+uniqueNames.add("Alice"); // Дубликат, не будет добавлен
+
+console.log("Unique names:");
+uniqueNames.forEach(name => console.log(name));
+
+let personInfo: Map<string, number> = new Map();
+personInfo.set("Alice", 30);
+personInfo.set("Bob", 25);
+
+console.log("Person info:");
+personInfo.forEach((age, name) => {
+  console.log(`${name} is ${age} years old`);
+});
+
+// Итерация по массиву с использованием reduce
+let sum = numbers.reduce((acc, current) => acc + current, 0);
+console.log("Sum of numbers:", sum);
+
+function getData(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (url === "valid_url") {
+        resolve("Data fetched successfully");
+      } else {
+        reject("Error: Invalid URL");
+      }
+    }, 2000);
+  });
+}
+
+async function fetchData() {
+  try {
+    console.log("Fetching data...");
+    let data = await getData("valid_url");
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+fetchData();
+
+function* numberGenerator() {
+  let i = 0;
+  while (i < 5) {
+    yield i++;
+  }
+}
+
+let generator = numberGenerator();
+
+for (let num of generator) {
+  console.log(num);
+}
+
+function* fibonacci(limit: number) {
+  let a = 0, b = 1;
+  for (let i = 0; i < limit; i++) {
+    yield a;
+    [a, b] = [b, a + b];
+  }
+}
+
+let fibSequence = fibonacci(10);
+console.log("Fibonacci sequence:");
+for (let num of fibSequence) {
+  console.log(num);
+}
+
+function throwError(message: string): never {
+  throw new Error(message);
+}
+
+function processValue(value: unknown) {
+  if (typeof value === "string") {
+    console.log("String value:", value.toUpperCase());
+  } else if (typeof value === "number") {
+    console.log("Number value:", value * 2);
+  } else {
+    throwError("Unknown value type");
+  }
+}
+
+try {
+  processValue("hello");
+  processValue(42);
+  processValue(true); // Это вызовет ошибку
+} catch (error) {
+  console.error("Caught an error:", error);
+}
+
+function divide(a: number, b: number): number {
+  if (b === 0) {
+    throw new Error("Division by zero");
+  }
+  return a / b;
+}
+
+try {
+  console.log(divide(10, 2));
+  console.log(divide(10, 0)); // Ошибка
+} catch (error) {
+  console.error(error.message);
+}
