@@ -11,13 +11,11 @@
 #include <string>
 
 
-void Print(const std::string& message)
-{
+void Print(const std::string& message) {
     std::cout << message << std::endl;
 }
 
-void PrintError(const std::string& errorMessage, const int line = -1) 
-{
+void PrintError(const std::string& errorMessage, const int line = -1) {
     std::cerr << "error: " << errorMessage << std::endl;
     if (line >= 0)
         std::cerr << "error line: " << line << std::endl;
