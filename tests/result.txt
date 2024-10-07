@@ -1,4 +1,4 @@
-07.10.2024 15:42:51,12 
+07.10.2024 16:44:18,14 
  
 Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\complex1.test: 
 /* Объявление переменных разных типов данных */
@@ -2442,6 +2442,7 @@ asd
 
 "asd\0"
 "asd\01"
+"asd \"
 
 'qwe\0'
 'qwe\0123'
@@ -2507,14 +2508,18 @@ error: octal escape sequence not allowed
 error line: 30
 
 Found string literal: "asd"
+error: unexpected appearing 
+ in end of a line
+error line: 32
+
 Found string literal: "qwe"
 error: octal escape sequence not allowed
-error line: 33
+error line: 34
 
 Found string literal: "qwe3"
 Found string literal: "zxc"
 error: octal escape sequence not allowed
-error line: 36
+error line: 37
 
 Found string literal: "zxc3"
 --------------- 

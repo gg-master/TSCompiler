@@ -52,22 +52,22 @@ DEC_DIGITS  {DEC_DIGIT}(_?{DEC_DIGIT})*
 INVALID_UNDERLINE_DEC_DIGITS {DEC_DIGIT}((_?|_{2,}){DEC_DIGIT})*(_+|_?)
 
 DEC_INT_LIT {DEC_DIGIT}|({NON_ZERO_DIGIT}_?{DEC_DIGITS})
-INVALID_UNDERLINE_DEC_INT_LIT ({DEC_DIGIT}(_?|_+))|({NON_ZERO_DIGIT}(_?|_{2,}){INVALID_UNDERLINE_DEC_DIGITS})
+INVALID_UNDERLINE_DEC_INT_LIT ({DEC_DIGIT}(_*))|({NON_ZERO_DIGIT}(_?|_{2,}){INVALID_UNDERLINE_DEC_DIGITS})
 
 EXPONENT_PART [eE][+-]?{DEC_DIGITS}
-INVALID_UNDERLINE_EXPONENT_PART (_?|_+)[eE](_?|_+)([+-](_+|_?))?{INVALID_UNDERLINE_DEC_DIGITS}
+INVALID_UNDERLINE_EXPONENT_PART (_*)[eE](_*)([+-](_*))?{INVALID_UNDERLINE_DEC_DIGITS}
 
 BIN_DIGIT [01]
 BIN_DIGITS  {BIN_DIGIT}(_?{BIN_DIGIT})*
-INVALID_UNDERLINE_BIN_DIGITS {BIN_DIGIT}((_?|_{2,}){BIN_DIGIT})*(_+|_?)
+INVALID_UNDERLINE_BIN_DIGITS {BIN_DIGIT}((_?|_{2,}){BIN_DIGIT})*(_*)
 
 OCTAL_DIGIT [0-7]
 OCTAL_DIGITS {OCTAL_DIGIT}(_?{OCTAL_DIGIT})*
-INVALID_UNDERLINE_OCTAL_DIGITS {OCTAL_DIGIT}((_?|_{2,}){OCTAL_DIGIT})*(_+|_?)
+INVALID_UNDERLINE_OCTAL_DIGITS {OCTAL_DIGIT}((_?|_{2,}){OCTAL_DIGIT})*(_*)
 
 HEX_DIGIT [0-9a-fA-F]
 HEX_DIGITS {HEX_DIGIT}(_?{HEX_DIGIT})*
-INVALID_UNDERLINE_HEX_DIGITS {HEX_DIGIT}((_?|_{2,}){HEX_DIGIT})*(_+|_?)
+INVALID_UNDERLINE_HEX_DIGITS {HEX_DIGIT}((_?|_{2,}){HEX_DIGIT})*(_*)
 
 SINGLE_ESCAPE_CHAR [\'\"\\\b\f\n\r\t\v]
 ESCAPE_CHAR ({SINGLE_ESCAPE_CHAR}|{DEC_DIGIT}|x|u)
@@ -377,7 +377,7 @@ yield       { Print("Found KW_YIELD: " + std::string{yytext}); }
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
 }
-{INVALID_UNDERLINE_DEC_INT_LIT}(_?|_+)(\.|(\.?{INVALID_UNDERLINE_EXPONENT_PART})) {
+{INVALID_UNDERLINE_DEC_INT_LIT}(_*)(\.|(\.?{INVALID_UNDERLINE_EXPONENT_PART})) {
     PrintError("illegal underscore in decimal number", yylineno);
 }
 
@@ -387,7 +387,7 @@ yield       { Print("Found KW_YIELD: " + std::string{yytext}); }
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
 }
-({INVALID_UNDERLINE_DEC_INT_LIT})?(_?|_+)\.{INVALID_UNDERLINE_DEC_DIGITS}({INVALID_UNDERLINE_EXPONENT_PART})? {
+({INVALID_UNDERLINE_DEC_INT_LIT})?(_*)\.{INVALID_UNDERLINE_DEC_DIGITS}({INVALID_UNDERLINE_EXPONENT_PART})? {
     PrintError("illegal underscore in decimal number", yylineno);
 }
 
@@ -399,7 +399,7 @@ yield       { Print("Found KW_YIELD: " + std::string{yytext}); }
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 2);
     PrintIntegerLiteral("binary", currentInteger); 
 }
-0(_?|_+)[bB](_?|_+){INVALID_UNDERLINE_BIN_DIGITS} {
+0(_*)[bB](_*){INVALID_UNDERLINE_BIN_DIGITS} {
     PrintError("illegal underscore in binary number", yylineno);
 }
 0[bB][^01[:space:]]+ {
@@ -414,7 +414,7 @@ yield       { Print("Found KW_YIELD: " + std::string{yytext}); }
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 8);
     PrintIntegerLiteral("octal", currentInteger); 
 }
-0(_?|_+)[oO](_?|_+){INVALID_UNDERLINE_OCTAL_DIGITS} {
+0(_*)[oO](_*){INVALID_UNDERLINE_OCTAL_DIGITS} {
     PrintError("illegal underscore in octal number", yylineno);
 }
 0[oO][^0-7[:space:]]+ {
@@ -429,7 +429,7 @@ yield       { Print("Found KW_YIELD: " + std::string{yytext}); }
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 16);
     PrintIntegerLiteral("hexadecimal", currentInteger); 
 }
-0(_?|_+)[xX](_?|_+){INVALID_UNDERLINE_HEX_DIGITS} {
+0(_*)[xX](_*){INVALID_UNDERLINE_HEX_DIGITS} {
     PrintError("illegal underscore in hexadecimal number", yylineno);
 }
 0[xX][^1-9a-fA-F[:space:]]+ {
