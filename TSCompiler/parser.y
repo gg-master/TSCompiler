@@ -425,12 +425,6 @@ restParameter
 
     /* === Classes === */
 
-accessibilityModifier
-    : PUBLIC
-    | PRIVATE
-    | PROTECTED
-    ;
-
 classDeclaration
     : CLASS identifier classHeritage classTail
     ;
@@ -450,12 +444,24 @@ classElementList
     ;
 
 classElement
-    : constructorDeclaration
+    : CONSTRUCTOR callSignature '{' functionBody '}'
+
+    /* PropertyDeclarationExpression */
+    | propertyName ';'
+    | propertyName typeAnnotation ';'
+    | propertyName initializer ';'
+    | propertyName typeAnnotation initializer ';'
+
+    /* MethodDeclarationExpression */
+    | propertyName callSignature '{' functionBody '}'
     ;
 
-constructorDeclaration
-    : CONSTRUCTOR callSignature '{' functionBody '}'
-    | accessibilityModifier CONSTRUCTOR callSignature '{' functionBody '}'
+propertyName
+    : identifier
+    | STRING_LIT
+    | INT_LIT
+    | FLOAT_LIT
+    | '[' singleExpression ']'
     ;
 
 identifier
@@ -475,7 +481,6 @@ identifier
     | UNDEFINED
     | OBJECT
     | KEYOF
-    | CONSTRUCTOR
     | NAMESPACE
     | ABSTRACT
     | REQUIRE
