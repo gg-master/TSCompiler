@@ -146,10 +146,27 @@
   <ItemGroup>
     <Flex Include="lexer.l">
       <LexCompat Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LexCompat>
+      <Debug Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</Debug>
     </Flex>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lexer.flex.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="parser.tab.cpp" />
+    <ClCompile Include="utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Bison Include="parser.y">
+      <Verbose Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</Verbose>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">--report=lookahead --report=solved --report=counterexamples --report=itemset %(AdditionalOptions)</AdditionalOptions>
+    </Bison>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="parser.tab.h" />
+    <ClInclude Include="utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bison.m4" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

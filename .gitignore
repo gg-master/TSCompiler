@@ -37,3 +37,5 @@ x64/
 /TSCompiler/output.txt
 /tests/test.ts
 /tests/test.js
+
+*.output
