@@ -319,18 +319,54 @@ return/[[:space:]]*[\r\n]+ {
 interface   { Print("Found KW_INTARFACE: " + std::string{yytext}); } 
 
 abstract    { Print("Found KW_ABSTRACT: " + std::string{yytext}, yylineno); }
-class       { Print("Found KW_CLASS: " + std::string{yytext}); }
+class       { 
+    if ( debug ) {
+        Print("Found KW_CLASS: " + std::string{yytext});
+    }
+    return CLASS;
+}
 implements  { Print("Found KW_IMPLEMENTS: " + std::string{yytext}); } 
-extends     { Print("Found KW_EXTENDS: " + std::string{yytext}); } 
-constructor { Print("Found KW_CONSTRUCTOR: " + std::string{yytext}); }
+extends     {
+    if ( debug ) {
+        Print("Found KW_EXTENDS: " + std::string{yytext});
+    }
+    return EXTENDS;
+}
+
+constructor {
+    if ( debug ) {
+        Print("Found KW_CONSTRUCTOR: " + std::string{yytext});
+    }
+    return CONSTRUCTOR;
+}
 private     { Print("Found KW_PRIVATE: " + std::string{yytext}); } 
 protected   { Print("Found KW_PROTECTED: " + std::string{yytext}); } 
 public      { Print("Found KW_PUBLIC: " + std::string{yytext}); }
-get         { Print("Found KW_GET: " + std::string{yytext}); } 
-set         { Print("Found KW_SET: " + std::string{yytext}); } 
+get         {
+    if ( debug ) {
+        Print("Found KW_GET: " + std::string{yytext});
+    }
+    return GET;
+} 
+set         {
+    if ( debug ) {
+        Print("Found KW_SET: " + std::string{yytext});
+    }
+    return SET;
+}
 static      { Print("Found KW_STATIC: " + std::string{yytext}); } 
-super       { Print("Found KW_SUPER: " + std::string{yytext}); }
-this        { Print("Found KW_THIS: " + std::string{yytext}); }
+super       {
+    if ( debug ) {
+        Print("Found KW_SUPER: " + std::string{yytext});
+    }
+    return SUPER;
+}
+this        {
+    if ( debug ) {
+        Print("Found KW_THIS: " + std::string{yytext});
+    }
+    return THIS;
+}
 readonly    { Print("Found KW_READONLY: " + std::string{yytext}); }
 
 instanceof  { Print("Found KW_INSTANCEOF: " + std::string{yytext}); }
@@ -415,10 +451,11 @@ new         {
 "!=="   { Print("Found OPERATOR_STRICT_NOT_EQUAL: " + std::string{yytext}); }
 
 "=>"    {
+    PrintError("Unsupported ARROW_FUNCTION in this version: " + std::string{yytext});
     if ( debug ) {
-        Print("Found ARROW_FUNCTION: " + std::string{yytext}); 
+        Print("Found ARROW_FUNCTION: " + std::string{yytext});
     }
-    return ARROW_FUNCTION;
+    return -1;
 }
 
 ">"     { Print("Found OPERATOR_GREATER_THAN: " + std::string{yytext}); }
@@ -556,7 +593,7 @@ new         {
 <DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\x({HEX_DIGIT}{2}) {
     std::fill(std::begin(buffer), std::end(buffer), 0);
     std::copy(yytext, yytext + yyleng, buffer);
-    std::sscanf(buffer + 2, "%x", &currentInteger);
+    sscanf_s(buffer + 2, "%x", &currentInteger);
     currentString += static_cast<char>(currentInteger);
 }
 <DOUBLE_STR,SINGLE_STR,TEMPLATE_STR>\\0 {
@@ -631,7 +668,7 @@ new         {
     currentString += yytext;
 }
 <TEMPLATE_STR>\\\` {
-    currentString += "\`";
+    currentString += "`";
 }
 <TEMPLATE_STR>\` {
     PrintStringLiteral(currentString);
@@ -788,7 +825,7 @@ new         {
 %%
 
 void rescanTokenString(const char * s) {
-    char *yycopy = strdup( yytext );
+    char *yycopy = _strdup( yytext );
     for (int i = yyleng - 1; i >= 0; --i ) {
         unput( yycopy[i] ); 
     }

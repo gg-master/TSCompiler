@@ -22,7 +22,7 @@ int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
 %skeleton "./bison.m4"
 
 %locations 
-%error-verbose
+%define parse.error verbose
 
 %union {
     int _integer;
@@ -31,8 +31,7 @@ int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
     double _floatingPoint;
 }
 
-%token VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS STATIC GET SET DO WHILE FOR CONTINUE BREAK SWITCH CASE DEFAULT RETURN SUPER THIS NEW ELLIPSIS OF ARROW_FUNCTION 
-%token PUBLIC PRIVATE PROTECTED
+%token VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS GET SET DO WHILE FOR CONTINUE BREAK SWITCH CASE DEFAULT RETURN SUPER THIS NEW ELLIPSIS OF
 %token ASYNC AS FROM YIELD KEYOF CONSTRUCTOR NAMESPACE ABSTRACT REQUIRE
 
 %token ANY NUMBER BOOLEAN STRING NEVER UNDEFINED UNIQUE SYMBOL OBJECT VOID UNKNOWN
@@ -50,7 +49,7 @@ int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
 
 %right '=' OPERATOR_ASSIGN_PLUS OPERATOR_ASSIGN_MINUS OPERATOR_ASSIGN_POWER OPERATOR_ASSIGN_MULTIPLY OPERATOR_ASSIGN_DIVIDE OPERATOR_ASSIGN_MOD OPERATOR_ASSIGN_SHIFT_LEFT OPERATOR_ASSIGN_SHIFT_RIGHT OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT OPERATOR_ASSIGN_BITWISE_AND OPERATOR_ASSIGN_BITWISE_XOR OPERATOR_ASSIGN_BITWISE_OR OPERATOR_ASSIGN_LOGICAL_AND OPERATOR_ASSIGN_LOGICAL_OR OPERATOR_ASSIGN_NULLISH_COALESCING
 
-%left '?' ':' COND // expr ? expr : expr
+%left '?' ':' // expr ? expr : expr
 %left OPERATOR_NULLISH_COALESCING
 %left OPERATOR_LOGICAL_OR
 %left OPERATOR_LOGICAL_AND
@@ -65,13 +64,13 @@ int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
 %left '*' '/' '%'
 
 %right OPERATOR_POWER
-%right '!' '~' UMINUS UPLUS PREF_INCREMENT PREF_DECREMENT VOID DELETE TYPEOF
+%right '!' '~' UMINUS UPLUS PREF_INCREMENT PREF_DECREMENT VOID
 
 %nonassoc POST_INCREMENT POST_DECREMENT
 
 %right NEW
 
-%left '.' '[' ']' ENDL_BRACKET_OPEN FUNC_CALL OPTIONAL_CHAINING_OPERATOR MEMBER_ACCESS
+%left '.' '[' ']' ENDL_BRACKET_OPEN OPTIONAL_CHAINING_OPERATOR
 
 %nonassoc '(' ')'
 
@@ -102,7 +101,6 @@ statementListItem
     | blockStatement
     | functionDeclaration
     | classDeclaration
-    /* | arrowFunctionDeclaration statementSep */
     ;
 
 statementSep
@@ -251,6 +249,7 @@ singleExpression
     | singleExpression OPERATOR_SHIFT_LEFT singleExpression { Print("- R: singleExpression OPERATOR_SHIFT_LEFT singleExpression -> singleExpression"); }
     | singleExpression OPERATOR_SHIFT_RIGHT singleExpression { Print("- R: singleExpression OPERATOR_SHIFT_RIGHT singleExpression -> singleExpression"); }
     | singleExpression OPERATOR_UNSIGNED_SHIFT_RIGHT singleExpression { Print("- R: singleExpression OPERATOR_UNSIGNED_SHIFT_RIGHT singleExpression -> singleExpression"); }
+    | singleExpression OPERATOR_NULLISH_COALESCING singleExpression { Print("- R: singleExpression OPERATOR_NULLISH_COALESCING singleExpression -> singleExpression"); }
 
     | singleExpression INSTANCEOF singleExpression { Print("- R: singleExpression INSTANCEOF singleExpression -> singleExpression"); }
     | singleExpression IN singleExpression { Print("- R: singleExpression IN singleExpression -> singleExpression"); }
@@ -261,7 +260,9 @@ singleExpression
     | '(' expressionList ')' { Print("- R: '(' expressionList ')' -> singleExpression"); }
 
     | singleExpression arguments { Print("- R: singleExpression arguments -> singleExpression"); }
-    | singleExpression '.' identifier { Print("- R: singleExpression '.' ID -> singleExpression"); }
+    
+    | singleExpression OPTIONAL_CHAINING_OPERATOR singleExpression { Print("- R: singleExpression OPTIONAL_CHAINING_OPERATOR singleExpression -> singleExpression"); }
+    | singleExpression '.' identifier { Print("- R: singleExpression '.' identifier -> singleExpression"); }
 
     | arrayLiteral { Print("- R: arrayLiteral -> singleExpression"); }
     | singleExpression '[' expressionList ']' { Print("- R: singleExpression '[' singleExpression ']' -> singleExpression"); }
@@ -426,64 +427,71 @@ restParameter
     /* === Classes === */
 
 classDeclaration
-    : CLASS identifier classHeritage classTail
+    : CLASS identifier classTail { Print("- R: CLASS identifier classTail -> classDeclaration"); }
+    | CLASS identifier classHeritage classTail { Print("- R: CLASS identifier classHeritage classTail -> classDeclaration"); }
     ;
 
 classHeritage
-    : EXTENDS typeReference
+    : EXTENDS typeReference { Print("- R: EXTENDS typeReference -> classHeritage"); }
     ; 
 
 classTail
-    : '{' '}'
-    | '{' classElementList '}'
+    : '{' '}' { Print("- R: '{' '}' -> classTail"); }
+    | '{' classElementList '}' { Print("- R: '{' classElementList '}' -> classTail"); }
     ;
 
 classElementList
-    : classElement
-    | classElementList classElement
+    : classElement { Print("- R: classElement -> classElementList"); }
+    | classElementList classElement { Print("- R: classElementList classElement -> classElementList"); }
     ;
 
 classElement
-    : CONSTRUCTOR callSignature '{' functionBody '}'
+    : CONSTRUCTOR callSignature '{' functionBody '}' { Print("- R: CONSTRUCTOR callSignature '{' functionBody '}' -> classElement"); }
 
     /* PropertyDeclarationExpression */
-    | propertyName ';'
-    | propertyName typeAnnotation ';'
-    | propertyName initializer ';'
-    | propertyName typeAnnotation initializer ';'
+    | propertyName ';' { Print("- R: propertyName ';' -> classElement"); }
+    | propertyName typeAnnotation ';' { Print("- R: propertyName typeAnnotation ';' -> classElement"); }
+    | propertyName initializer ';' { Print("- R: propertyName initializer ';' -> classElement"); }
+    | propertyName typeAnnotation initializer ';' { Print("- R: propertyName typeAnnotation initializer ';' -> classElement"); }
 
     /* MethodDeclarationExpression */
-    | propertyName callSignature '{' functionBody '}'
+    | propertyName callSignature '{' functionBody '}' { Print("- R: propertyName callSignature '{' functionBody '}' -> classElement"); }
+
+    /* GetterSetterDeclarationExpression */
+    | GET propertyName '(' ')' '{' functionBody '}' { Print("- R: GET propertyName '(' ')' '{' functionBody '}' -> classElement"); }
+    | GET propertyName '(' ')' typeAnnotation '{' functionBody '}' { Print("- R: GET propertyName '(' ')' typeAnnotation '{' functionBody '}' -> classElement"); }
+    | SET propertyName callSignature '{' functionBody '}' { Print("- R: SET propertyName callSignature '{' functionBody '}' -> classElement"); }
     ;
 
 propertyName
-    : identifier
-    | STRING_LIT
-    | INT_LIT
-    | FLOAT_LIT
-    | '[' singleExpression ']'
+    : identifier { Print("- R: identifier -> propertyName"); }
+    | STRING_LIT { Print("- R: STRING_LIT -> propertyName"); }
+    | INT_LIT { Print("- R: INT_LIT -> propertyName"); }
+    | FLOAT_LIT { Print("- R: FLOAT_LIT -> propertyName"); }
+    | '[' singleExpression ']' { Print("- R: '[' singleExpression ']' -> propertyName"); }
+    | ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: ENDL_BRACKET_OPEN singleExpression ']' -> propertyName"); }
     ;
 
 identifier
-    : ID
-    | ASYNC
-    | AS
-    | FROM
-    | YIELD
-    | OF
-    | ANY
-    | NUMBER
-    | BOOLEAN
-    | STRING
-    | UNIQUE
-    | SYMBOL
-    | NEVER
-    | UNDEFINED
-    | OBJECT
-    | KEYOF
-    | NAMESPACE
-    | ABSTRACT
-    | REQUIRE
+    : ID { Print("- R: ID -> identifier"); }
+    | ASYNC { Print("- R: ASYNC -> identifier"); }
+    | AS { Print("- R: AS -> identifier"); }
+    | FROM { Print("- R: FROM -> identifier"); }
+    | YIELD { Print("- R: YIELD -> identifier"); }
+    | OF { Print("- R: OF -> identifier"); }
+    | ANY { Print("- R: ANY -> identifier"); }
+    | NUMBER { Print("- R: NUMBER -> identifier"); }
+    | BOOLEAN { Print("- R: BOOLEAN -> identifier"); }
+    | STRING { Print("- R: STRING -> identifier"); }
+    | UNIQUE { Print("- R: UNIQUE -> identifier"); }
+    | SYMBOL { Print("- R: SYMBOL -> identifier"); }
+    | NEVER { Print("- R: NEVER -> identifier"); }
+    | UNDEFINED { Print("- R: UNDEFINED -> identifier"); }
+    | OBJECT { Print("- R: OBJECT -> identifier"); }
+    | KEYOF { Print("- R: KEYOF -> identifier"); }
+    | NAMESPACE { Print("- R: NAMESPACE -> identifier"); }
+    | ABSTRACT { Print("- R: ABSTRACT -> identifier"); }
+    | REQUIRE { Print("- R: REQUIRE -> identifier"); }
     ;
 
 %%
