@@ -129,8 +129,14 @@ primaryType
     : '(' type ')' { Print("- R: '(' type ')' -> primaryType"); }
     | predefinedType { Print("- R: predefinedType -> primaryType"); }
     | typeReference { Print("- R: typeReference -> primaryType"); }
-    | primaryType '[' ']' { Print("- R: primaryType ENDL_BRACKET_OPEN ']' -> primaryType"); }
-    | primaryType '[' primaryType ']' { Print("- R: primaryType ENDL_BRACKET_OPEN primaryType ']' -> primaryType"); }
+    | primaryType '[' ']' { Print("- R: primaryType '[' ']' -> primaryType"); }
+    | primaryType '[' primaryType ']' { Print("- R: primaryType '[' primaryType ']' -> primaryType"); }
+    | '[' tupleTypeElements ']' { Print("- R: '[' tupleTypeElements ']' -> primaryType"); }
+    ;
+
+tupleTypeElements
+    : type { Print("- R: type -> tupleTypeElements"); }
+    | tupleTypeElements ',' type { Print("- R: tupleTypeElements ',' type -> tupleTypeElements"); }
     ;
 
 typeReference

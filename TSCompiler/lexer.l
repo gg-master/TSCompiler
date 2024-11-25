@@ -72,20 +72,92 @@ char buffer[10];
 
 %}
 
-module      { Print("Found KW_MODULE: " + std::string{yytext}); } 
-package     { Print("Found KW_PACKAGE: " + std::string{yytext}); } 
-import      { Print("Found KW_IMPORT: " + std::string{yytext}); } 
-export      { Print("Found KW_EXPORT: " + std::string{yytext}); } 
-from        { Print("Found KW_FROM: " + std::string{yytext}); } 
-require     { Print("Found KW_REQUIRE: " + std::string{yytext}); }
+module      {
+    PrintError("Unsupported KW_MODULE in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_MODULE: " + std::string{yytext});
+    }
+    return -1;
+} 
+package     {
+    PrintError("Unsupported KW_PACKAGE in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_PACKAGE: " + std::string{yytext});
+    }
+    return -1;
+} 
+import      {
+    PrintError("Unsupported KW_IMPORT in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_IMPORT: " + std::string{yytext});
+    }
+    return -1;
+} 
+export      {
+    PrintError("Unsupported KW_EXPORT in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_EXPORT: " + std::string{yytext});
+    }
+    return -1;
+} 
+from        {
+    PrintError("Unsupported KW_FROM in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_FROM: " + std::string{yytext});
+    }
+    return -1;
+} 
+require     {
+    PrintError("Unsupported KW_REQUIRE in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_REQUIRE: " + std::string{yytext});
+    }
+    return -1;
+}
 
-namespace   { Print("Found KW_NAMESPACE: " + std::string{yytext}); } 
+namespace   {
+    PrintError("Unsupported KW_INFER in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_NAMESPACE: " + std::string{yytext});
+    }
+    return -1;
+} 
 
-delete      { Print("Found KW_DELETE: " + std::string{yytext}); } 
-debugger    { Print("Found KW_DEBUGGER: " + std::string{yytext}); } 
-declare     { Print("Found KW_DECLARE: " + std::string{yytext}); } 
-with        { Print("Found KW_WITH: " + std::string{yytext}); }
-await       { Print("Found KW_AWAIT: " + std::string{yytext}); }
+delete      {
+    PrintError("Unsupported KW_DELETE in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_DELETE: " + std::string{yytext});
+    }
+    return -1;
+} 
+debugger    {
+    PrintError("Unsupported KW_DEBUGGER in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_DEBUGGER: " + std::string{yytext});
+    }
+    return -1;
+} 
+declare     {
+    PrintError("Unsupported KW_DECLARE in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_DECLARE: " + std::string{yytext});
+    }
+    return -1;
+} 
+with        {
+    PrintError("Unsupported KW_WITH in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_WITH: " + std::string{yytext});
+    }
+    return -1;
+}
+await       {
+    PrintError("Unsupported KW_AWAIT in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_AWAIT: " + std::string{yytext});
+    }
+    return -1;
+}
 
 const       {
     if ( debug ) {
@@ -106,7 +178,13 @@ let         {
     return LET;
 } 
 
-as          { Print("Found KW_AS: " + std::string{yytext}); }
+as          {
+    PrintError("Unsupported KW_AS in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_AS: " + std::string{yytext});
+    }
+    return -1;
+}
 
 any         {
     if ( debug ) {
@@ -195,21 +273,84 @@ false       {
     return FALSE_KW;
 }
 
-enum        { Print("Found KW_ENUM: " + std::string{yytext}); }
-type        { Print("Found KW_TYPE: " + std::string{yytext}); }
-typeof      { Print("Found KW_TYPEOF: " + std::string{yytext}); }
-keyof       { Print("Found KW_KEYOF: " + std::string{yytext}); } 
-infer       { Print("Found KW_INFER: " + std::string{yytext}); }
-
-of          { Print("Found KW_OF: " + std::string{yytext}); } 
-in          { Print("Found KW_IN: " + std::string{yytext}); } 
-
-try         { Print("Found KW_TRY: " + std::string{yytext}); }
-catch       {
-    Print("Found KW_CATCH: " + std::string{yytext});
+enum        {
+    PrintError("Unsupported KW_ENUM in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_ENUM: " + std::string{yytext});
+    }
+    return -1;
 }
-finally     { Print("Found KW_FINALLY: " + std::string{yytext}); } 
-throw       { Print("Found KW_THROW: " + std::string{yytext}); }
+type        {
+    PrintError("Unsupported KW_TYPE in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_TYPE: " + std::string{yytext});
+    }
+    return -1;
+}
+typeof      {
+    PrintError("Unsupported KW_TYPEOF in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_TYPEOF: " + std::string{yytext});
+    }
+    return -1;
+}
+keyof       {
+    PrintError("Unsupported KW_KEYOF in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_KEYOF: " + std::string{yytext});
+    }
+    return -1;
+} 
+infer       {
+    PrintError("Unsupported KW_INFER in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_INFER: " + std::string{yytext});
+    }
+    return -1;
+}
+is          {
+    PrintError("Unsupported KW_IS in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_IS: " + std::string{yytext});
+    }
+    return -1;
+} 
+
+in          {
+    if ( debug ) {
+        Print("Found KW_IN: " + std::string{yytext});
+    }
+    return IN;
+} 
+
+try         {
+    PrintError("Unsupported KW_TRY in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_TRY: " + std::string{yytext});
+    }
+    return -1;
+}
+catch       {
+    PrintError("Unsupported KW_CATCH in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_CATCH: " + std::string{yytext});
+    }
+    return -1;
+}
+finally     {
+    PrintError("Unsupported KW_FINALLY in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_FINALLY: " + std::string{yytext});
+    }
+    return -1;    
+} 
+throw       {
+    PrintError("Unsupported KW_THROW in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_THROW: " + std::string{yytext});
+    }
+    return -1;
+}
 
 if          {
     if ( debug ) {
@@ -299,7 +440,13 @@ function    {
     return FUNCTION;
 }
 
-yield       { Print("Found KW_YIELD: " + std::string{yytext}); }
+yield       {
+    PrintError("Unsupported KW_YIELD in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_YIELD: " + std::string{yytext});
+    }
+    return -1;
+}
 
 return {
     if ( debug ) {
@@ -316,16 +463,34 @@ return/[[:space:]]*[\r\n]+ {
     return RETURN;
 }
 
-interface   { Print("Found KW_INTARFACE: " + std::string{yytext}); } 
+interface   {
+    PrintError("Unsupported KW_INTARFACE in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_INTARFACE: " + std::string{yytext});
+    }
+    return -1;
+}
 
-abstract    { Print("Found KW_ABSTRACT: " + std::string{yytext}, yylineno); }
+abstract    {
+    PrintError("Unsupported KW_ABSTRACT in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_ABSTRACT: " + std::string{yytext}, yylineno);
+    }
+    return -1;
+}
 class       { 
     if ( debug ) {
         Print("Found KW_CLASS: " + std::string{yytext});
     }
     return CLASS;
 }
-implements  { Print("Found KW_IMPLEMENTS: " + std::string{yytext}); } 
+implements  {
+    PrintError("Unsupported KW_IMPLEMENTS in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_IMPLEMENTS: " + std::string{yytext});
+    }
+    return -1;
+} 
 extends     {
     if ( debug ) {
         Print("Found KW_EXTENDS: " + std::string{yytext});
@@ -339,9 +504,27 @@ constructor {
     }
     return CONSTRUCTOR;
 }
-private     { Print("Found KW_PRIVATE: " + std::string{yytext}); } 
-protected   { Print("Found KW_PROTECTED: " + std::string{yytext}); } 
-public      { Print("Found KW_PUBLIC: " + std::string{yytext}); }
+private     {
+    PrintError("Unsupported KW_PRIVATE in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_PRIVATE: " + std::string{yytext});
+    }
+    return -1;
+} 
+protected   {
+    PrintError("Unsupported KW_PROTECTED in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_PROTECTED: " + std::string{yytext});
+    }
+    return -1;
+} 
+public      {
+    PrintError("Unsupported KW_PUBLIC in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_PUBLIC: " + std::string{yytext});
+    }
+    return -1;
+}
 get         {
     if ( debug ) {
         Print("Found KW_GET: " + std::string{yytext});
@@ -354,7 +537,13 @@ set         {
     }
     return SET;
 }
-static      { Print("Found KW_STATIC: " + std::string{yytext}); } 
+static      {
+    PrintError("Unsupported KW_STATIC in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_STATIC: " + std::string{yytext});
+    }
+    return -1;
+} 
 super       {
     if ( debug ) {
         Print("Found KW_SUPER: " + std::string{yytext});
@@ -367,10 +556,20 @@ this        {
     }
     return THIS;
 }
-readonly    { Print("Found KW_READONLY: " + std::string{yytext}); }
+readonly    {
+    PrintError("Unsupported KW_READONLY in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_READONLY: " + std::string{yytext});
+    }
+    return -1;
+}
 
-instanceof  { Print("Found KW_INSTANCEOF: " + std::string{yytext}); }
-is          { Print("Found KW_IS: " + std::string{yytext}); } 
+instanceof  {
+    if ( debug ) {
+        Print("Found KW_INSTANCEOF: " + std::string{yytext});
+    }
+    return INSTANCEOF;
+}
 
 new         { 
     if ( debug ) {
@@ -385,26 +584,74 @@ new         {
     }
     return '?';
 }
-"?."    { Print("Found OPTIONAL_CHAINING_OPERATOR: " + std::string{yytext}); }
-"??"    { Print("Found OPERATOR_NULLISH_COALESCING: " + std::string{yytext}); }
-"??="   { Print("Found OPERATOR_ASSIGN_NULLISH_COALESCING: " + std::string{yytext}); }
+"?."    {
+    if ( debug ) {
+        Print("Found OPTIONAL_CHAINING_OPERATOR: " + std::string{yytext});
+    }
+    return OPTIONAL_CHAINING_OPERATOR;
+}
+"??"    {
+    if ( debug ) {
+        Print("Found OPERATOR_NULLISH_COALESCING: " + std::string{yytext});
+    }
+    return OPERATOR_NULLISH_COALESCING;
+}
+"??="   {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_NULLISH_COALESCING: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_NULLISH_COALESCING;
+}
 
-"%"     { Print("Found OPERATOR_MOD: " + std::string{yytext}); }
-"%="    { Print("Found OPERATOR_ASSIGN_MOD: " + std::string{yytext}); }
+"%"     {
+    if ( debug ) {
+        Print("Found OPERATOR_MOD: " + std::string{yytext});
+    }
+    return '%';
+}
+"%="    {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_MOD: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_MOD;
+}
 
 "+"     {
-    Print("Found OPERATOR_PLUS: " + std::string{yytext}); 
+    if ( debug ) {
+        Print("Found OPERATOR_PLUS: " + std::string{yytext});
+    }
     return '+'; 
 }
-"+="    { Print("Found OPERATOR_ASSIGN_PLUS: " + std::string{yytext}); }
+"+="    {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_PLUS: " + std::string{yytext});
+    }
+}
 "++"    { 
-    Print("Found OPERATOR_INCREMENT: " + std::string{yytext}); 
+    if ( debug ) {
+        Print("Found OPERATOR_INCREMENT: " + std::string{yytext}); 
+    }
     return OPERATOR_INCREMENT; 
 }
 
-"-"     { Print("Found OPERATOR_MINUS: " + std::string{yytext}); }
-"-="    { Print("Found OPERATOR_ASSIGN_MINUS: " + std::string{yytext}); }
-"--"    { Print("Found OPERATOR_DECREMENT: " + std::string{yytext}); }
+"-"     {
+    if ( debug ) {
+        Print("Found OPERATOR_MINUS: " + std::string{yytext});
+    }
+    return '-';
+}
+"-="    {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_MINUS: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_MINUS;
+}
+"--"    {
+    if ( debug ) {
+        Print("Found OPERATOR_DECREMENT: " + std::string{yytext});
+    }
+    return OPERATOR_DECREMENT;
+}
 
 <ENDL_OPERATOR>"++" {
     yy_pop_state();
@@ -432,10 +679,30 @@ new         {
     return ENDL;
 }
 
-"*"     { Print("Found OPERATOR_MULTIPLY: " + std::string{yytext}); }
-"**"    { Print("Found OPERATOR_POWER: " + std::string{yytext}); }
-"*="    { Print("Found OPERATOR_ASSIGN_MULTIPLY: " + std::string{yytext}); }
-"**="   { Print("Found OPERATOR_ASSIGN_POWER: " + std::string{yytext}); }
+"*"     {
+    if ( debug ) {
+        Print("Found OPERATOR_MULTIPLY: " + std::string{yytext});
+    }
+    return '*';
+}
+"**"    {
+    if ( debug ) {
+        Print("Found OPERATOR_POWER: " + std::string{yytext});
+    }
+    return OPERATOR_POWER;
+}
+"*="    {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_MULTIPLY: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_MULTIPLY;
+}
+"**="   {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_POWER: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_POWER;
+}
 
 "="     { 
     if ( debug ) {
@@ -443,12 +710,37 @@ new         {
     }
     return '=';
 }
-"=="    { Print("Found OPERATOR_EQUAL: " + std::string{yytext}); }
-"==="   { Print("Found OPERATOR_STRICT_EQUAL: " + std::string{yytext}); }
+"=="    {
+    if ( debug ) {
+        Print("Found OPERATOR_EQUAL: " + std::string{yytext});
+    }
+    return OPERATOR_EQUAL;
+}
+"==="   {
+    if ( debug ) {
+        Print("Found OPERATOR_STRICT_EQUAL: " + std::string{yytext});
+    }
+    return OPERATOR_STRICT_EQUAL;
+}
 
-"!"     { Print("Found OPERATOR_NOT: " + std::string{yytext}); }
-"!="    { Print("Found OPERATOR_NOT_EQUAL: " + std::string{yytext}); }
-"!=="   { Print("Found OPERATOR_STRICT_NOT_EQUAL: " + std::string{yytext}); }
+"!"     {
+    if ( debug ) {
+        Print("Found OPERATOR_NOT: " + std::string{yytext});
+    }
+    return '!';
+}
+"!="    {
+    if ( debug ) {
+        Print("Found OPERATOR_NOT_EQUAL: " + std::string{yytext});
+    }
+    return OPERATOR_NOT_EQUAL;
+}
+"!=="   {
+    if ( debug ) {
+        Print("Found OPERATOR_STRICT_NOT_EQUAL: " + std::string{yytext});
+    }
+    return OPERATOR_STRICT_NOT_EQUAL;
+}
 
 "=>"    {
     PrintError("Unsupported ARROW_FUNCTION in this version: " + std::string{yytext});
@@ -458,35 +750,150 @@ new         {
     return -1;
 }
 
-">"     { Print("Found OPERATOR_GREATER_THAN: " + std::string{yytext}); }
-">="    { Print("Found OPERATOR_GREATER_THAN_EQUAL: " + std::string{yytext}); }
-">>"    { Print("Found OPERATOR_SHIFT_RIGHT: " + std::string{yytext}); }
-">>="   { Print("Found OPERATOR_ASSIGN_SHIFT_RIGHT: " + std::string{yytext}); }
-">>>"   { Print("Found OPERATOR_UNSIGNED_SHIFT_RIGHT: " + std::string{yytext}); }
-">>>="  { Print("Found OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT: " + std::string{yytext}); }
+">"     {
+    if ( debug ) {
+        Print("Found OPERATOR_GREATER_THAN: " + std::string{yytext});
+    }
+    return '>';
+}
+">="    {
+    if ( debug ) {
+        Print("Found OPERATOR_GREATER_THAN_EQUAL: " + std::string{yytext});
+    }
+    return OPERATOR_GREATER_THAN_EQUAL;
+}
+">>"    {
+    if ( debug ) {
+        Print("Found OPERATOR_SHIFT_RIGHT: " + std::string{yytext});
+    }
+    return OPERATOR_SHIFT_RIGHT;
+}
+">>="   {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_SHIFT_RIGHT: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_SHIFT_RIGHT;
+}
+">>>"   {
+    if ( debug ) {
+        Print("Found OPERATOR_UNSIGNED_SHIFT_RIGHT: " + std::string{yytext});
+    }
+    return OPERATOR_UNSIGNED_SHIFT_RIGHT;
+}
+">>>="  {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT;
+}
 
-"<"     { Print("Found OPERATOR_LESS_THAN: " + std::string{yytext}); }
-"<="    { Print("Found OPERATOR_LESS_THAN_EQUAL: " + std::string{yytext}); }
-"<<"    { Print("Found OPERATOR_SHIFT_LEFT: " + std::string{yytext}); }
-"<<="   { Print("Found OPERATOR_ASSIGN_SHIFT_LEFT: " + std::string{yytext}); }
+"<"     {
+    if ( debug ) {
+        Print("Found OPERATOR_LESS_THAN: " + std::string{yytext});
+    }
+    return '<';
+}
+"<="    {
+    if ( debug ) {
+        Print("Found OPERATOR_LESS_THAN_EQUAL: " + std::string{yytext});
+    }
+    return OPERATOR_LESS_THAN_EQUAL;
+}
+"<<"    {
+    if ( debug ) {
+        Print("Found OPERATOR_SHIFT_LEFT: " + std::string{yytext});
+    }
+    return OPERATOR_SHIFT_LEFT;
+}
+"<<="   {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_SHIFT_LEFT: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_SHIFT_LEFT;
+}
 
-"/"     { Print("Found OPERATOR_DIVIDE: " + std::string{yytext}); }
-"/="    { Print("Found OPERATOR_ASSIGN_DIVIDE: " + std::string{yytext}); }
+"/"     {
+    if ( debug ) {
+        Print("Found OPERATOR_DIVIDE: " + std::string{yytext});
+    }
+    return '/';
+}
+"/="    {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_DIVIDE: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_DIVIDE;
+}
 
-"^"     { Print("Found OPERATOR_BITWISE_XOR: " + std::string{yytext}); }
-"^="    { Print("Found OPERATOR_ASSIGN_BITWISE_XOR: " + std::string{yytext}); }
+"^"     {
+    if ( debug ) {
+        Print("Found OPERATOR_BITWISE_XOR: " + std::string{yytext});
+    }
+    return '^';
+}
+"^="    {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_BITWISE_XOR: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_BITWISE_XOR;
+}
 
-"~"     { Print("Found OPERATOR_BITWISE_NOT: " + std::string{yytext}); }
+"~"     {
+    if ( debug ) {
+        Print("Found OPERATOR_BITWISE_NOT: " + std::string{yytext});
+    }
+    return '~';
+}
 
-"&"     { Print("Found OPERATOR_BITWISE_AND: " + std::string{yytext}); }
-"&="    { Print("Found OPERATOR_ASSIGN_BITWISE_AND: " + std::string{yytext}); }
-"&&"    { Print("Found OPERATOR_LOGICAL_AND: " + std::string{yytext}); }
-"&&="   { Print("Found OPERATOR_ASSIGN_LOGICAL_AND: " + std::string{yytext}); }
+"&"     {
+    if ( debug ) {
+        Print("Found OPERATOR_BITWISE_AND: " + std::string{yytext});
+    }
+    return '&';
+}
+"&="    {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_BITWISE_AND: " + std::string{yytext}); 
+    }
+    return OPERATOR_ASSIGN_BITWISE_AND;
+}
+"&&"    {
+    if ( debug ) {
+        Print("Found OPERATOR_LOGICAL_AND: " + std::string{yytext});
+    }
+    return OPERATOR_LOGICAL_AND;
+}
+"&&="   {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_LOGICAL_AND: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_LOGICAL_AND;
+}
 
-"|"     { Print("Found OPERATOR_BITWISE_OR: " + std::string{yytext}); }
-"|="    { Print("Found OPERATOR_ASSIGN_BITWISE_OR: " + std::string{yytext}); }
-"||"    { Print("Found OPERATOR_LOGICAL_OR: " + std::string{yytext}); }
-"||="   { Print("Found OPERATOR_ASSIGN_LOGICAL_OR: " + std::string{yytext}); }
+"|"     {
+    if ( debug ) {
+        Print("Found OPERATOR_BITWISE_OR: " + std::string{yytext});
+    }
+    return '|';
+}
+"|="    {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_BITWISE_OR: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_BITWISE_OR;
+}
+"||"    {
+    if ( debug ) {
+        Print("Found OPERATOR_LOGICAL_OR: " + std::string{yytext});
+    }
+    return OPERATOR_LOGICAL_OR;
+}
+"||="   {
+    if ( debug ) {
+        Print("Found OPERATOR_ASSIGN_LOGICAL_OR: " + std::string{yytext});
+    }
+    return OPERATOR_ASSIGN_LOGICAL_OR;
+}
 
 "["     { 
     if ( debug ) {
@@ -577,7 +984,13 @@ new         {
     return ';';
 }
 
-"@"     { Print("Found DECORATOR_AT: " + std::string{yytext}); }
+"@"     {
+    PrintError("Unsupported DECORATOR_AT in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found DECORATOR_AT: " + std::string{yytext});
+    }
+    return -1;
+}
 
 
 \" {
@@ -645,7 +1058,9 @@ new         {
 }
 <DOUBLE_STR>\" {
     PrintStringLiteral(currentString);
+    yylval._string = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
+    return STRING_LIT;
 }
 
 \' {
@@ -657,7 +1072,9 @@ new         {
 }
 <SINGLE_STR>\' {
     PrintStringLiteral(currentString);
+    yylval._string = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
+    return STRING_LIT;
 }
 
 \` {
@@ -672,7 +1089,9 @@ new         {
 }
 <TEMPLATE_STR>\` {
     PrintStringLiteral(currentString);
+    yylval._string = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
+    return STRING_LIT;
 }
 
 
@@ -711,11 +1130,13 @@ new         {
     PrintError("illegal underscore in decimal number", yylineno);
 }
 
-{DEC_INT_LIT}(\.|(\.?{EXPONENT_PART})) { /* Decimal literal */
+({DEC_INT_LIT})(\.|(\.?{EXPONENT_PART})) { /* Decimal literal */
     std::string number_string = yytext;
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
+    yylval._floatingPoint = currentFloatingPoint;
+    return FLOAT_LIT;
 }
 {INVALID_UNDERLINE_DEC_INT_LIT}(_*)(\.|(\.?{INVALID_UNDERLINE_EXPONENT_PART})) {
     PrintError("illegal underscore in decimal number", yylineno);
@@ -726,6 +1147,8 @@ new         {
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
+    yylval._floatingPoint = currentFloatingPoint;
+    return FLOAT_LIT;
 }
 ({INVALID_UNDERLINE_DEC_INT_LIT})?(_*)\.{INVALID_UNDERLINE_DEC_DIGITS}({INVALID_UNDERLINE_EXPONENT_PART})? {
     PrintError("illegal underscore in decimal number", yylineno);
@@ -738,6 +1161,8 @@ new         {
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 2);
     PrintIntegerLiteral("binary", currentInteger); 
+    yylval._integer = currentInteger;
+    return INT_LIT;
 }
 0(_*)[bB](_*){INVALID_UNDERLINE_BIN_DIGITS} {
     PrintError("illegal underscore in binary number", yylineno);
@@ -753,6 +1178,8 @@ new         {
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 8);
     PrintIntegerLiteral("octal", currentInteger); 
+    yylval._integer = currentInteger;
+    return INT_LIT;
 }
 0(_*)[oO](_*){INVALID_UNDERLINE_OCTAL_DIGITS} {
     PrintError("illegal underscore in octal number", yylineno);
@@ -767,7 +1194,9 @@ new         {
     std::string number_string = yytext;
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 16);
-    PrintIntegerLiteral("hexadecimal", currentInteger); 
+    PrintIntegerLiteral("hexadecimal", currentInteger);
+    yylval._integer = currentInteger;
+    return INT_LIT;
 }
 0(_*)[xX](_*){INVALID_UNDERLINE_HEX_DIGITS} {
     PrintError("illegal underscore in hexadecimal number", yylineno);
