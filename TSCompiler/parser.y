@@ -16,6 +16,7 @@ extern int yylex();
 void yyerror(const char *s);
 int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
 
+int inFunctionFody = 0;
 %}
 
 /* added the yyfilter funtion call */
@@ -96,7 +97,11 @@ statementListItem
     | iterationStatement
     | continueStatement statementSep { Print("- R: continueStatement statementSep -> statementListItem");  }
     | breakStatement statementSep { Print("- R: breakStatement statementSep -> statementListItem"); }
-    | returnStatement statementSep { Print("- R: returnStatement statementSep -> statementListItem"); }
+    | returnStatement { 
+        if ( !inFunctionFody ) { yyerror("illegal return statement"); } 
+        } statementSep {
+            Print("- R: returnStatement statementSep -> statementListItem"); 
+        }
     | labelledStatement
     | blockStatement
     | functionDeclaration
@@ -128,7 +133,6 @@ unionOrIntersectionOrPrimaryType
 primaryType
     : '(' type ')' { Print("- R: '(' type ')' -> primaryType"); }
     | predefinedType { Print("- R: predefinedType -> primaryType"); }
-    | typeReference { Print("- R: typeReference -> primaryType"); }
     | primaryType '[' ']' { Print("- R: primaryType '[' ']' -> primaryType"); }
     | primaryType '[' primaryType ']' { Print("- R: primaryType '[' primaryType ']' -> primaryType"); }
     | '[' tupleTypeElements ']' { Print("- R: '[' tupleTypeElements ']' -> primaryType"); }
@@ -139,28 +143,21 @@ tupleTypeElements
     | tupleTypeElements ',' type { Print("- R: tupleTypeElements ',' type -> tupleTypeElements"); }
     ;
 
-typeReference
-    : identifier { Print("- R: identifier -> typeReference"); }
-    ;
-
 predefinedType
-    : NULL_KW { Print("- R: NULL_LITERAL -> predefinedType"); }
+    : ANY { Print("- R: ANY -> predefinedType"); }
+    | NUMBER { Print("- R: NUMBER -> predefinedType"); }
+    | STRING { Print("- R: STRING -> predefinedType"); }
+    | BOOLEAN { Print("- R: BOOLEAN -> predefinedType"); }
+    | NEVER { Print("- R: NEVER -> predefinedType"); }
+    | UNKNOWN { Print("- R: UNKNOWN -> predefinedType"); }
+    | UNDEFINED { Print("- R: UNDEFINED -> predefinedType"); }
+    | VOID { Print("- R: VOID -> predefinedType"); }
+    | NULL_KW { Print("- R: NULL_KW -> predefinedType"); }
     | INT_LIT { Print("- R: INT_LIT -> predefinedType"); }
     | FLOAT_LIT { Print("- R: FLOAT_LIT -> predefinedType"); }
-    | TRUE_KW { Print("- R: TRUE_LITERAL -> predefinedType"); }
-    | FALSE_KW { Print("- R: FALSE_LITERAL -> predefinedType"); }
+    | TRUE_KW { Print("- R: TRUE_WD -> predefinedType"); }
+    | FALSE_KW { Print("- R: FALSE_KW -> predefinedType"); }
     | STRING_LIT { Print("- R: STRING_LIT -> predefinedType"); }
-    | UNIQUE SYMBOL { Print("- R: UNIQUE SYMBOL -> predefinedType"); }
-    | UNKNOWN { Print("- R: UNKNOWN -> predefinedType"); }
-    | VOID { Print("- R: VOID -> predefinedType"); }
-    /* : ANY { Print("- R: ANY -> predefinedType"); } */
-    /* | NUMBER { Print("- R: NUMBER -> predefinedType"); } */
-    /* | BOOLEAN { Print("- R: BOOLEAN -> predefinedType"); } */
-    /* | STRING { Print("- R: STRING -> predefinedType"); } */
-    /* | SYMBOL { Print("- R: SYMBOL -> predefinedType"); } */
-    /* | NEVER { Print("- R: NEVER -> predefinedType"); } */
-    /* | UNDEFINED { Print("- R: UNDEFINED -> predefinedType"); } */
-    /* | OBJECT { Print("- R: OBJECT -> predefinedType"); } */
     ;
 
 typeAnnotation
@@ -382,12 +379,12 @@ defaultClause
     /* === Functions === */
 
 functionDeclaration
-    : FUNCTION identifier callSignature '{' functionBody '}' { Print("- R: FUNCTION ID callSignature '{' functionBody '}' -> functionDeclaration"); }
+    : FUNCTION identifier callSignature functionBody { Print("- R: FUNCTION ID callSignature functionBody -> functionDeclaration"); }
     ;
 
 functionBody
-    : /* empty */ { Print("- R: #empty# -> functionBody"); }
-    | statementList { Print("- R: statementList -> returnStatement"); }
+    : '{' '}' { Print("- R: '{' '}' -> functionBody"); }
+    | '{' { inFunctionFody = 1; } statementList '}' { inFunctionFody = 0; Print("- R: '{' statementList '}' -> functionBody"); }
     ;
 
 callSignature
@@ -438,7 +435,7 @@ classDeclaration
     ;
 
 classHeritage
-    : EXTENDS typeReference { Print("- R: EXTENDS typeReference -> classHeritage"); }
+    : EXTENDS identifier { Print("- R: EXTENDS identifier -> classHeritage"); }
     ; 
 
 classTail
@@ -452,7 +449,7 @@ classElementList
     ;
 
 classElement
-    : CONSTRUCTOR callSignature '{' functionBody '}' { Print("- R: CONSTRUCTOR callSignature '{' functionBody '}' -> classElement"); }
+    : CONSTRUCTOR callSignature functionBody { Print("- R: CONSTRUCTOR callSignature functionBody -> classElement"); }
 
     /* PropertyDeclarationExpression */
     | propertyName ';' { Print("- R: propertyName ';' -> classElement"); }
@@ -461,12 +458,12 @@ classElement
     | propertyName typeAnnotation initializer ';' { Print("- R: propertyName typeAnnotation initializer ';' -> classElement"); }
 
     /* MethodDeclarationExpression */
-    | propertyName callSignature '{' functionBody '}' { Print("- R: propertyName callSignature '{' functionBody '}' -> classElement"); }
+    | propertyName callSignature functionBody { Print("- R: propertyName callSignature functionBody -> classElement"); }
 
     /* GetterSetterDeclarationExpression */
-    | GET propertyName '(' ')' '{' functionBody '}' { Print("- R: GET propertyName '(' ')' '{' functionBody '}' -> classElement"); }
-    | GET propertyName '(' ')' typeAnnotation '{' functionBody '}' { Print("- R: GET propertyName '(' ')' typeAnnotation '{' functionBody '}' -> classElement"); }
-    | SET propertyName callSignature '{' functionBody '}' { Print("- R: SET propertyName callSignature '{' functionBody '}' -> classElement"); }
+    | GET propertyName '(' ')' functionBody { Print("- R: GET propertyName '(' ')' functionBody -> classElement"); }
+    | GET propertyName '(' ')' typeAnnotation functionBody { Print("- R: GET propertyName '(' ')' typeAnnotation functionBody -> classElement"); }
+    | SET propertyName callSignature functionBody { Print("- R: SET propertyName callSignature functionBody -> classElement"); }
     ;
 
 propertyName
@@ -484,7 +481,6 @@ identifier
     | AS { Print("- R: AS -> identifier"); }
     | FROM { Print("- R: FROM -> identifier"); }
     | YIELD { Print("- R: YIELD -> identifier"); }
-    | OF { Print("- R: OF -> identifier"); }
     | ANY { Print("- R: ANY -> identifier"); }
     | NUMBER { Print("- R: NUMBER -> identifier"); }
     | BOOLEAN { Print("- R: BOOLEAN -> identifier"); }
