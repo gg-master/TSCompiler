@@ -10,7 +10,7 @@ if "%~2"=="" (
     set root_folder="."
 )
 
-for /D /R %%d in ("%root_folder%\*") do (
+for /D /R "%root_folder%" %%d in (*) do (
     echo Processing folder %%d...
 
     set "result_file=%%d\result.txt"
