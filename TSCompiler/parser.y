@@ -16,6 +16,7 @@ extern int yylex();
 void yyerror(const char *s);
 int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
 
+int isASIActivated = 0;
 int isInFunctionBody = 0; // need for return stmt
 int isInIterationBody = 0; // need for continue & break stmt
 int isInForHeader = 0;
@@ -99,8 +100,14 @@ statementList
     ;
 
 statementListItem
-    : error // simple error recovering. TODO improve that in future
-    | ';'                           { Print("- R: ';' -> statementListItem"); }
+    : error
+    | ';'                           { 
+        if ( isASIActivated ) {
+            yyerror(("syntax error on token: " + std::string{yytext_ptr}).c_str()); 
+            YYERROR;
+        }
+        Print("- R: ';' -> statementListItem"); 
+    }
     | expressionList statementSep   { Print("- R: expressionList statementSep -> statementListItem"); }
     | varStatement statementSep     { Print("- R: varStatement statementSep -> statementListItem"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
@@ -108,7 +115,7 @@ statementListItem
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
     | continueStatement {
         if ( !isInIterationBody ) { 
-            yyerror("illegal continue statement"); 
+            yyerror("illegal continue statement");
         } 
     } statementSep                  { Print("- R: continueStatement statementSep -> statementListItem");  }
     | breakStatement {
@@ -343,10 +350,14 @@ ifStatement
 iterationStatement
     : DO { isInIterationBody = 1; } statementListItem WHILE '(' expressionList ')' { doWhileASI(); } statementSep                           { isInIterationBody = 0; Print("- R: DO statementListItem WHILE '(' expressionList ')' statementSep -> iterationStatement"); }
     | WHILE '(' expressionList ')' { isInIterationBody = 1; } statementListItem                                                             { isInIterationBody = 0; Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
-    | FOR '(' { isInForHeader = 1; } expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                { isInIterationBody = 0; Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    | FOR '(' { isInForHeader = 1; } varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem   { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    | FOR '(' { isInForHeader = 1; } singleExpression IN singleExpression ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                         { isInIterationBody = 0; Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
-    | FOR '(' { isInForHeader = 1; } varModifier varDeclaration IN expressionList ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                 { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
+    | forHeader expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                { isInIterationBody = 0; Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
+    | forHeader varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem   { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
+    | forHeader singleExpression IN singleExpression ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                         { isInIterationBody = 0; Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
+    | forHeader varModifier varDeclaration IN expressionList ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                 { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
+    ;
+
+forHeader
+    :  FOR '(' { isInForHeader = 1; }
     ;
 
 continueStatement
@@ -528,6 +539,8 @@ void yyerror(const char* s) {
  * See: https://262.ecma-international.org/14.0/#sec-unicode-format-control-characters:~:text=The%20offending%20token%20is%20separated%20from%20the%20previous%20token%20by%20at%20least%20one
  */
 int yyfilter(int yychar, int yyn, int yystate, short *yyssp) {
+    isASIActivated = 0;
+
     if (yychar != ENDL) {
         return yychar;
     }
@@ -571,6 +584,8 @@ defact:
             if ( debug ) {
                 Print("found syntax error on token: " + yytext_str + ". inserted ';' as token", yylloc.first_line);
             }
+            
+            isASIActivated = 1;
             return ';';
         }
         goto reduce;
