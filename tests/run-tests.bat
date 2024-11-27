@@ -3,30 +3,32 @@ chcp 1251 > nul
 setlocal enabledelayedexpansion
 
 set program=%1
-set test_folder=%2
+set root_folder=%2
 
 if "%~2"=="" (
     set program="../x64/Debug/TSCompiler.exe"
-    set test_folder="."
+    set root_folder="."
 )
 
-set result_file="%test_folder%\result.txt"
+for /D /R %%d in ("%root_folder%\*") do (
+    echo Processing folder %%d...
 
-echo %date% %time% > %result_file%
-echo. >> %result_file%
+    set "result_file=%%d\result.txt"
+    echo %date% %time% > "!result_file!"
+    echo Results for folder %%d: >> "!result_file!"
+    echo. >> "!result_file!"
 
-for %%f in ("%test_folder%\*.test") do (
-    echo Input data from %%f: >> %result_file%
-    type %%f >> %result_file%
-    echo. >> %result_file%
-    
-    echo Output data for %%f: >> %result_file%
-    %program% %%f >> %result_file% 2>&1
-    
-    echo --------------- >> %result_file%
-    echo. >> %result_file%
+    for %%f in ("%%d\*.test" "%%d\*.ts") do (
+        echo Input data from %%f: >> "!result_file!"
+        type "%%f" >> "!result_file!"
+        echo. >> "!result_file!"
+
+        echo Output data for %%f: >> "!result_file!"
+        %program% "%%f" >> "!result_file!" 2>&1
+
+        echo --------------- >> "!result_file!"
+        echo. >> "!result_file!"
+    )
 )
 
-del output.txt
-
-code %result_file%
+echo Done processing all tests.

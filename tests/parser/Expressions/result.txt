@@ -1,0 +1,497 @@
+27.11.2024 21:24:54,02 
+Results for folder D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\Expressions: 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\Expressions\simpleExamples.ts: 
+// can exist semantic errors here
+
+simpleIndent; 
+this;
+super;
+1;
+1.1;
+"double quoted string";
+'single quoted string';
+`template string`;
+`template string ${1, 2, 3} template string`;
+true;
+false;
+null;
+
+// unary minus
+-1;
+    - 
+
+        1;
+
+// unary plus
++ 2;
++
+
+2;
+
+// not operator
+!3; !
+
+
+3;
+
+// bitwise not
+~4;
+
+~    4;
+
+// post increment & decrement (endl between operand is invalid)
+5++; 5      ++;
+
+6--; 6              --;
+
+// pref increment & decrement
+++7; ++
+
+    7;
+
+--      8; --
+
+
+    8;
+
+// binary operations
+1 +         1;
+1
+
+    +   
+
+    2;
+
+1 - 2, 2 * 2; 3 / 3; 10 % 5
+
+1   < 2, 2 > 3
+
+// TODO add more exaples
+ 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\Expressions\simpleExamples.ts: 
+Opening file D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\Expressions\simpleExamples.ts
+Building syntax tree
+Found singleline comment:  can exist semantic errors here
+Line:2. Found ENDL
+Line:3. Found ENDL
+Found identifier: simpleIndent
+skiped ENDL`s. jumped to: simpleIndent
+- R: ID -> identifier
+Found SEMICOLON: ;
+- R: identifier -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementListItem -> statementList
+Line:4. Found ENDL
+Found KW_THIS: this
+skiped ENDL`s. jumped to: this
+- R: THIS -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:5. Found ENDL
+Found KW_SUPER: super
+skiped ENDL`s. jumped to: super
+- R: SUPER -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:6. Found ENDL
+Found decimal integer literal: 1
+skiped ENDL`s. jumped to: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:7. Found ENDL
+Found floating point literal: 1.100000
+skiped ENDL`s. jumped to: 1.1
+- R: FLOAT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:8. Found ENDL
+Found string literal: "double quoted string"
+skiped ENDL`s. jumped to: "
+- R: STRING_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:9. Found ENDL
+Found string literal: "single quoted string"
+skiped ENDL`s. jumped to: '
+- R: STRING_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:10. Found ENDL
+Found string literal: "template string"
+skiped ENDL`s. jumped to: `
+- R: STRING_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:11. Found ENDL
+Found string literal: "template string ${1, 2, 3} template string"
+skiped ENDL`s. jumped to: `
+- R: STRING_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:12. Found ENDL
+Found KW_TRUE: true
+skiped ENDL`s. jumped to: true
+- R: TRUE_LITERAL -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:13. Found ENDL
+Found KW_FALSE: false
+skiped ENDL`s. jumped to: false
+- R: FALSE_LITERAL -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:14. Found ENDL
+Found KW_NULL: null
+skiped ENDL`s. jumped to: null
+- R: NULL_LITERAL -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:15. Found ENDL
+Line:16. Found ENDL
+Found singleline comment:  unary minus
+Line:17. Found ENDL
+Found OPERATOR_MINUS: -
+skiped ENDL`s. jumped to: -
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: '-' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:18. Found ENDL
+Found OPERATOR_MINUS: -
+skiped ENDL`s. jumped to: -
+Line:19. Found ENDL
+Line:20. Found ENDL
+Found decimal integer literal: 1
+skiped ENDL`s. jumped to: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: '-' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:21. Found ENDL
+Line:22. Found ENDL
+Found singleline comment:  unary plus
+Line:23. Found ENDL
+Found OPERATOR_PLUS: +
+skiped ENDL`s. jumped to: +
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: '+'s singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:24. Found ENDL
+Found OPERATOR_PLUS: +
+skiped ENDL`s. jumped to: +
+Line:25. Found ENDL
+Line:26. Found ENDL
+Found decimal integer literal: 2
+skiped ENDL`s. jumped to: 2
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: '+'s singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:27. Found ENDL
+Line:28. Found ENDL
+Found singleline comment:  not operator
+Line:29. Found ENDL
+Found OPERATOR_NOT: !
+skiped ENDL`s. jumped to: !
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: '!' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Found OPERATOR_NOT: !
+Line:30. Found ENDL
+Line:31. Found ENDL
+Line:32. Found ENDL
+Found decimal integer literal: 3
+skiped ENDL`s. jumped to: 3
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: '!' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:33. Found ENDL
+Line:34. Found ENDL
+Found singleline comment:  bitwise not
+Line:35. Found ENDL
+Found OPERATOR_BITWISE_NOT: ~
+skiped ENDL`s. jumped to: ~
+Found decimal integer literal: 4
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: '~' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:36. Found ENDL
+Line:37. Found ENDL
+Found OPERATOR_BITWISE_NOT: ~
+skiped ENDL`s. jumped to: ~
+Found decimal integer literal: 4
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: '~' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:38. Found ENDL
+Line:39. Found ENDL
+Found singleline comment:  post increment & decrement (endl between operand is invalid)
+Line:40. Found ENDL
+Found decimal integer literal: 5
+skiped ENDL`s. jumped to: 5
+- R: INT_LIT -> singleExpression
+Found OPERATOR_INCREMENT: ++
+- R: singleExpression OPERATOR_INCREMENT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Found decimal integer literal: 5
+- R: INT_LIT -> singleExpression
+Found OPERATOR_INCREMENT: ++
+- R: singleExpression OPERATOR_INCREMENT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:41. Found ENDL
+Line:42. Found ENDL
+Found decimal integer literal: 6
+skiped ENDL`s. jumped to: 6
+- R: INT_LIT -> singleExpression
+Found OPERATOR_DECREMENT: --
+- R: singleExpression OPERATOR_DECREMENT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Found decimal integer literal: 6
+- R: INT_LIT -> singleExpression
+Found OPERATOR_DECREMENT: --
+- R: singleExpression OPERATOR_DECREMENT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:43. Found ENDL
+Line:44. Found ENDL
+Found singleline comment:  pref increment & decrement
+Found ENDL of ENDL_OPERATOR
+Found ENDL_OPERATOR_INCREMENT
+skiped ENDL`s. jumped to: ++
+Found decimal integer literal: 7
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: ENDL_OPERATOR_INCREMENT singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Found OPERATOR_INCREMENT: ++
+Line:46. Found ENDL
+Line:47. Found ENDL
+Found decimal integer literal: 7
+skiped ENDL`s. jumped to: 7
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: OPERATOR_INCREMENT singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Found ENDL of ENDL_OPERATOR
+Found ENDL_OPERATOR_DECREMENT
+skiped ENDL`s. jumped to: --
+Found decimal integer literal: 8
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: ENDL_OPERATOR_DECREMENT singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Found OPERATOR_DECREMENT: --
+Line:50. Found ENDL
+Line:51. Found ENDL
+Line:52. Found ENDL
+Found decimal integer literal: 8
+skiped ENDL`s. jumped to: 8
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: OPERATOR_DECREMENT singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:53. Found ENDL
+Line:54. Found ENDL
+Found singleline comment:  binary operations
+Line:55. Found ENDL
+Found decimal integer literal: 1
+skiped ENDL`s. jumped to: 1
+- R: INT_LIT -> singleExpression
+Found OPERATOR_PLUS: +
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression '+' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:56. Found ENDL
+Found decimal integer literal: 1
+skiped ENDL`s. jumped to: 1
+- R: INT_LIT -> singleExpression
+Line:57. Found ENDL
+Line:58. Found ENDL
+Found OPERATOR_PLUS: +
+skiped ENDL`s. jumped to: +
+Line:59. Found ENDL
+Line:60. Found ENDL
+Found decimal integer literal: 2
+skiped ENDL`s. jumped to: 2
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression '+' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:61. Found ENDL
+Line:62. Found ENDL
+Found decimal integer literal: 1
+skiped ENDL`s. jumped to: 1
+- R: INT_LIT -> singleExpression
+Found OPERATOR_MINUS: -
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression '-' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found OPERATOR_MULTIPLY: *
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression '*' singleExpression -> singleExpression
+- R: expressionList ',' singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Found OPERATOR_DIVIDE: /
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression '/' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Found decimal integer literal: 10
+- R: INT_LIT -> singleExpression
+Found OPERATOR_MOD: %
+Found decimal integer literal: 5
+- R: INT_LIT -> singleExpression
+Line:63. Found ENDL
+Line:64. Found ENDL
+Found decimal integer literal: 1
+skiped ENDL`s. jumped to: 1
+Line:1. found syntax error on token: 1. inserted ';' as token
+- R: singleExpression '%' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found OPERATOR_LESS_THAN: <
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression '<' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found OPERATOR_GREATER_THAN: >
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Line:65. Found ENDL
+Line:66. Found ENDL
+Found singleline comment:  TODO add more exaples
+Line:67. Found ENDL
+skiped ENDL`s. jumped to: <EOF>
+- R: singleExpression '>' singleExpression -> singleExpression
+- R: expressionList ',' singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+- R: statementList -> script
+--------------- 
+ 

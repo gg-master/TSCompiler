@@ -1,0 +1,421 @@
+27.11.2024 21:24:54,02 
+Results for folder D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\VarDeclarations: 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\VarDeclarations\simpleExamples.ts: 
+var a = 1;
+var b = 2, c = 3, d = 4;
+
+var a1, a2, a3;
+
+let c1: number;
+let c2: number | string;
+let c3: 1 = 1;
+let c4: "123" = "123";
+
+const b2: number = 1;
+const b3: number[] = [1, 2, 3];
+const b4: [number, string] = [1, "123"];
+
+var d2: (number) = 2;
+
+// use special words as identifiers
+
+var async = 1;
+var as = 2;
+var from, yield, any, number, boolean;
+
+// TODO add more complicated examples
+ 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\VarDeclarations\simpleExamples.ts: 
+Opening file D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\VarDeclarations\simpleExamples.ts
+Building syntax tree
+Found KW_VAR: var
+- R: VAR -> varModifier
+Found identifier: a
+- R: ID -> identifier
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: identifier '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementListItem -> statementList
+Line:2. Found ENDL
+Found KW_VAR: var
+skiped ENDL`s. jumped to: var
+- R: VAR -> varModifier
+Found identifier: b
+- R: ID -> identifier
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: identifier '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+Found identifier: c
+- R: ID -> identifier
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: identifier '=' singleExpression -> varDeclaration
+- R: varDeclarationList ',' varDeclaration -> varDeclarationList
+Found identifier: d
+- R: ID -> identifier
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 4
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: identifier '=' singleExpression -> varDeclaration
+- R: varDeclarationList ',' varDeclaration -> varDeclarationList
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:3. Found ENDL
+Line:4. Found ENDL
+Found KW_VAR: var
+skiped ENDL`s. jumped to: var
+- R: VAR -> varModifier
+Found identifier: a1
+- R: ID -> identifier
+Found COMMA: ,
+- R: identifier -> varDeclaration
+- R: varDeclaration -> argument
+Found identifier: a2
+- R: ID -> identifier
+Found COMMA: ,
+- R: identifier -> varDeclaration
+- R: varDeclarationList ',' varDeclaration -> varDeclarationList
+Found identifier: a3
+- R: ID -> identifier
+Found SEMICOLON: ;
+- R: identifier -> varDeclaration
+- R: varDeclarationList ',' varDeclaration -> varDeclarationList
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:5. Found ENDL
+Line:6. Found ENDL
+Found KW_LET: let
+skiped ENDL`s. jumped to: let
+- R: LET -> varModifier
+Found identifier: c1
+- R: ID -> identifier
+Found COLON: :
+Found TYPE_NUMBER: number
+- R: NUMBER -> predefinedType
+- R: predefinedType -> primaryType
+Found SEMICOLON: ;
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: ':' type -> typeAnnotation
+- R: identifier typeAnnotation -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:7. Found ENDL
+Found KW_LET: let
+skiped ENDL`s. jumped to: let
+- R: LET -> varModifier
+Found identifier: c2
+- R: ID -> identifier
+Found COLON: :
+Found TYPE_NUMBER: number
+- R: NUMBER -> predefinedType
+- R: predefinedType -> primaryType
+Found OPERATOR_BITWISE_OR: |
+- R: primaryType -> argument
+Found TYPE_STRING: string
+- R: STRING -> predefinedType
+- R: predefinedType -> primaryType
+Found SEMICOLON: ;
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType '|' unionOrIntersectionOrPrimaryType -> unionOrIntersectionOrPrimaryType
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: ':' type -> typeAnnotation
+- R: identifier typeAnnotation -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:8. Found ENDL
+Found KW_LET: let
+skiped ENDL`s. jumped to: let
+- R: LET -> varModifier
+Found identifier: c3
+- R: ID -> identifier
+Found COLON: :
+Found decimal integer literal: 1
+- R: INT_LIT -> predefinedType
+- R: predefinedType -> primaryType
+Found OPERATOR_ASSIGN: =
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: ':' type -> typeAnnotation
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: identifier typeAnnotation '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:9. Found ENDL
+Found KW_LET: let
+skiped ENDL`s. jumped to: let
+- R: LET -> varModifier
+Found identifier: c4
+- R: ID -> identifier
+Found COLON: :
+Found string literal: "123"
+- R: STRING_LIT -> predefinedType
+- R: predefinedType -> primaryType
+Found OPERATOR_ASSIGN: =
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: ':' type -> typeAnnotation
+Found string literal: "123"
+- R: STRING_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: identifier typeAnnotation '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:10. Found ENDL
+Line:11. Found ENDL
+Found KW_CONST: const
+skiped ENDL`s. jumped to: const
+- R: CONST -> varModifier
+Found identifier: b2
+- R: ID -> identifier
+Found COLON: :
+Found TYPE_NUMBER: number
+- R: NUMBER -> predefinedType
+- R: predefinedType -> primaryType
+Found OPERATOR_ASSIGN: =
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: ':' type -> typeAnnotation
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: identifier typeAnnotation '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:12. Found ENDL
+Found KW_CONST: const
+skiped ENDL`s. jumped to: const
+- R: CONST -> varModifier
+Found identifier: b3
+- R: ID -> identifier
+Found COLON: :
+Found TYPE_NUMBER: number
+- R: NUMBER -> predefinedType
+- R: predefinedType -> primaryType
+Found BRACKET_OPEN: [
+Found BRACKET_CLOSE: ]
+- R: primaryType '[' ']' -> primaryType
+Found OPERATOR_ASSIGN: =
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: ':' type -> typeAnnotation
+Found BRACKET_OPEN: [
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+- R: elementList ',' elementList -> elementList
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Found BRACKET_CLOSE: ]
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+- R: elementList ',' elementList -> elementList
+- R: [ elementList ']' -> arrayLiteral
+- R: arrayLiteral -> singleExpression
+Found SEMICOLON: ;
+- R: identifier typeAnnotation '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:13. Found ENDL
+Found KW_CONST: const
+skiped ENDL`s. jumped to: const
+- R: CONST -> varModifier
+Found identifier: b4
+- R: ID -> identifier
+Found COLON: :
+Found BRACKET_OPEN: [
+Found TYPE_NUMBER: number
+- R: NUMBER -> predefinedType
+- R: predefinedType -> primaryType
+Found COMMA: ,
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: type -> tupleTypeElements
+Found TYPE_STRING: string
+- R: STRING -> predefinedType
+- R: predefinedType -> primaryType
+Found BRACKET_CLOSE: ]
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: tupleTypeElements ',' type -> tupleTypeElements
+- R: '[' tupleTypeElements ']' -> primaryType
+Found OPERATOR_ASSIGN: =
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: ':' type -> typeAnnotation
+Found BRACKET_OPEN: [
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+Found string literal: "123"
+- R: STRING_LIT -> singleExpression
+Found BRACKET_CLOSE: ]
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+- R: elementList ',' elementList -> elementList
+- R: [ elementList ']' -> arrayLiteral
+- R: arrayLiteral -> singleExpression
+Found SEMICOLON: ;
+- R: identifier typeAnnotation '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:14. Found ENDL
+Line:15. Found ENDL
+Found KW_VAR: var
+skiped ENDL`s. jumped to: var
+- R: VAR -> varModifier
+Found identifier: d2
+- R: ID -> identifier
+Found COLON: :
+Found PARENTHESIS_OPEN: (
+Found TYPE_NUMBER: number
+- R: NUMBER -> predefinedType
+- R: predefinedType -> primaryType
+Found PARENTHESIS_CLOSE: )
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: '(' type ')' -> primaryType
+Found OPERATOR_ASSIGN: =
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: ':' type -> typeAnnotation
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: identifier typeAnnotation '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:16. Found ENDL
+Line:17. Found ENDL
+Found singleline comment:  use special words as identifiers
+Line:18. Found ENDL
+Line:19. Found ENDL
+Found KW_VAR: var
+skiped ENDL`s. jumped to: var
+- R: VAR -> varModifier
+Found identifier: async
+- R: ID -> identifier
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: identifier '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:20. Found ENDL
+Found KW_VAR: var
+skiped ENDL`s. jumped to: var
+- R: VAR -> varModifier
+warn: Unsupported KW_AS in this version: as
+Found KW_AS: as
+- R: AS -> identifier
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: identifier '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:21. Found ENDL
+Found KW_VAR: var
+skiped ENDL`s. jumped to: var
+- R: VAR -> varModifier
+warn: Unsupported KW_FROM in this version: from
+Found KW_FROM: from
+- R: FROM -> identifier
+Found COMMA: ,
+- R: identifier -> varDeclaration
+- R: varDeclaration -> argument
+warn: Unsupported KW_YIELD in this version: yield
+Found KW_YIELD: yield
+- R: YIELD -> identifier
+Found COMMA: ,
+- R: identifier -> varDeclaration
+- R: varDeclarationList ',' varDeclaration -> varDeclarationList
+Found TYPE_ANY: any
+- R: ANY -> identifier
+Found COMMA: ,
+- R: identifier -> varDeclaration
+- R: varDeclarationList ',' varDeclaration -> varDeclarationList
+Found TYPE_NUMBER: number
+- R: NUMBER -> identifier
+Found COMMA: ,
+- R: identifier -> varDeclaration
+- R: varDeclarationList ',' varDeclaration -> varDeclarationList
+Found TYPE_BOOLEAN: boolean
+- R: BOOLEAN -> identifier
+Found SEMICOLON: ;
+- R: identifier -> varDeclaration
+- R: varDeclarationList ',' varDeclaration -> varDeclarationList
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:22. Found ENDL
+Line:23. Found ENDL
+Found singleline comment:  TODO add more complicated examples
+Line:24. Found ENDL
+skiped ENDL`s. jumped to: <EOF>
+- R: ';' -> statementListItem
+- R: statementList statementListItem -> statementList
+- R: statementList -> script
+--------------- 
+ 

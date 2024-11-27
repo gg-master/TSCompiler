@@ -1,0 +1,332 @@
+27.11.2024 21:24:54,02 
+Results for folder D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\Iterations: 
+ 
+Input data from D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\Iterations\simpleExamples.ts: 
+do 1; while(false);
+do {
+
+;
+
+} 
+while
+
+(
+    false
+
+)
+
+while(false) 1
+
+for (1 + 1; 2 + 2, 3 + 3; 4 + 4) 1
+for (
+    var a = 0, b = 1;
+    a
+     < 
+     b &&
+    b
+     <
+      3;
+    b++
+) 2;
+
+let forVar;
+for (forVar in [1, 2, 3]) ;
+
+for (let v: string in ["1", "2", "3"]);
+ 
+Output data for D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\Iterations\simpleExamples.ts: 
+Opening file D:\dev\UNI\Compiler\TS_compiler\TSCompiler\tests\parser\.\Iterations\simpleExamples.ts
+Building syntax tree
+Found KW_DO: do
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+Found KW_WHILE: while
+Found PARENTHESIS_OPEN: (
+Found KW_FALSE: false
+- R: FALSE_LITERAL -> singleExpression
+Found PARENTHESIS_CLOSE: )
+- R: singleExpression -> expressionList
+activated do-while ASI state
+ASI inserted ';' after do-while: ;
+- R: ';' -> statementSep
+- R: DO statementListItem WHILE '(' expressionList ')' statementSep -> iterationStatement
+- R: iterationStatement -> statementListItem
+- R: statementListItem -> statementList
+Line:2. Found ENDL
+Found KW_DO: do
+skiped ENDL`s. jumped to: do
+Found BRACE_OPEN: {
+Line:3. Found ENDL
+Line:4. Found ENDL
+Found SEMICOLON: ;
+skiped ENDL`s. jumped to: ;
+- R: ';' -> statementListItem
+- R: statementListItem -> statementList
+Line:5. Found ENDL
+Line:6. Found ENDL
+Found BRACE_CLOSE: }
+skiped ENDL`s. jumped to: }
+- R: '{' statementList '}' -> blockStatement
+- R: blockStatement -> statementListItem
+Line:7. Found ENDL
+Found KW_WHILE: while
+skiped ENDL`s. jumped to: while
+Line:8. Found ENDL
+Line:9. Found ENDL
+Found PARENTHESIS_OPEN: (
+skiped ENDL`s. jumped to: (
+Line:10. Found ENDL
+Found KW_FALSE: false
+skiped ENDL`s. jumped to: false
+- R: FALSE_LITERAL -> singleExpression
+Line:11. Found ENDL
+Line:12. Found ENDL
+Found PARENTHESIS_CLOSE: )
+skiped ENDL`s. jumped to: )
+- R: singleExpression -> expressionList
+activated do-while ASI state
+
+
+ASI inserted ';' after do-while: w
+- R: ';' -> statementSep
+- R: DO statementListItem WHILE '(' expressionList ')' statementSep -> iterationStatement
+- R: iterationStatement -> statementListItem
+- R: statementList statementListItem -> statementList
+Found KW_WHILE: while
+Found PARENTHESIS_OPEN: (
+Found KW_FALSE: false
+- R: FALSE_LITERAL -> singleExpression
+Found PARENTHESIS_CLOSE: )
+- R: singleExpression -> expressionList
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Line:13. Found ENDL
+Line:14. Found ENDL
+Found KW_FOR: for
+skiped ENDL`s. jumped to: for
+Line:1. found syntax error on token: for. inserted ';' as token
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement
+- R: iterationStatement -> statementListItem
+- R: statementList statementListItem -> statementList
+Found KW_FOR: for
+Found PARENTHESIS_OPEN: (
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found OPERATOR_PLUS: +
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression '+' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: expressionList -> expressionListOpt
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found OPERATOR_PLUS: +
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression '+' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Found OPERATOR_PLUS: +
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression '+' singleExpression -> singleExpression
+- R: expressionList ',' singleExpression -> expressionList
+- R: expressionList -> expressionListOpt
+Found decimal integer literal: 4
+- R: INT_LIT -> singleExpression
+Found OPERATOR_PLUS: +
+Found decimal integer literal: 4
+- R: INT_LIT -> singleExpression
+Found PARENTHESIS_CLOSE: )
+- R: singleExpression '+' singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: expressionList -> expressionListOpt
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Line:15. Found ENDL
+Found KW_FOR: for
+skiped ENDL`s. jumped to: for
+Line:1. found syntax error on token: for. inserted ';' as token
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement
+- R: iterationStatement -> statementListItem
+- R: statementList statementListItem -> statementList
+Found KW_FOR: for
+Found PARENTHESIS_OPEN: (
+Line:16. Found ENDL
+Found KW_VAR: var
+- R: VAR -> varModifier
+Found identifier: a
+- R: ID -> identifier
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 0
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: identifier '=' singleExpression -> varDeclaration
+- R: varDeclaration -> argument
+Found identifier: b
+- R: ID -> identifier
+Found OPERATOR_ASSIGN: =
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: identifier '=' singleExpression -> varDeclaration
+- R: varDeclarationList ',' varDeclaration -> varDeclarationList
+Line:17. Found ENDL
+Found identifier: a
+- R: ID -> identifier
+- R: identifier -> singleExpression
+Line:18. Found ENDL
+Found OPERATOR_LESS_THAN: <
+Line:19. Found ENDL
+Found identifier: b
+- R: ID -> identifier
+- R: identifier -> singleExpression
+Found OPERATOR_LOGICAL_AND: &&
+- R: singleExpression '<' singleExpression -> singleExpression
+Line:20. Found ENDL
+Found identifier: b
+- R: ID -> identifier
+- R: identifier -> singleExpression
+Line:21. Found ENDL
+Found OPERATOR_LESS_THAN: <
+Line:22. Found ENDL
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression '<' singleExpression -> singleExpression
+- R: singleExpression OPERATOR_LOGICAL_AND singleExpression -> singleExpression
+- R: singleExpression -> expressionList
+- R: expressionList -> expressionListOpt
+Line:23. Found ENDL
+Found identifier: b
+- R: ID -> identifier
+- R: identifier -> singleExpression
+Found OPERATOR_INCREMENT: ++
+- R: singleExpression OPERATOR_INCREMENT -> singleExpression
+Line:24. Found ENDL
+Found PARENTHESIS_CLOSE: )
+- R: singleExpression -> expressionList
+- R: expressionList -> expressionListOpt
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found SEMICOLON: ;
+- R: singleExpression -> expressionList
+- R: ';' -> statementSep
+- R: expressionList statementSep -> statementListItem
+- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement
+- R: iterationStatement -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:25. Found ENDL
+Line:26. Found ENDL
+Found KW_LET: let
+skiped ENDL`s. jumped to: let
+- R: LET -> varModifier
+Found identifier: forVar
+- R: ID -> identifier
+Found SEMICOLON: ;
+- R: identifier -> varDeclaration
+- R: varDeclaration -> argument
+- R: varModifier varDeclarationList -> varStatement
+- R: ';' -> statementSep
+- R: varStatement statementSep -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:27. Found ENDL
+Found KW_FOR: for
+skiped ENDL`s. jumped to: for
+Found PARENTHESIS_OPEN: (
+Found identifier: forVar
+- R: ID -> identifier
+- R: identifier -> singleExpression
+Found KW_IN: in
+Found BRACKET_OPEN: [
+Found decimal integer literal: 1
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+Found decimal integer literal: 2
+- R: INT_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+- R: elementList ',' elementList -> elementList
+Found decimal integer literal: 3
+- R: INT_LIT -> singleExpression
+Found BRACKET_CLOSE: ]
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+- R: elementList ',' elementList -> elementList
+- R: [ elementList ']' -> arrayLiteral
+- R: arrayLiteral -> singleExpression
+Found PARENTHESIS_CLOSE: )
+Found SEMICOLON: ;
+- R: ';' -> statementListItem
+- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement
+- R: iterationStatement -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:28. Found ENDL
+Line:29. Found ENDL
+Found KW_FOR: for
+skiped ENDL`s. jumped to: for
+Found PARENTHESIS_OPEN: (
+Found KW_LET: let
+- R: LET -> varModifier
+Found identifier: v
+- R: ID -> identifier
+Found COLON: :
+Found TYPE_STRING: string
+- R: STRING -> predefinedType
+- R: predefinedType -> primaryType
+Found KW_IN: in
+- R: primaryType -> argument
+- R: unionOrIntersectionOrPrimaryType -> type
+- R: ':' type -> typeAnnotation
+- R: identifier typeAnnotation -> varDeclaration
+Found BRACKET_OPEN: [
+Found string literal: "1"
+- R: STRING_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+Found string literal: "2"
+- R: STRING_LIT -> singleExpression
+Found COMMA: ,
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+- R: elementList ',' elementList -> elementList
+Found string literal: "3"
+- R: STRING_LIT -> singleExpression
+Found BRACKET_CLOSE: ]
+- R: singleExpression -> arrayElement
+- R: arrayElement -> elementList
+- R: elementList ',' elementList -> elementList
+- R: [ elementList ']' -> arrayLiteral
+- R: arrayLiteral -> singleExpression
+Found PARENTHESIS_CLOSE: )
+- R: singleExpression -> expressionList
+Found SEMICOLON: ;
+- R: ';' -> statementListItem
+- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement
+- R: iterationStatement -> statementListItem
+- R: statementList statementListItem -> statementList
+Line:30. Found ENDL
+skiped ENDL`s. jumped to: <EOF>
+- R: ';' -> statementListItem
+- R: statementList statementListItem -> statementList
+- R: statementList -> script
+--------------- 
+ 
