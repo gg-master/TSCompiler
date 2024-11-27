@@ -18,6 +18,9 @@ int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
 
 int isInFunctionBody = 0; // need for return stmt
 int isInIterationBody = 0; // need for continue & break stmt
+int isInForHeader = 0;
+
+int syntaxErrorCounter = 0;
 %}
 
 /* added the yyfilter funtion call */
@@ -81,7 +84,13 @@ int isInIterationBody = 0; // need for continue & break stmt
 %%
 
 script
-    : statementList { Print("- R: statementList -> script"); }
+    : statementList { 
+        if ( syntaxErrorCounter > 0 ) {
+            PrintError("Found " + std::to_string(syntaxErrorCounter) + " syntax errors. Fix them and rerun.");
+            exit(1);
+        }
+        Print("- R: statementList -> script"); 
+    }
     ;
 
 statementList
@@ -90,7 +99,8 @@ statementList
     ;
 
 statementListItem
-    : ';'                           { Print("- R: ';' -> statementListItem"); }
+    : error // simple error recovering. TODO improve that in future
+    | ';'                           { Print("- R: ';' -> statementListItem"); }
     | expressionList statementSep   { Print("- R: expressionList statementSep -> statementListItem"); }
     | varStatement statementSep     { Print("- R: varStatement statementSep -> statementListItem"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
@@ -333,10 +343,10 @@ ifStatement
 iterationStatement
     : DO { isInIterationBody = 1; } statementListItem WHILE '(' expressionList ')' { doWhileASI(); } statementSep                           { isInIterationBody = 0; Print("- R: DO statementListItem WHILE '(' expressionList ')' statementSep -> iterationStatement"); }
     | WHILE '(' expressionList ')' { isInIterationBody = 1; } statementListItem                                                             { isInIterationBody = 0; Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
-    | FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' { isInIterationBody = 1; } statementListItem                { isInIterationBody = 0; Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    | FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' { isInIterationBody = 1; } statementListItem   { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    | FOR '(' singleExpression IN singleExpression ')' { isInIterationBody = 1; } statementListItem                                         { isInIterationBody = 0; Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
-    | FOR '(' varModifier varDeclaration IN expressionList ')' { isInIterationBody = 1; } statementListItem                                 { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
+    | FOR '(' { isInForHeader = 1; } expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                { isInIterationBody = 0; Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
+    | FOR '(' { isInForHeader = 1; } varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem   { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
+    | FOR '(' { isInForHeader = 1; } singleExpression IN singleExpression ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                         { isInIterationBody = 0; Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
+    | FOR '(' { isInForHeader = 1; } varModifier varDeclaration IN expressionList ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                 { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
     ;
 
 continueStatement
@@ -509,8 +519,8 @@ identifier
 
 
 void yyerror(const char* s) {
+    syntaxErrorCounter++;
     fprintf(stderr, "Line:%d. Text: %s. Error: %s\n", yylloc.first_line, yytext_ptr, s);
-    exit(1);
 }
 
 /* Implementing part of automatic semicolon insertion of TypeScript / ECMAscript. 
@@ -523,6 +533,10 @@ int yyfilter(int yychar, int yyn, int yystate, short *yyssp) {
     }
     // Skiping multiple ENDL symbols
     do { yychar = yylex(); } while (yychar == ENDL); 
+
+    if ( isInForHeader ) {
+        return yychar;
+    }
 
     std::string yytext_str = std::string{yytext_ptr};
     if (yytext_str == "") { 
