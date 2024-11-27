@@ -8,6 +8,7 @@ int debug = 1;
 extern FILE* yyin;
 
 extern char* yytext_ptr;
+extern int yyleng;
 
 extern void rescanTokenString(const char *s);
 extern void doWhileASI();
@@ -100,11 +101,12 @@ statementList
     ;
 
 statementListItem
-    : error
+    : error // TODO check errors recovering
+    | error ';' // TODO check errors recovering
     | ';'                           { 
         if ( isASIActivated ) {
-            yyerror(("syntax error on token: " + std::string{yytext_ptr}).c_str()); 
-            YYERROR;
+            std::string text(yytext_ptr, yyleng);
+            yyerror(("syntax error on token: " + text).c_str()); YYERROR;
         }
         Print("- R: ';' -> statementListItem"); 
     }
@@ -115,17 +117,46 @@ statementListItem
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
     | continueStatement {
         if ( !isInIterationBody ) { 
-            yyerror("illegal continue statement");
+            yyerror("illegal continue statement."); YYERROR;
         } 
     } statementSep                  { Print("- R: continueStatement statementSep -> statementListItem");  }
     | breakStatement {
         if ( !isInIterationBody ) { 
-            yyerror("illegal break statement"); 
+            yyerror("illegal break statement."); YYERROR;
         } 
     } statementSep                  { Print("- R: breakStatement statementSep -> statementListItem"); }
     | returnStatement { 
         if ( !isInFunctionBody ) { 
-            yyerror("illegal return statement"); 
+            yyerror("illegal return statement."); YYERROR;
+        } 
+    } statementSep                  { Print("- R: returnStatement statementSep -> statementListItem"); }
+    | labelledStatement             { Print("- R: labelledStatement -> statementListItem"); }
+    | blockStatement                { Print("- R: blockStatement -> statementListItem"); }
+    | functionDeclaration           { Print("- R: functionDeclaration -> statementListItem"); }
+    | classDeclaration              { Print("- R: classDeclaration -> statementListItem"); }
+    ;
+
+statementListItemWithoutEmptyStatement
+    : error // TODO check errors recovering
+    | error ';' // TODO check errors recovering
+    | expressionList statementSep   { Print("- R: expressionList statementSep -> statementListItem"); }
+    | varStatement statementSep     { Print("- R: varStatement statementSep -> statementListItem"); }
+    | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
+    | switchStatement               { Print("- R: switchStatement -> statementListItem"); }
+    | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
+    | continueStatement {
+        if ( !isInIterationBody ) { 
+            yyerror("illegal continue statement."); YYERROR;
+        } 
+    } statementSep                  { Print("- R: continueStatement statementSep -> statementListItem");  }
+    | breakStatement {
+        if ( !isInIterationBody ) { 
+            yyerror("illegal break statement."); YYERROR;
+        } 
+    } statementSep                  { Print("- R: breakStatement statementSep -> statementListItem"); }
+    | returnStatement { 
+        if ( !isInFunctionBody ) { 
+            yyerror("illegal return statement."); YYERROR;
         } 
     } statementSep                  { Print("- R: returnStatement statementSep -> statementListItem"); }
     | labelledStatement             { Print("- R: labelledStatement -> statementListItem"); }
@@ -343,8 +374,8 @@ varModifier
     /* ================================ */
 
 ifStatement
-    : IF '(' expressionList ')' statementListItem %prec IF_ONLY_PREC { Print("- R:  IF '(' expressionList ')' statementListItem -> ifStatement"); }
-    | IF '(' expressionList ')' statementListItem ELSE statementListItem { Print("- R: IF '(' expressionList ')' statementListItem ELSE statementListItem -> ifStatement"); }
+    : IF '(' expressionList ')' statementListItemWithoutEmptyStatement %prec IF_ONLY_PREC { Print("- R: IF '(' expressionList ')' statementListItem -> ifStatement"); }
+    | IF '(' expressionList ')' statementListItemWithoutEmptyStatement ELSE statementListItem { Print("- R: IF '(' expressionList ')' statementListItem ELSE statementListItem -> ifStatement"); }
     ;
 
 iterationStatement
@@ -531,8 +562,77 @@ identifier
 
 void yyerror(const char* s) {
     syntaxErrorCounter++;
-    fprintf(stderr, "Line:%d. Text: %s. Error: %s\n", yylloc.first_line, yytext_ptr, s);
+    std::string text(yytext_ptr, yyleng);
+
+    fprintf(stderr, ">> SyntaxError: Line:%d. Text: %s. Error: %s <<\n", yylloc.first_line, text.c_str(), s);
 }
+
+bool checkOnSyntaxError(int yychar, int yyn, int yystate, short *yyssp) {
+    yysymbol_kind_t yytoken = YYTRANSLATE(yychar); // getting char class
+
+start: 
+    yyn = yypact[yystate]; // first action index
+    if (yypact_value_is_default(yyn)) {
+        goto defact;
+    }
+
+    yyn += yytoken; // calc index inside yytable
+
+    if (yyn < 0 || YYLAST < yyn || yycheck[yyn] != yytoken) {
+        /* default action */
+defact: 
+        yyn = yydefact[yystate];
+
+        if (yyn == 0) { // syntax error
+            return true;
+        }
+        goto reduce;
+    }
+    // table contains action 
+    yyn = yytable[yyn];
+
+    if (yyn <= 0) { // reduce case
+        yyn = -yyn;
+reduce:     
+        yyssp -= yyr2[yyn];
+        const int yylhs = yyr1[yyn] - YYNTOKENS;
+        const int yyi = yypgoto[yylhs] + *yyssp;
+        yystate = (0 <= yyi && yyi <= YYLAST && yycheck[yyi] == *yyssp
+                ? yytable[yyi]
+                : yydefgoto[yylhs]);
+        yyssp++;
+        goto start;
+
+    } else { // shift case
+        return false;
+    }
+}
+
+int simpleASI(int yychar, int yyn, int yystate, short *yyssp) {
+    if (checkOnSyntaxError(yychar, yyn, yystate, yyssp)) {
+        
+        if (checkOnSyntaxError(';', yyn, yystate, yyssp)) {
+            return yychar;
+        }
+
+        std::string yytext_str = std::string{yytext_ptr};
+        if (yytext_str == "") {
+            yytext_str = "<EOF>";
+        }
+
+        if (yytext_str != "<EOF>") { 
+            rescanTokenString(yytext_ptr);
+        }
+
+        if ( debug ) {
+            Print("found syntax error on token: " + yytext_str + ". inserted ';' as token", yylloc.first_line);
+        }
+        isASIActivated = 1;
+        return ';';
+    }
+    return yychar;
+}
+
 
 /* Implementing part of automatic semicolon insertion of TypeScript / ECMAscript. 
  * This part is impelemnted first rule of semicolon insertion. 
@@ -540,6 +640,10 @@ void yyerror(const char* s) {
  */
 int yyfilter(int yychar, int yyn, int yystate, short *yyssp) {
     isASIActivated = 0;
+
+    if (yychar == '}') {
+        return simpleASI(yychar, yyn, yystate, yyssp);
+    }
 
     if (yychar != ENDL) {
         return yychar;
@@ -560,52 +664,7 @@ int yyfilter(int yychar, int yyn, int yystate, short *yyssp) {
         Print("skiped ENDL`s. jumped to: " + yytext_str);
     }
 
-    yysymbol_kind_t yytoken = YYTRANSLATE(yychar); // getting char class
-
-start: 
-    yyn = yypact[yystate]; // first action index
-    if (yypact_value_is_default(yyn)) {
-        goto defact;
-    }
-
-    yyn += yytoken; // calc index inside yytable
-
-    if (yyn < 0 || YYLAST < yyn || yycheck[yyn] != yytoken) {
-        /* default action */
-defact: 
-        yyn = yydefact[yystate];
-
-        if (yyn == 0) { // syntax error
-
-            if (yytext_str != "<EOF>") { 
-                rescanTokenString(yytext_ptr);
-            }
-
-            if ( debug ) {
-                Print("found syntax error on token: " + yytext_str + ". inserted ';' as token", yylloc.first_line);
-            }
-            
-            isASIActivated = 1;
-            return ';';
-        }
-        goto reduce;
-    }
-    // table contains action 
-    yyn = yytable[yyn];
-
-    if (yyn <= 0) { // reduce case
-        yyn = -yyn;
-reduce:     
-        yyssp -= yyr2[yyn];
-        const int yylhs = yyr1[yyn] - YYNTOKENS;
-        const int yyi = yypgoto[yylhs] + *yyssp;
-        yystate = (0 <= yyi && yyi <= YYLAST && yycheck[yyi] == *yyssp
-                ? yytable[yyi]
-                : yydefgoto[yylhs]);
-        yyssp++;
-        goto start;
-
-    } else { // shift case
-        return yychar;
-    }
+    return simpleASI(yychar, yyn, yystate, yyssp);
 }
+
+

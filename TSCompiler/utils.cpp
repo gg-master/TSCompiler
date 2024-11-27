@@ -2,13 +2,6 @@
 #include <string>
 #include <algorithm>
 
-void Print(const std::string& message, const int line = -1) {
-    if (line >= 0) {
-        std::cout << "Line:" << line << ". ";
-    }
-    std::cout << message << std::endl;
-}
-
 char* Dublicate(const char* source)
 {
     const auto length = std::strlen(source) + 1;
@@ -18,11 +11,25 @@ char* Dublicate(const char* source)
     return destination;
 }
 
+void Print(const std::string& message, const int line = -1) {
+    if (line >= 0) {
+        std::cout << "Line:" << line << ". ";
+    }
+    std::cout << message << std::endl;
+}
+
 void PrintError(const std::string& errorMessage, const int line = -1) {
     if (line >= 0) {
         std::cerr << "ErrLine:" << line << ". ";
     }
     std::cerr << "error: " << errorMessage << std::endl;
+}
+
+void PrintWarn(const std::string& message, const int line = -1) {
+    if (line >= 0) {
+        std::cout << "WarnLine:" << line << ". ";
+    }
+    std::cout << "warn: " << message << std::endl;
 }
 
 void PrintIntegerLiteral(const std::string& type, const int integer) {

@@ -58,7 +58,6 @@ ESCAPE_CHAR ({SINGLE_ESCAPE_CHAR}|{DEC_DIGIT}|x|u)
 
 %x ENDL_OPERATOR
 %x DO_WHILE_ASI
-%x BRACE_CLOSE_ASI
 
 %%
 
@@ -103,26 +102,26 @@ export      {
     return -1;
 } 
 from        {
-    PrintError("Unsupported KW_FROM in this version: " + std::string{yytext});
+    PrintWarn("Unsupported KW_FROM in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_FROM: " + std::string{yytext});
     }
-    return -1;
+    return FROM;
 } 
 require     {
-    PrintError("Unsupported KW_REQUIRE in this version: " + std::string{yytext});
+    PrintWarn("Unsupported KW_REQUIRE in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_REQUIRE: " + std::string{yytext});
     }
-    return -1;
+    return REQUIRE;
 }
 
 namespace   {
-    PrintError("Unsupported KW_INFER in this version: " + std::string{yytext});
+    PrintWarn("Unsupported KW_NAMESPACE in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_NAMESPACE: " + std::string{yytext});
     }
-    return -1;
+    return NAMESPACE;
 } 
 
 delete      {
@@ -181,11 +180,11 @@ let         {
 } 
 
 as          {
-    PrintError("Unsupported KW_AS in this version: " + std::string{yytext});
+    PrintWarn("Unsupported KW_AS in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_AS: " + std::string{yytext});
     }
-    return -1;
+    return AS;
 }
 
 any         {
@@ -297,11 +296,11 @@ typeof      {
     return -1;
 }
 keyof       {
-    PrintError("Unsupported KW_KEYOF in this version: " + std::string{yytext});
+    PrintWarn("Unsupported KW_KEYOF in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_KEYOF: " + std::string{yytext});
     }
-    return -1;
+    return KEYOF;
 } 
 infer       {
     PrintError("Unsupported KW_INFER in this version: " + std::string{yytext});
@@ -443,11 +442,11 @@ function    {
 }
 
 yield       {
-    PrintError("Unsupported KW_YIELD in this version: " + std::string{yytext});
+    PrintWarn("Unsupported KW_YIELD in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_YIELD: " + std::string{yytext});
     }
-    return -1;
+    return YIELD;
 }
 
 return {
@@ -474,11 +473,11 @@ interface   {
 }
 
 abstract    {
-    PrintError("Unsupported KW_ABSTRACT in this version: " + std::string{yytext});
+    PrintWarn("Unsupported KW_ABSTRACT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_ABSTRACT: " + std::string{yytext}, yylineno);
     }
-    return -1;
+    return ABSTRACT;
 }
 class       { 
     if ( debug ) {
@@ -944,19 +943,10 @@ new         {
     }
     return '{'; 
 }
-"}"     {
-    if ( debug ) {
-        Print("ASI inserted ';' before BRACE_CLOSE: " + std::string{yytext}); 
-    }
-    yy_push_state(BRACE_CLOSE_ASI);
-    rescanTokenString(yytext);
-    return ';';
-}
-<BRACE_CLOSE_ASI>"}" {
+"}" {
     if ( debug ) {
         Print("Found BRACE_CLOSE: " + std::string{yytext}); 
     }
-    yy_pop_state();
     return '}';
 }
 
