@@ -17,7 +17,7 @@ void rescanTokenString(const char *s);
 void doWhileASI();
 
 extern int debug;
-int semicolonInsertion;
+int endlSemicolonInsertion;
 
 %}
 
@@ -55,8 +55,10 @@ ESCAPE_CHAR ({SINGLE_ESCAPE_CHAR}|{DEC_DIGIT}|x|u)
 %x MULTILINE_COMMENT
 
 %x OVER
+
 %x ENDL_OPERATOR
 %x DO_WHILE_ASI
+%x BRACE_CLOSE_ASI
 
 %%
 
@@ -414,7 +416,7 @@ break/[[:space:]]*[\r\n]+ {
     if ( debug ) {
         Print("Found KW_BREAK: " + std::string{yytext});
     }
-    semicolonInsertion = 1;
+    endlSemicolonInsertion = 1;
     return BREAK;
 }
 
@@ -429,7 +431,7 @@ continue/[[:space:]]*[\r\n]+ {
     if ( debug ) {
         Print("Found KW_CONTINUE: " + std::string{yytext}); 
     }
-    semicolonInsertion = 1;
+    endlSemicolonInsertion = 1;
     return CONTINUE;
 }
 
@@ -459,7 +461,7 @@ return/[[:space:]]*[\r\n]+ {
     if ( debug ) {
         Print("Found KW_RETURN: " + std::string{yytext}); 
     }
-    semicolonInsertion = 1;
+    endlSemicolonInsertion = 1;
     return RETURN;
 }
 
@@ -944,8 +946,17 @@ new         {
 }
 "}"     {
     if ( debug ) {
+        Print("ASI inserted ';' before BRACE_CLOSE: " + std::string{yytext}); 
+    }
+    yy_push_state(BRACE_CLOSE_ASI);
+    rescanTokenString(yytext);
+    return ';';
+}
+<BRACE_CLOSE_ASI>"}" {
+    if ( debug ) {
         Print("Found BRACE_CLOSE: " + std::string{yytext}); 
     }
+    yy_pop_state();
     return '}';
 }
 
@@ -1216,9 +1227,9 @@ new         {
 
 [\r\n] {
     Print("Found ENDL", yylineno);
-    if (semicolonInsertion) {
+    if (endlSemicolonInsertion) {
         Print("ASI Replace ENDL -> ';'", yylineno);
-        semicolonInsertion = 0;
+        endlSemicolonInsertion = 0;
         return ';';
     }
     return ENDL;
@@ -1240,13 +1251,12 @@ new         {
     return -1;
 }
 
-<DO_WHILE_ASI><<EOF>> {
-    yy_pop_state();
+<DO_WHILE_ASI><<EOF>> |
+<INITIAL><<EOF>> {
     BEGIN(OVER);
     return ';';
 }
 
-<INITIAL><<EOF>> |
 <OVER><<EOF>> {
     yyterminate();
 }

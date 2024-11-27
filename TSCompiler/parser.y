@@ -16,7 +16,8 @@ extern int yylex();
 void yyerror(const char *s);
 int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
 
-int inFunctionFody = 0;
+int isInFunctionBody = 0; // need for return stmt
+int isInIterationBody = 0; // need for continue & break stmt
 %}
 
 /* added the yyfilter funtion call */
@@ -89,23 +90,31 @@ statementList
     ;
 
 statementListItem
-    : ';' { Print("- R: ';' -> statementListItem"); }
-    | expressionList statementSep { Print("- R: expressionList statementSep -> statementListItem"); }
-    | varStatement statementSep
-    | ifStatement
-    | switchStatement
-    | iterationStatement
-    | continueStatement statementSep { Print("- R: continueStatement statementSep -> statementListItem");  }
-    | breakStatement statementSep { Print("- R: breakStatement statementSep -> statementListItem"); }
+    : ';'                           { Print("- R: ';' -> statementListItem"); }
+    | expressionList statementSep   { Print("- R: expressionList statementSep -> statementListItem"); }
+    | varStatement statementSep     { Print("- R: varStatement statementSep -> statementListItem"); }
+    | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
+    | switchStatement               { Print("- R: switchStatement -> statementListItem"); }
+    | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
+    | continueStatement {
+        if ( !isInIterationBody ) { 
+            yyerror("illegal continue statement"); 
+        } 
+    } statementSep                  { Print("- R: continueStatement statementSep -> statementListItem");  }
+    | breakStatement {
+        if ( !isInIterationBody ) { 
+            yyerror("illegal break statement"); 
+        } 
+    } statementSep                  { Print("- R: breakStatement statementSep -> statementListItem"); }
     | returnStatement { 
-        if ( !inFunctionFody ) { yyerror("illegal return statement"); } 
-        } statementSep {
-            Print("- R: returnStatement statementSep -> statementListItem"); 
-        }
-    | labelledStatement
-    | blockStatement
-    | functionDeclaration
-    | classDeclaration
+        if ( !isInFunctionBody ) { 
+            yyerror("illegal return statement"); 
+        } 
+    } statementSep                  { Print("- R: returnStatement statementSep -> statementListItem"); }
+    | labelledStatement             { Print("- R: labelledStatement -> statementListItem"); }
+    | blockStatement                { Print("- R: blockStatement -> statementListItem"); }
+    | functionDeclaration           { Print("- R: functionDeclaration -> statementListItem"); }
+    | classDeclaration              { Print("- R: classDeclaration -> statementListItem"); }
     ;
 
 statementSep
@@ -322,12 +331,12 @@ ifStatement
     ;
 
 iterationStatement
-    : DO statementListItem WHILE '(' expressionList ')' { doWhileASI(); } statementSep { Print("- R: DO statementListItem WHILE '(' expressionList ')' statementSep -> iterationStatement"); }
-    | WHILE '(' expressionList ')' statementListItem { Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
-    | FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem { Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    | FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem { Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    | FOR '(' singleExpression IN singleExpression ')' statementListItem { Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
-    | FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem { Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
+    : DO { isInIterationBody = 1; } statementListItem WHILE '(' expressionList ')' { doWhileASI(); } statementSep                           { isInIterationBody = 0; Print("- R: DO statementListItem WHILE '(' expressionList ')' statementSep -> iterationStatement"); }
+    | WHILE '(' expressionList ')' { isInIterationBody = 1; } statementListItem                                                             { isInIterationBody = 0; Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
+    | FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' { isInIterationBody = 1; } statementListItem                { isInIterationBody = 0; Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
+    | FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' { isInIterationBody = 1; } statementListItem   { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
+    | FOR '(' singleExpression IN singleExpression ')' { isInIterationBody = 1; } statementListItem                                         { isInIterationBody = 0; Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
+    | FOR '(' varModifier varDeclaration IN expressionList ')' { isInIterationBody = 1; } statementListItem                                 { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
     ;
 
 continueStatement
@@ -384,7 +393,7 @@ functionDeclaration
 
 functionBody
     : '{' '}' { Print("- R: '{' '}' -> functionBody"); }
-    | '{' { inFunctionFody = 1; } statementList '}' { inFunctionFody = 0; Print("- R: '{' statementList '}' -> functionBody"); }
+    | '{' { isInFunctionBody = 1; } statementList '}' { isInFunctionBody = 0; Print("- R: '{' statementList '}' -> functionBody"); }
     ;
 
 callSignature
