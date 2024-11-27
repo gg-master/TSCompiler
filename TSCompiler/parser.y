@@ -102,7 +102,6 @@ statementList
 
 statementListItem
     : error // TODO check errors recovering
-    | error ';' // TODO check errors recovering
     | ';'                           { 
         if ( isASIActivated ) {
             std::string text(yytext_ptr, yyleng);
@@ -137,8 +136,7 @@ statementListItem
     ;
 
 statementListItemWithoutEmptyStatement
-    : error // TODO check errors recovering
-    | error ';' // TODO check errors recovering
+    : error ';' // TODO check errors recovering
     | expressionList statementSep   { Print("- R: expressionList statementSep -> statementListItem"); }
     | varStatement statementSep     { Print("- R: varStatement statementSep -> statementListItem"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
@@ -193,10 +191,12 @@ primaryType
     | primaryType '[' ']' { Print("- R: primaryType '[' ']' -> primaryType"); }
     | primaryType '[' primaryType ']' { Print("- R: primaryType '[' primaryType ']' -> primaryType"); }
     | '[' tupleTypeElements ']' { Print("- R: '[' tupleTypeElements ']' -> primaryType"); }
+    | ENDL_BRACKET_OPEN tupleTypeElements ']' { Print("- R: '[' tupleTypeElements ']' -> primaryType"); }
     ;
 
 tupleTypeElements
-    : type { Print("- R: type -> tupleTypeElements"); }
+    : /* empty */ { Print("- R: #empty# -> tupleTypeElements"); }
+    | type { Print("- R: type -> tupleTypeElements"); }
     | tupleTypeElements ',' type { Print("- R: tupleTypeElements ',' type -> tupleTypeElements"); }
     ;
 

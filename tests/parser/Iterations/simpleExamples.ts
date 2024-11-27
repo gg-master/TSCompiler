@@ -12,6 +12,11 @@ while
 )
 
 while(false) 1
+label: while(false) break label
+
+label2: while(false) {
+    continue label2;
+}
 
 for (1 + 1; 2 + 2, 3 + 3; 4 + 4) 1
 for (
