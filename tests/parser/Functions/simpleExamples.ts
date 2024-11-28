@@ -37,3 +37,6 @@ number
 {
 return 1;
 }
+
+// 10 
+function f(q, a?, m, b?: number, c = 1) {}

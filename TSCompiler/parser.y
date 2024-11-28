@@ -86,13 +86,14 @@ int syntaxErrorCounter = 0;
 %%
 
 script
-    : statementList { 
-        if ( syntaxErrorCounter > 0 ) {
-            PrintError("Found " + std::to_string(syntaxErrorCounter) + " syntax errors. Fix them and rerun.");
-            exit(1);
+    : statementList 
+        { 
+            if ( syntaxErrorCounter > 0 ) {
+                PrintError("Found " + std::to_string(syntaxErrorCounter) + " syntax errors. Fix them and rerun.");
+                exit(1);
+            }
+            Print("- R: statementList -> script"); 
         }
-        Print("- R: statementList -> script"); 
-    }
     ;
 
 statementList
@@ -101,34 +102,33 @@ statementList
     ;
 
 statementListItem
-    : error // TODO check errors recovering
-    | ';'                           { 
-        if ( isASIActivated ) {
-            std::string text(yytext_ptr, yyleng);
-            yyerror(("syntax error on token: " + text).c_str()); YYERROR;
-        }
-        Print("- R: ';' -> statementListItem"); 
-    }
-    | expressionList statementSep   { Print("- R: expressionList statementSep -> statementListItem"); }
-    | varStatement statementSep     { Print("- R: varStatement statementSep -> statementListItem"); }
+    : emptyStatement                { Print("- R: emptyStatement -> statementListItem"); }
+    | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); }
+    | varStatement                  { Print("- R: varStatement -> statementListItem"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
     | switchStatement               { Print("- R: switchStatement -> statementListItem"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
-    | continueStatement {
-        if ( !isInIterationBody ) { 
-            yyerror("illegal continue statement."); YYERROR;
-        } 
-    } statementSep                  { Print("- R: continueStatement statementSep -> statementListItem");  }
-    | breakStatement {
-        if ( !isInIterationBody ) { 
-            yyerror("illegal break statement."); YYERROR;
-        } 
-    } statementSep                  { Print("- R: breakStatement statementSep -> statementListItem"); }
-    | returnStatement { 
-        if ( !isInFunctionBody ) { 
-            yyerror("illegal return statement."); YYERROR;
-        } 
-    } statementSep                  { Print("- R: returnStatement statementSep -> statementListItem"); }
+    | continueStatement 
+        {
+            if ( !isInIterationBody ) { 
+                yyerror("illegal continue statement."); YYERROR;
+            } 
+            Print("- R: continueStatement -> statementListItem");  
+        }
+    | breakStatement 
+        {
+            if ( !isInIterationBody ) { 
+                yyerror("illegal break statement."); YYERROR;
+            } 
+            Print("- R: breakStatement -> statementListItem");
+        }
+    | returnStatement 
+        { 
+            if ( !isInFunctionBody ) { 
+                yyerror("illegal return statement."); YYERROR;
+            } 
+            Print("- R: returnStatement -> statementListItem"); 
+        }
     | labelledStatement             { Print("- R: labelledStatement -> statementListItem"); }
     | blockStatement                { Print("- R: blockStatement -> statementListItem"); }
     | functionDeclaration           { Print("- R: functionDeclaration -> statementListItem"); }
@@ -136,35 +136,47 @@ statementListItem
     ;
 
 statementListItemWithoutEmptyStatement
-    : error ';' // TODO check errors recovering
-    | expressionList statementSep   { Print("- R: expressionList statementSep -> statementListItem"); }
-    | varStatement statementSep     { Print("- R: varStatement statementSep -> statementListItem"); }
+    : expressionStatement           { Print("- R: expressionStatement -> statementListItem"); }
+    | varStatement                  { Print("- R: varStatement -> statementListItem"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
     | switchStatement               { Print("- R: switchStatement -> statementListItem"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
-    | continueStatement {
-        if ( !isInIterationBody ) { 
-            yyerror("illegal continue statement."); YYERROR;
-        } 
-    } statementSep                  { Print("- R: continueStatement statementSep -> statementListItem");  }
-    | breakStatement {
-        if ( !isInIterationBody ) { 
-            yyerror("illegal break statement."); YYERROR;
-        } 
-    } statementSep                  { Print("- R: breakStatement statementSep -> statementListItem"); }
-    | returnStatement { 
-        if ( !isInFunctionBody ) { 
-            yyerror("illegal return statement."); YYERROR;
-        } 
-    } statementSep                  { Print("- R: returnStatement statementSep -> statementListItem"); }
+    | continueStatement
+        {
+            if ( !isInIterationBody ) { 
+                yyerror("illegal continue statement."); YYERROR;
+            } 
+            Print("- R: continueStatement -> statementListItem");
+        }
+    | breakStatement
+        {
+            if ( !isInIterationBody ) { 
+                yyerror("illegal break statement."); YYERROR;
+            } 
+            Print("- R: breakStatement -> statementListItem");
+        }
+    | returnStatement
+        { 
+            if ( !isInFunctionBody ) { 
+                yyerror("illegal return statement."); YYERROR;
+            } 
+            Print("- R: returnStatement -> statementListItem"); 
+        }
     | labelledStatement             { Print("- R: labelledStatement -> statementListItem"); }
     | blockStatement                { Print("- R: blockStatement -> statementListItem"); }
     | functionDeclaration           { Print("- R: functionDeclaration -> statementListItem"); }
     | classDeclaration              { Print("- R: classDeclaration -> statementListItem"); }
     ;
 
-statementSep
-    : ';' { Print("- R: ';' -> statementSep"); }
+emptyStatement
+    : ';' 
+        { 
+            if ( isASIActivated ) {
+                std::string text(yytext_ptr, yyleng);
+                yyerror(("syntax error on token: " + text).c_str()); YYERROR;
+            }
+            Print("- R: ';' -> emptyStatement"); 
+        }
     ;
 
 initializer
@@ -210,15 +222,20 @@ predefinedType
     | UNDEFINED { Print("- R: UNDEFINED -> predefinedType"); }
     | VOID { Print("- R: VOID -> predefinedType"); }
     | NULL_KW { Print("- R: NULL_KW -> predefinedType"); }
-    | INT_LIT { Print("- R: INT_LIT -> predefinedType"); }
-    | FLOAT_LIT { Print("- R: FLOAT_LIT -> predefinedType"); }
     | TRUE_KW { Print("- R: TRUE_WD -> predefinedType"); }
     | FALSE_KW { Print("- R: FALSE_KW -> predefinedType"); }
-    | STRING_LIT { Print("- R: STRING_LIT -> predefinedType"); }
+    | simpleLiteral { Print("- R: simpleLiteral -> predefinedType"); }
     ;
 
 typeAnnotation
     : ':' type { Print("- R: ':' type -> typeAnnotation"); }
+    ;
+
+simpleLiteral
+    : STRING_LIT { Print("- R: STRING_LIT -> simpleLiteral"); }
+    | INT_LIT { Print("- R: INT_LIT -> simpleLiteral"); }
+    | FLOAT_LIT { Print("- R: FLOAT_LIT -> simpleLiteral"); }
+    | TEMPLATE_LITERAL { Print("- R: TEMPLATE_LITERAL -> simpleLiteral"); }
     ;
 
 // JavaScript supports arrasys like [,,1,2,,].
@@ -240,6 +257,10 @@ arrayElement
 
     /* ====== EXPRESSIONS ====== */
 
+expressionStatement
+    : expressionList ';' { Print("- R: expressionList ';' -> expressionStatement"); }
+    ;
+
 expressionListOpt
     : /* empty */ { Print("- R: #empty# -> expressionListOpt"); }
     | expressionList { Print("- R: expressionList -> expressionListOpt"); }
@@ -250,19 +271,16 @@ expressionList
     | expressionList ',' singleExpression { Print("- R: expressionList ',' singleExpression -> expressionList"); }
     ;
 
-singleExpression 
+singleExpression
     : identifier { Print("- R: identifier -> singleExpression"); }
+    | simpleLiteral { Print("- R: simpleLiteral -> singleExpression"); }
     | THIS { Print("- R: THIS -> singleExpression"); }
     | SUPER { Print("- R: SUPER -> singleExpression"); }
-    | INT_LIT { Print("- R: INT_LIT -> singleExpression"); }
-    | FLOAT_LIT { Print("- R: FLOAT_LIT -> singleExpression"); }
-    | STRING_LIT { Print("- R: STRING_LIT -> singleExpression"); }
-    | TEMPLATE_LITERAL { Print("- R: TEMPLATE_LITERAL -> singleExpression"); }
     | TRUE_KW { Print("- R: TRUE_LITERAL -> singleExpression"); }
     | FALSE_KW { Print("- R: FALSE_LITERAL -> singleExpression"); }
     | NULL_KW { Print("- R: NULL_LITERAL -> singleExpression"); }
     | '-' singleExpression %prec UMINUS { Print("- R: '-' singleExpression -> singleExpression"); }
-    | '+' singleExpression %prec UPLUS { Print("- R: '+'s singleExpression -> singleExpression"); }
+    | '+' singleExpression %prec UPLUS { Print("- R: '+' singleExpression -> singleExpression"); }
     | '!' singleExpression { Print("- R: '!' singleExpression -> singleExpression"); }
     | '~' singleExpression { Print("- R: '~' singleExpression -> singleExpression"); }
     | singleExpression OPERATOR_INCREMENT %prec POST_INCREMENT { Print("- R: singleExpression OPERATOR_INCREMENT -> singleExpression"); }
@@ -325,8 +343,8 @@ singleExpression
     | singleExpression '.' identifier { Print("- R: singleExpression '.' identifier -> singleExpression"); }
 
     | arrayLiteral { Print("- R: arrayLiteral -> singleExpression"); }
-    | singleExpression '[' expressionList ']' { Print("- R: singleExpression '[' singleExpression ']' -> singleExpression"); }
-    | singleExpression ENDL_BRACKET_OPEN expressionList ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN singleExpression ']' -> singleExpression"); }
+    | singleExpression '[' expressionList ']' { Print("- R: singleExpression '[' expressionList ']' -> singleExpression"); }
+    | singleExpression ENDL_BRACKET_OPEN expressionList ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN expressionList ']' -> singleExpression"); }
 
     | NEW singleExpression { Print("- R: NEW singleExpression -> singleExpression"); }
     ;
@@ -347,10 +365,10 @@ argument
     | ELLIPSIS singleExpression { Print("- R: ELLIPSIS singleExpression -> argument"); }
     ;
 
-    /* ============================== */
+    /* ====== varStatement ====== */
 
 varStatement
-    : varModifier varDeclarationList { Print("- R: varModifier varDeclarationList -> varStatement"); }
+    : varModifier varDeclarationList ';' { Print("- R: varModifier varDeclarationList ';' -> varStatement"); }
     ;
 
 varDeclarationList
@@ -371,7 +389,7 @@ varModifier
     | CONST { Print("- R: CONST -> varModifier"); }
     ;
 
-    /* ================================ */
+    /* ====== ifStatement ====== */
 
 ifStatement
     : IF '(' expressionList ')' statementListItemWithoutEmptyStatement %prec IF_ONLY_PREC { Print("- R: IF '(' expressionList ')' statementListItem -> ifStatement"); }
@@ -379,7 +397,7 @@ ifStatement
     ;
 
 iterationStatement
-    : DO { isInIterationBody = 1; } statementListItem WHILE '(' expressionList ')' { doWhileASI(); } statementSep                           { isInIterationBody = 0; Print("- R: DO statementListItem WHILE '(' expressionList ')' statementSep -> iterationStatement"); }
+    : DO { isInIterationBody = 1; } statementListItem WHILE '(' expressionList ')' { doWhileASI(); } ';'                           { isInIterationBody = 0; Print("- R: DO statementListItem WHILE '(' expressionList ')' ';' -> iterationStatement"); }
     | WHILE '(' expressionList ')' { isInIterationBody = 1; } statementListItem                                                             { isInIterationBody = 0; Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
     | forHeader expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                { isInIterationBody = 0; Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
     | forHeader varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem   { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
@@ -392,18 +410,18 @@ forHeader
     ;
 
 continueStatement
-    : CONTINUE { Print("- R: CONTINUE -> returnStatement"); }
-    | CONTINUE identifier { Print("- R: CONTINUE identifier -> returnStatement"); }
+    : CONTINUE ';' { Print("- R: CONTINUE ';' -> returnStatement"); }
+    | CONTINUE identifier ';' { Print("- R: CONTINUE identifier ';' -> returnStatement"); }
     ;
 
 breakStatement
-    : BREAK  { Print("- R: BREAK -> returnStatement"); }
-    | BREAK identifier { Print("- R: BREAK identifier -> returnStatement"); }
+    : BREAK  ';' { Print("- R: BREAK ';' -> returnStatement"); }
+    | BREAK identifier ';' { Print("- R: BREAK identifier ';' -> returnStatement"); }
     ;
 
 returnStatement
-    : RETURN { Print("- R: RETURN -> returnStatement"); }
-    | RETURN singleExpression { Print("- R: RETURN singleExpression -> returnStatement"); }
+    : RETURN ';' { Print("- R: RETURN ';' -> returnStatement"); }
+    | RETURN singleExpression ';' { Print("- R: RETURN singleExpression ';' -> returnStatement"); }
     ;
 
 labelledStatement
@@ -510,7 +528,7 @@ classElementList
     ;
 
 classElement
-    : CONSTRUCTOR callSignature functionBody { Print("- R: CONSTRUCTOR callSignature functionBody -> classElement"); }
+    : CONSTRUCTOR constructorCallSignature functionBody { Print("- R: CONSTRUCTOR callSignature functionBody -> classElement"); }
 
     /* PropertyDeclarationExpression */
     | propertyName ';' { Print("- R: propertyName ';' -> classElement"); }
@@ -527,13 +545,19 @@ classElement
     | SET propertyName callSignature functionBody { Print("- R: SET propertyName callSignature functionBody -> classElement"); }
     ;
 
+constructorCallSignature
+    : '(' ')' { Print("- R: '(' ')' -> constructorCallSignature"); }
+    | '(' restParameter ')' { Print("- R: '(' restParameter ')' -> constructorCallSignature"); }
+    | '(' parameterList ')' { Print("- R: '(' parameterList ')' -> constructorCallSignature"); }
+    | '(' parameterList ',' restParameter ')' { Print("- R: '(' parameterList ',' restParameter ')' -> constructorCallSignature"); }
+    | '(' parameterList ',' ')' { Print("- R: '(' parameterList ',' ')' -> constructorCallSignature"); }
+    ;
+
 propertyName
     : identifier { Print("- R: identifier -> propertyName"); }
-    | STRING_LIT { Print("- R: STRING_LIT -> propertyName"); }
-    | INT_LIT { Print("- R: INT_LIT -> propertyName"); }
-    | FLOAT_LIT { Print("- R: FLOAT_LIT -> propertyName"); }
-    | '[' singleExpression ']' { Print("- R: '[' singleExpression ']' -> propertyName"); }
-    | ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: ENDL_BRACKET_OPEN singleExpression ']' -> propertyName"); }
+    | simpleLiteral { Print("- R: STRING_LIT -> propertyName"); }
+    | '[' simpleLiteral ']' { Print("- R: '[' simpleLiteral ']' -> propertyName"); }
+    | ENDL_BRACKET_OPEN simpleLiteral ']' { Print("- R: ENDL_BRACKET_OPEN simpleLiteral ']' -> propertyName"); }
     ;
 
 identifier
