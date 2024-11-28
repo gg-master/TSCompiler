@@ -179,6 +179,11 @@ emptyStatement
         }
     ;
 
+blockStatement
+    : '{' '}' { Print("- R: '{' '}' -> blockStatement"); }
+    | '{' statementList '}' { Print("- R: '{' statementList '}' -> blockStatement"); }
+    ;
+
 initializer
     : '=' singleExpression { Print("- R: '=' singleExpression -> initializer"); }
     ;
@@ -365,7 +370,7 @@ argument
     | ELLIPSIS singleExpression { Print("- R: ELLIPSIS singleExpression -> argument"); }
     ;
 
-    /* ====== varStatement ====== */
+    /* ====== Variables ====== */
 
 varStatement
     : varModifier varDeclarationList ';' { Print("- R: varModifier varDeclarationList ';' -> varStatement"); }
@@ -389,48 +394,11 @@ varModifier
     | CONST { Print("- R: CONST -> varModifier"); }
     ;
 
-    /* ====== ifStatement ====== */
+    /* ====== Conditions ====== */
 
 ifStatement
     : IF '(' expressionList ')' statementListItemWithoutEmptyStatement %prec IF_ONLY_PREC { Print("- R: IF '(' expressionList ')' statementListItem -> ifStatement"); }
     | IF '(' expressionList ')' statementListItemWithoutEmptyStatement ELSE statementListItem { Print("- R: IF '(' expressionList ')' statementListItem ELSE statementListItem -> ifStatement"); }
-    ;
-
-iterationStatement
-    : DO { isInIterationBody = 1; } statementListItem WHILE '(' expressionList ')' { doWhileASI(); } ';'                           { isInIterationBody = 0; Print("- R: DO statementListItem WHILE '(' expressionList ')' ';' -> iterationStatement"); }
-    | WHILE '(' expressionList ')' { isInIterationBody = 1; } statementListItem                                                             { isInIterationBody = 0; Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
-    | forHeader expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                { isInIterationBody = 0; Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    | forHeader varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem   { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    | forHeader singleExpression IN singleExpression ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                         { isInIterationBody = 0; Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
-    | forHeader varModifier varDeclaration IN expressionList ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                 { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
-    ;
-
-forHeader
-    :  FOR '(' { isInForHeader = 1; }
-    ;
-
-continueStatement
-    : CONTINUE ';' { Print("- R: CONTINUE ';' -> returnStatement"); }
-    | CONTINUE identifier ';' { Print("- R: CONTINUE identifier ';' -> returnStatement"); }
-    ;
-
-breakStatement
-    : BREAK  ';' { Print("- R: BREAK ';' -> returnStatement"); }
-    | BREAK identifier ';' { Print("- R: BREAK identifier ';' -> returnStatement"); }
-    ;
-
-returnStatement
-    : RETURN ';' { Print("- R: RETURN ';' -> returnStatement"); }
-    | RETURN singleExpression ';' { Print("- R: RETURN singleExpression ';' -> returnStatement"); }
-    ;
-
-labelledStatement
-    : identifier ':' statementListItem { Print("- R: identifier ':' statementListItem -> labelledStatement"); }
-    ;
-
-blockStatement
-    : '{' '}' { Print("- R: '{' '}' -> blockStatement"); }
-    | '{' statementList '}' { Print("- R: '{' statementList '}' -> blockStatement"); }
     ;
 
 switchStatement
@@ -455,7 +423,42 @@ defaultClause
     | DEFAULT ':' statementList { Print("- R: DEFAULT ':' statementList -> defaultClause"); }
     ;
 
+    /* ====== Iterations ====== */
+
+iterationStatement
+    : DO { isInIterationBody = 1; } statementListItem WHILE '(' expressionList ')' { doWhileASI(); } ';'                           { isInIterationBody = 0; Print("- R: DO statementListItem WHILE '(' expressionList ')' ';' -> iterationStatement"); }
+    | WHILE '(' expressionList ')' { isInIterationBody = 1; } statementListItem                                                             { isInIterationBody = 0; Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
+    | forHeader expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                { isInIterationBody = 0; Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
+    | forHeader varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem   { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
+    | forHeader singleExpression IN singleExpression ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                         { isInIterationBody = 0; Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
+    | forHeader varModifier varDeclaration IN expressionList ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                 { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
+    ;
+
+forHeader
+    :  FOR '(' { isInForHeader = 1; }
+    ;
+
+continueStatement
+    : CONTINUE ';' { Print("- R: CONTINUE ';' -> returnStatement"); }
+    | CONTINUE identifier ';' { Print("- R: CONTINUE identifier ';' -> returnStatement"); }
+    ;
+
+breakStatement
+    : BREAK  ';' { Print("- R: BREAK ';' -> returnStatement"); }
+    | BREAK identifier ';' { Print("- R: BREAK identifier ';' -> returnStatement"); }
+    ;
+
+labelledStatement
+    : identifier ':' statementListItem { Print("- R: identifier ':' statementListItem -> labelledStatement"); }
+    ;
+
     /* === Functions === */
+
+returnStatement
+    : RETURN ';' { Print("- R: RETURN ';' -> returnStatement"); }
+    | RETURN singleExpression ';' { Print("- R: RETURN singleExpression ';' -> returnStatement"); }
+    ;
+
 
 functionDeclaration
     : FUNCTION identifier callSignature functionBody { Print("- R: FUNCTION ID callSignature functionBody -> functionDeclaration"); }
