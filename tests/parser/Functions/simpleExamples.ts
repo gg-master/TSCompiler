@@ -39,4 +39,7 @@ return 1;
 }
 
 // 10 
-function f(q, a?, m, b?: number, c = 1) {}
+function f(q, a?, b?: number, c = 1,) {}
+
+// 11
+function f(q, a?, c = 1, ...d) {}

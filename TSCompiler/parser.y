@@ -467,26 +467,41 @@ functionBody
     ;
 
 callSignature
-    : '(' ')' { Print("- R: '(' ')' -> callSignature"); }
-    | '(' ')' typeAnnotation { Print("- R: '(' ')' typeAnnotation -> callSignature"); }
-    | '(' restParameter ')' { Print("- R: '(' restParameter ')' -> callSignature"); }
-    | '(' restParameter ')' typeAnnotation { Print("- R: '(' restParameter ')' typeAnnotation -> callSignature"); }
-    | '(' parameterList ')' { Print("- R: '(' parameterList ')' -> callSignature"); }
+    : '(' parameterList ')' { Print("- R: '(' parameterList ')' -> callSignature"); }
     | '(' parameterList ')' typeAnnotation { Print("- R: '(' parameterList ')' typeAnnotation -> callSignature"); }
-    | '(' parameterList ',' restParameter ')' { Print("- R: '(' parameterList ',' restParameter ')' -> callSignature"); }
-    | '(' parameterList ',' restParameter ')' typeAnnotation { Print("- R: '(' parameterList ',' restParameter ')' typeAnnotation -> callSignature"); }
-    | '(' parameterList ',' ')' { Print("- R: '(' parameterList ',' ')' -> callSignature"); }
-    | '(' parameterList ',' ')' typeAnnotation { Print("- R: '(' parameterList ',' ')' typeAnnotation -> callSignature"); }
     ;
 
 parameterList
-    : parameter { Print("- R: parameter -> parameterList"); }
-    | parameterList ',' parameter { Print("- R: parameterList ',' parameter -> parameterList"); }
+    : /* empty */ { Print("- R: #empty# -> parameterList"); }
+    | requiredParameterList { Print("- R: requiredParameterList -> parameterList"); }
+    | optionalParameterList { Print("- R: optionalParameterList -> parameterList"); }
+    | restParameter { Print("- R: restParameter -> parameterList"); }
+    
+    | requiredParameterList ',' optionalParameterList { Print("- R: requiredParameterList ',' optionalParameterList -> parameterList"); }
+    | requiredParameterList ',' restParameter { Print("- R: requiredParameterList ',' restParameter -> parameterList"); }
+    | optionalParameterList ',' restParameter { Print("- R: optionalParameterList ',' restParameter -> parameterList"); }
+    
+    | requiredParameterList ',' optionalParameterList ',' restParameter { Print("- R: requiredParameterList ',' optionalParameterList ',' restParameter -> parameterList"); }
+    
+    | requiredParameterList ',' { Print("- R: requiredParameterList ',' -> parameterList"); }
+    | optionalParameterList ',' { Print("- R: optionalParameterList ',' -> parameterList"); }
+    | restParameter ',' { Print("- R: restParameter ',' -> parameterList"); }
+    
+    | requiredParameterList ',' optionalParameterList ',' { Print("- R: requiredParameterList ',' optionalParameterList ',' -> parameterList"); }
+    | requiredParameterList ',' restParameter ',' { Print("- R: requiredParameterList ',' restParameter ',' -> parameterList"); }
+    | optionalParameterList ',' restParameter ',' { Print("- R: optionalParameterList ',' restParameter ',' -> parameterList"); }
+    
+    | requiredParameterList ',' optionalParameterList ',' restParameter ',' { Print("- R: requiredParameterList ',' optionalParameterList ',' restParameter ',' -> parameterList"); }
     ;
 
-parameter
-    : requiredParameter { Print("- R: requiredParameter -> parameter"); }
-    | optionalParameter { Print("- R: optionalParameter -> parameter"); }
+requiredParameterList
+    : requiredParameter { Print("- R: requiredParameter -> requiredParameterList"); }
+    | requiredParameterList ',' requiredParameter { Print("- R:  requiredParameterList ',' requiredParameter -> requiredParameterList"); }
+    ;
+
+optionalParameterList
+    : optionalParameter { Print("- R: optionalParameter -> optionalParameterList"); }
+    | optionalParameterList ',' optionalParameter { Print("- R: optionalParameterList ',' optionalParameter -> optionalParameterList"); }
     ;
 
 requiredParameter
@@ -546,11 +561,7 @@ classElement
     ;
 
 constructorCallSignature
-    : '(' ')' { Print("- R: '(' ')' -> constructorCallSignature"); }
-    | '(' restParameter ')' { Print("- R: '(' restParameter ')' -> constructorCallSignature"); }
-    | '(' parameterList ')' { Print("- R: '(' parameterList ')' -> constructorCallSignature"); }
-    | '(' parameterList ',' restParameter ')' { Print("- R: '(' parameterList ',' restParameter ')' -> constructorCallSignature"); }
-    | '(' parameterList ',' ')' { Print("- R: '(' parameterList ',' ')' -> constructorCallSignature"); }
+    : '(' parameterList ')' { Print("- R: '(' parameterList ')' -> constructorCallSignature"); }
     ;
 
 propertyName
