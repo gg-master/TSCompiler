@@ -136,36 +136,36 @@ statementListItem
     ;
 
 statementListItemWithoutEmptyStatement
-    : expressionStatement           { Print("- R: expressionStatement -> statementListItem"); }
-    | varStatement                  { Print("- R: varStatement -> statementListItem"); }
-    | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
-    | switchStatement               { Print("- R: switchStatement -> statementListItem"); }
-    | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
+    : expressionStatement           { Print("- R: expressionStatement -> statementListItemWithoutEmptyStatement"); }
+    | varStatement                  { Print("- R: varStatement -> statementListItemWithoutEmptyStatement"); }
+    | ifStatement                   { Print("- R: ifStatement -> statementListItemWithoutEmptyStatement"); }
+    | switchStatement               { Print("- R: switchStatement -> statementListItemWithoutEmptyStatement"); }
+    | iterationStatement            { Print("- R: iterationStatement -> statementListItemWithoutEmptyStatement"); }
     | continueStatement
         {
             if ( !isInIterationBody ) { 
                 yyerror("illegal continue statement."); YYERROR;
             } 
-            Print("- R: continueStatement -> statementListItem");
+            Print("- R: continueStatement -> statementListItemWithoutEmptyStatement");
         }
     | breakStatement
         {
             if ( !isInIterationBody ) { 
                 yyerror("illegal break statement."); YYERROR;
             } 
-            Print("- R: breakStatement -> statementListItem");
+            Print("- R: breakStatement -> statementListItemWithoutEmptyStatement");
         }
     | returnStatement
         { 
             if ( !isInFunctionBody ) { 
                 yyerror("illegal return statement."); YYERROR;
             } 
-            Print("- R: returnStatement -> statementListItem"); 
+            Print("- R: returnStatement -> statementListItemWithoutEmptyStatement"); 
         }
-    | labelledStatement             { Print("- R: labelledStatement -> statementListItem"); }
-    | blockStatement                { Print("- R: blockStatement -> statementListItem"); }
-    | functionDeclaration           { Print("- R: functionDeclaration -> statementListItem"); }
-    | classDeclaration              { Print("- R: classDeclaration -> statementListItem"); }
+    | labelledStatement             { Print("- R: labelledStatement -> statementListItemWithoutEmptyStatement"); }
+    | blockStatement                { Print("- R: blockStatement -> statementListItemWithoutEmptyStatement"); }
+    | functionDeclaration           { Print("- R: functionDeclaration -> statementListItemWithoutEmptyStatement"); }
+    | classDeclaration              { Print("- R: classDeclaration -> statementListItemWithoutEmptyStatement"); }
     ;
 
 emptyStatement
@@ -451,7 +451,7 @@ varStatement
     ;
 
 varDeclarationList
-    : varDeclaration                        { Print("- R: varDeclaration -> argument"); }
+    : varDeclaration                        { Print("- R: varDeclaration -> varDeclarationList"); }
     | varDeclarationList ',' varDeclaration { Print("- R: varDeclarationList ',' varDeclaration -> varDeclarationList"); }
     ;
 
@@ -594,7 +594,7 @@ parameterList
 
 requiredParameterList
     : requiredParameter                             { Print("- R: requiredParameter -> requiredParameterList"); }
-    | requiredParameterList ',' requiredParameter   { Print("- R:  requiredParameterList ',' requiredParameter -> requiredParameterList"); }
+    | requiredParameterList ',' requiredParameter   { Print("- R: requiredParameterList ',' requiredParameter -> requiredParameterList"); }
     ;
 
 optionalParameterList
