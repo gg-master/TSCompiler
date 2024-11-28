@@ -89,13 +89,13 @@ one of the two semicolons in the header of a for statement
 */
 
 // Example 1. 
-for (a; b
-    c
-)
+// for (a; b
+//     c
+// )
 
 // Example 2. 
-if (a > b)
-else c = d;
+// if (a > b)
+// else c = d;
 
 /*
 3. When, as the source text is parsed from left to right, the end of the input 
