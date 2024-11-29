@@ -111,3 +111,11 @@ class C5 {
     [`asd`]: number = 2;
     [321] = 2;
 }
+
+// 9
+class WithGetterAndSetter {
+    get name() { return; }
+    get lastName(): string { return 'abc' }
+
+    set name(a,) {}
+}

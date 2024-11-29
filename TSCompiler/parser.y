@@ -772,11 +772,10 @@ int simpleASI(int yychar, int yyn, int yystate, short *yyssp) {
  * See: https://262.ecma-international.org/14.0/#sec-unicode-format-control-characters:~:text=The%20offending%20token%20is%20separated%20from%20the%20previous%20token%20by%20at%20least%20one
  */
 int yyfilter(int yychar, int yyn, int yystate, short *yyssp) {
-    isASIActivated = 0;
-
-    if (yychar == '}') {
+    if (yychar == '}' && !isASIActivated) {
         return simpleASI(yychar, yyn, yystate, yyssp);
     }
+    isASIActivated = 0;
 
     if (yychar != ENDL) {
         return yychar;
