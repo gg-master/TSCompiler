@@ -133,6 +133,8 @@ statementListItem
     | blockStatement                { Print("- R: blockStatement -> statementListItem"); }
     | functionDeclaration           { Print("- R: functionDeclaration -> statementListItem"); }
     | classDeclaration              { Print("- R: classDeclaration -> statementListItem"); }
+    
+    | error
     ;
 
 statementListItemWithoutEmptyStatement
@@ -166,6 +168,8 @@ statementListItemWithoutEmptyStatement
     | blockStatement                { Print("- R: blockStatement -> statementListItemWithoutEmptyStatement"); }
     | functionDeclaration           { Print("- R: functionDeclaration -> statementListItemWithoutEmptyStatement"); }
     | classDeclaration              { Print("- R: classDeclaration -> statementListItemWithoutEmptyStatement"); }
+    
+    | error
     ;
 
 emptyStatement
@@ -448,6 +452,7 @@ argument
 
 varStatement
     : varModifier varDeclarationList ';' { Print("- R: varModifier varDeclarationList ';' -> varStatement"); }
+    | varModifier error ';'
     ;
 
 varDeclarationList
