@@ -405,33 +405,37 @@ while       {
 }
 
 break       { 
+    PrintError("Unsupported KW_BREAK in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_BREAK: " + std::string{yytext});
     }
-    return BREAK;
+    return -1;
 }
 
-break/[[:space:]]*[\r\n]+ { 
+break/[[:space:]]*[\r\n]+ {
+    PrintError("Unsupported KW_BREAK in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_BREAK: " + std::string{yytext});
     }
     endlSemicolonInsertion = 1;
-    return BREAK;
+    return -1;
 }
 
-continue    { 
+continue    {
+    PrintError("Unsupported KW_CONTINUE in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_CONTINUE: " + std::string{yytext}); 
     }
-    return CONTINUE;
+    return -1;
 }
 
-continue/[[:space:]]*[\r\n]+ { 
+continue/[[:space:]]*[\r\n]+ {
+    PrintError("Unsupported KW_CONTINUE in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_CONTINUE: " + std::string{yytext}); 
     }
     endlSemicolonInsertion = 1;
-    return CONTINUE;
+    return -1;
 }
 
 function    {
@@ -592,16 +596,18 @@ new         {
     return OPTIONAL_CHAINING_OPERATOR;
 }
 "??"    {
+    PrintError("Unsupported OPERATOR_NULLISH_COALESCING in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_NULLISH_COALESCING: " + std::string{yytext});
     }
-    return OPERATOR_NULLISH_COALESCING;
+    return -1;
 }
 "??="   {
+    PrintError("Unsupported OPERATOR_ASSIGN_NULLISH_COALESCING in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_NULLISH_COALESCING: " + std::string{yytext});
     }
-    return OPERATOR_ASSIGN_NULLISH_COALESCING;
+    return -1;
 }
 
 "%"     {
@@ -611,10 +617,11 @@ new         {
     return '%';
 }
 "%="    {
+    PrintError("Unsupported OPERATOR_ASSIGN_MOD in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_MOD: " + std::string{yytext});
     }
-    return OPERATOR_ASSIGN_MOD;
+    return -1;
 }
 
 "+"     {
@@ -687,10 +694,11 @@ new         {
     return '*';
 }
 "**"    {
+    PrintError("Unsupported OPERATOR_POWER in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_POWER: " + std::string{yytext});
     }
-    return OPERATOR_POWER;
+    return -1;
 }
 "*="    {
     if ( debug ) {
@@ -699,10 +707,11 @@ new         {
     return OPERATOR_ASSIGN_MULTIPLY;
 }
 "**="   {
+    PrintError("Unsupported OPERATOR_ASSIGN_POWER in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_POWER: " + std::string{yytext});
     }
-    return OPERATOR_ASSIGN_POWER;
+    return -1;
 }
 
 "="     { 
@@ -758,34 +767,39 @@ new         {
     return '>';
 }
 ">="    {
+    PrintError("Unsupported OPERATOR_GREATER_THAN_EQUAL in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_GREATER_THAN_EQUAL: " + std::string{yytext});
     }
-    return OPERATOR_GREATER_THAN_EQUAL;
+    return -1;
 }
 ">>"    {
+    PrintError("Unsupported OPERATOR_SHIFT_RIGHT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_SHIFT_RIGHT: " + std::string{yytext});
     }
-    return OPERATOR_SHIFT_RIGHT;
+    return -1;
 }
 ">>="   {
+    PrintError("Unsupported OPERATOR_ASSIGN_SHIFT_RIGHT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_SHIFT_RIGHT: " + std::string{yytext});
     }
-    return OPERATOR_ASSIGN_SHIFT_RIGHT;
+    return -1;
 }
 ">>>"   {
+    PrintError("Unsupported OPERATOR_UNSIGNED_SHIFT_RIGHT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_UNSIGNED_SHIFT_RIGHT: " + std::string{yytext});
     }
-    return OPERATOR_UNSIGNED_SHIFT_RIGHT;
+    return -1;
 }
 ">>>="  {
+    PrintError("Unsupported OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT: " + std::string{yytext});
     }
-    return OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT;
+    return -1;
 }
 
 "<"     {
@@ -795,22 +809,25 @@ new         {
     return '<';
 }
 "<="    {
+    PrintError("Unsupported OPERATOR_LESS_THAN_EQUAL in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_LESS_THAN_EQUAL: " + std::string{yytext});
     }
-    return OPERATOR_LESS_THAN_EQUAL;
+    return -1;
 }
 "<<"    {
+    PrintError("Unsupported OPERATOR_SHIFT_LEFT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_SHIFT_LEFT: " + std::string{yytext});
     }
-    return OPERATOR_SHIFT_LEFT;
+    return -1;
 }
 "<<="   {
+    PrintError("Unsupported OPERATOR_ASSIGN_SHIFT_LEFT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_SHIFT_LEFT: " + std::string{yytext});
     }
-    return OPERATOR_ASSIGN_SHIFT_LEFT;
+    return -1;
 }
 
 "/"     {
@@ -833,10 +850,11 @@ new         {
     return '^';
 }
 "^="    {
+    PrintError("Unsupported OPERATOR_ASSIGN_BITWISE_XOR in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_BITWISE_XOR: " + std::string{yytext});
     }
-    return OPERATOR_ASSIGN_BITWISE_XOR;
+    return -1;
 }
 
 "~"     {
@@ -853,10 +871,11 @@ new         {
     return '&';
 }
 "&="    {
+    PrintError("Unsupported OPERATOR_ASSIGN_BITWISE_AND in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_BITWISE_AND: " + std::string{yytext}); 
     }
-    return OPERATOR_ASSIGN_BITWISE_AND;
+    return -1;
 }
 "&&"    {
     if ( debug ) {
@@ -878,10 +897,11 @@ new         {
     return '|';
 }
 "|="    {
+    PrintError("Unsupported OPERATOR_ASSIGN_BITWISE_OR in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_BITWISE_OR: " + std::string{yytext});
     }
-    return OPERATOR_ASSIGN_BITWISE_OR;
+    return -1;
 }
 "||"    {
     if ( debug ) {
@@ -971,11 +991,12 @@ new         {
     return '.';
 }
 
-"..."   { 
+"..."   {
+    PrintError("Unsupported DOTS_ELLIPSIS in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found DOTS_ELLIPSIS: " + std::string{yytext}); 
     }
-    return ELLIPSIS;
+    return -1;
 }
 
 ";"     {
@@ -1243,11 +1264,6 @@ new         {
 
 <DO_WHILE_ASI><<EOF>> |
 <INITIAL><<EOF>> {
-    BEGIN(OVER);
-    return ';';
-}
-
-<OVER><<EOF>> {
     yyterminate();
 }
 

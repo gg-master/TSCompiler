@@ -19,7 +19,6 @@ int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
 
 int isASIActivated = 0;
 int isInFunctionBody = 0; // need for return stmt
-int isInIterationBody = 0; // need for continue & break stmt
 int isInForHeader = 0;
 
 int syntaxErrorCounter = 0;
@@ -38,7 +37,7 @@ int syntaxErrorCounter = 0;
     double _floatingPoint;
 }
 
-%token VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS GET SET DO WHILE FOR CONTINUE BREAK SWITCH CASE DEFAULT RETURN SUPER THIS NEW ELLIPSIS OF
+%token VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS GET SET DO WHILE FOR SWITCH CASE DEFAULT RETURN SUPER THIS NEW
 %token ASYNC AS FROM YIELD KEYOF CONSTRUCTOR NAMESPACE ABSTRACT REQUIRE
 
 %token ANY NUMBER BOOLEAN STRING NEVER UNDEFINED UNIQUE SYMBOL OBJECT VOID UNKNOWN
@@ -52,12 +51,11 @@ int syntaxErrorCounter = 0;
 %precedence IF_ONLY_PREC
 %left IF ELSE
 
-%left ','
+%left ',' COMMA_OPERATOR COMMA_SEPARATOR
 
-%right '=' OPERATOR_ASSIGN_PLUS OPERATOR_ASSIGN_MINUS OPERATOR_ASSIGN_POWER OPERATOR_ASSIGN_MULTIPLY OPERATOR_ASSIGN_DIVIDE OPERATOR_ASSIGN_MOD OPERATOR_ASSIGN_SHIFT_LEFT OPERATOR_ASSIGN_SHIFT_RIGHT OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT OPERATOR_ASSIGN_BITWISE_AND OPERATOR_ASSIGN_BITWISE_XOR OPERATOR_ASSIGN_BITWISE_OR OPERATOR_ASSIGN_LOGICAL_AND OPERATOR_ASSIGN_LOGICAL_OR OPERATOR_ASSIGN_NULLISH_COALESCING
+%right '=' OPERATOR_ASSIGN_PLUS OPERATOR_ASSIGN_MINUS OPERATOR_ASSIGN_MULTIPLY OPERATOR_ASSIGN_DIVIDE OPERATOR_ASSIGN_LOGICAL_AND OPERATOR_ASSIGN_LOGICAL_OR
 
 %left '?' ':' // expr ? expr : expr
-%left OPERATOR_NULLISH_COALESCING
 %left OPERATOR_LOGICAL_OR
 %left OPERATOR_LOGICAL_AND
 %left '|'
@@ -65,12 +63,10 @@ int syntaxErrorCounter = 0;
 %left '&'
 %left OPERATOR_EQUAL OPERATOR_NOT_EQUAL OPERATOR_STRICT_EQUAL OPERATOR_STRICT_NOT_EQUAL
 %left  '>' '<' OPERATOR_GREATER_THAN_EQUAL OPERATOR_LESS_THAN_EQUAL INSTANCEOF IN
-%left OPERATOR_SHIFT_LEFT OPERATOR_SHIFT_RIGHT OPERATOR_UNSIGNED_SHIFT_RIGHT
 
 %left '+' '-'
 %left '*' '/' '%'
 
-%right OPERATOR_POWER
 %right '!' '~' UMINUS UPLUS PREF_INCREMENT PREF_DECREMENT VOID
 
 %nonassoc POST_INCREMENT POST_DECREMENT
@@ -86,14 +82,26 @@ int syntaxErrorCounter = 0;
 %%
 
 script
-    : statementList 
+    : globalStatementList 
         { 
             if ( syntaxErrorCounter > 0 ) {
                 PrintError("Found " + std::to_string(syntaxErrorCounter) + " syntax errors. Fix them and rerun.");
                 exit(1);
             }
-            Print("- R: statementList -> script"); 
+            Print("- R: globalStatementList -> script"); 
         }
+    ;
+
+globalStatementList
+    : statementList                             { Print("- R: statementList -> globalStatementList"); }
+
+    | functionDeclaration                       { Print("- R: functionDeclaration -> globalStatementList"); }
+    | classDeclaration                          { Print("- R: classDeclaration -> globalStatementList"); }
+    | globalStatementList functionDeclaration   { Print("- R: globalStatementList functionDeclaration -> globalStatementList"); }
+    | globalStatementList classDeclaration      { Print("- R: globalStatementList classDeclaration -> globalStatementList"); }
+
+    | error
+    | globalStatementList error
     ;
 
 statementList
@@ -108,20 +116,6 @@ statementListItem
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
     | switchStatement               { Print("- R: switchStatement -> statementListItem"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
-    | continueStatement 
-        {
-            if ( !isInIterationBody ) { 
-                yyerror("illegal continue statement."); YYERROR;
-            } 
-            Print("- R: continueStatement -> statementListItem");  
-        }
-    | breakStatement 
-        {
-            if ( !isInIterationBody ) { 
-                yyerror("illegal break statement."); YYERROR;
-            } 
-            Print("- R: breakStatement -> statementListItem");
-        }
     | returnStatement 
         { 
             if ( !isInFunctionBody ) { 
@@ -129,12 +123,7 @@ statementListItem
             } 
             Print("- R: returnStatement -> statementListItem"); 
         }
-    | labelledStatement             { Print("- R: labelledStatement -> statementListItem"); }
     | blockStatement                { Print("- R: blockStatement -> statementListItem"); }
-    | functionDeclaration           { Print("- R: functionDeclaration -> statementListItem"); }
-    | classDeclaration              { Print("- R: classDeclaration -> statementListItem"); }
-    
-    | error
     ;
 
 statementListItemWithoutEmptyStatement
@@ -143,20 +132,6 @@ statementListItemWithoutEmptyStatement
     | ifStatement                   { Print("- R: ifStatement -> statementListItemWithoutEmptyStatement"); }
     | switchStatement               { Print("- R: switchStatement -> statementListItemWithoutEmptyStatement"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItemWithoutEmptyStatement"); }
-    | continueStatement
-        {
-            if ( !isInIterationBody ) { 
-                yyerror("illegal continue statement."); YYERROR;
-            } 
-            Print("- R: continueStatement -> statementListItemWithoutEmptyStatement");
-        }
-    | breakStatement
-        {
-            if ( !isInIterationBody ) { 
-                yyerror("illegal break statement."); YYERROR;
-            } 
-            Print("- R: breakStatement -> statementListItemWithoutEmptyStatement");
-        }
     | returnStatement
         { 
             if ( !isInFunctionBody ) { 
@@ -164,11 +139,8 @@ statementListItemWithoutEmptyStatement
             } 
             Print("- R: returnStatement -> statementListItemWithoutEmptyStatement"); 
         }
-    | labelledStatement             { Print("- R: labelledStatement -> statementListItemWithoutEmptyStatement"); }
     | blockStatement                { Print("- R: blockStatement -> statementListItemWithoutEmptyStatement"); }
-    | functionDeclaration           { Print("- R: functionDeclaration -> statementListItemWithoutEmptyStatement"); }
-    | classDeclaration              { Print("- R: classDeclaration -> statementListItemWithoutEmptyStatement"); }
-    
+
     | error
     ;
 
@@ -192,25 +164,16 @@ initializer
     : '=' singleExpression { Print("- R: '=' singleExpression -> initializer"); }
     ;
 
-    /* ====== TYPES ====== */
+    // ====== TYPES ======
 
 type
-    : unionOrIntersectionOrPrimaryType      { Print("- R: unionOrIntersectionOrPrimaryType -> type"); }
-    | '|' unionOrIntersectionOrPrimaryType  { Print("- R: '|' unionOrIntersectionOrPrimaryType -> type"); }
-    | '&' unionOrIntersectionOrPrimaryType  { Print("- R: '&' unionOrIntersectionOrPrimaryType -> type"); }
-    ;
-
-unionOrIntersectionOrPrimaryType
-    : unionOrIntersectionOrPrimaryType '|' unionOrIntersectionOrPrimaryType { Print("- R: unionOrIntersectionOrPrimaryType '|' unionOrIntersectionOrPrimaryType -> unionOrIntersectionOrPrimaryType"); }
-    | unionOrIntersectionOrPrimaryType '&' unionOrIntersectionOrPrimaryType { Print("- R: unionOrIntersectionOrPrimaryType '&' unionOrIntersectionOrPrimaryType -> unionOrIntersectionOrPrimaryType"); }
-    | primaryType { Print("- R: primaryType -> argument"); }
+    : primaryType { Print("- R: primaryType -> type"); }
     ;
 
 primaryType
     : '(' type ')'                              { Print("- R: '(' type ')' -> primaryType"); }
     | predefinedType                            { Print("- R: predefinedType -> primaryType"); }
     | primaryType '[' ']'                       { Print("- R: primaryType '[' ']' -> primaryType"); }
-    | primaryType '[' primaryType ']'           { Print("- R: primaryType '[' primaryType ']' -> primaryType"); }
     | '[' tupleTypeElements ']'                 { Print("- R: '[' tupleTypeElements ']' -> primaryType"); }
     | ENDL_BRACKET_OPEN tupleTypeElements ']'   { Print("- R: '[' tupleTypeElements ']' -> primaryType"); }
     ;
@@ -236,6 +199,11 @@ predefinedType
     | simpleLiteral { Print("- R: simpleLiteral -> predefinedType"); }
     ;
 
+typeAnnotationOpt
+    : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); }
+    | typeAnnotation    { Print("- R: typeAnnotation -> typeAnnotationOpt"); }
+    ;
+
 typeAnnotation
     : ':' type { Print("- R: ':' type -> typeAnnotation"); }
     ;
@@ -254,30 +222,25 @@ arrayLiteral
     ;
 
 elementList
-    : /* empty */                   { Print("- R: #empty# -> elementList"); }
-    | arrayElement                  { Print("- R: arrayElement -> elementList"); }
-    | elementList ',' elementList   { Print("- R: elementList ',' elementList -> elementList"); }
+    : elementListItem { Print("- R: elementListItem -> elementList"); }
+    | elementList ',' elementListItem %prec COMMA_SEPARATOR { Print("- R: elementList ',' elementListItem -> elementList"); }
     ;
 
-arrayElement
-    : singleExpression          { Print("- R: singleExpression -> arrayElement"); }
-    | ELLIPSIS singleExpression { Print("- R: ELLIPSIS singleExpression -> arrayElement"); }
+elementListItem
+    : /* empty */ { Print("- R: #empty# -> elementListItem"); }
+    | singleExpression { Print("- R: singleExpression -> elementListItem"); }
+    | singleExpression ',' { Print("- R: singleExpression ',' -> elementListItem"); }
     ;
 
-    /* ====== EXPRESSIONS ====== */
+    // ====== EXPRESSIONS ======
 
 expressionStatement
-    : expressionList ';' { Print("- R: expressionList ';' -> expressionStatement"); }
+    : singleExpression ';' { Print("- R: expressionList ';' -> expressionStatement"); }
     ;
 
-expressionListOpt
-    : /* empty */       { Print("- R: #empty# -> expressionListOpt"); }
-    | expressionList    { Print("- R: expressionList -> expressionListOpt"); }
-    ;
-
-expressionList
-    : singleExpression                      { Print("- R: singleExpression -> expressionList"); }
-    | expressionList ',' singleExpression   { Print("- R: expressionList ',' singleExpression -> expressionList"); }
+singleExpressionOpt
+    : /* empty */       { Print("- R: #empty# -> singleExpressionOpt"); }
+    | singleExpression    { Print("- R: singleExpression -> singleExpressionOpt"); }
     ;
 
 singleExpression
@@ -293,7 +256,6 @@ singleExpression
     | '+' singleExpression %prec UPLUS  { Print("- R: '+' singleExpression -> singleExpression"); }
 
     | '!' singleExpression { Print("- R: '!' singleExpression -> singleExpression"); }
-    | '~' singleExpression { Print("- R: '~' singleExpression -> singleExpression"); }
 
     | singleExpression OPERATOR_INCREMENT %prec POST_INCREMENT { Print("- R: singleExpression OPERATOR_INCREMENT -> singleExpression"); }
     | singleExpression OPERATOR_DECREMENT %prec POST_DECREMENT { Print("- R: singleExpression OPERATOR_DECREMENT -> singleExpression"); }
@@ -307,148 +269,85 @@ singleExpression
     | singleExpression '-' singleExpression { Print("- R: singleExpression '-' singleExpression -> singleExpression"); }
     | singleExpression '*' singleExpression { Print("- R: singleExpression '*' singleExpression -> singleExpression"); }
     | singleExpression '/' singleExpression { Print("- R: singleExpression '/' singleExpression -> singleExpression"); }
-    | singleExpression '%' singleExpression { Print("- R: singleExpression '%' singleExpression -> singleExpression"); }
     | singleExpression '<' singleExpression { Print("- R: singleExpression '<' singleExpression -> singleExpression"); }
     | singleExpression '>' singleExpression { Print("- R: singleExpression '>' singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_POWER singleExpression
-        { Print("- R: singleExpression OPERATOR_POWER singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_EQUAL singleExpression
         { Print("- R: singleExpression OPERATOR_EQUAL singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_NOT_EQUAL singleExpression
         { Print("- R: singleExpression OPERATOR_NOT_EQUAL singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_STRICT_EQUAL singleExpression
         { Print("- R: singleExpression OPERATOR_STRICT_EQUAL singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_STRICT_NOT_EQUAL singleExpression
         { Print("- R: singleExpression OPERATOR_STRICT_NOT_EQUAL singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression
         { Print("- R: singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression
         { Print("- R: singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression -> singleExpression"); }
-    
+
     | singleExpression '=' singleExpression
         { Print("- R: singleExpression '=' singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression
         { Print("- R: singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression
         { Print("- R: singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_ASSIGN_MOD singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_MOD singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_ASSIGN_PLUS singleExpression
         { Print("- R: singleExpression OPERATOR_ASSIGN_PLUS singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_ASSIGN_MINUS singleExpression
         { Print("- R: singleExpression OPERATOR_ASSIGN_MINUS singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_ASSIGN_SHIFT_LEFT singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_SHIFT_LEFT singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_ASSIGN_SHIFT_RIGHT singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_SHIFT_RIGHT singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_ASSIGN_BITWISE_AND singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_BITWISE_AND singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_ASSIGN_BITWISE_XOR singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_BITWISE_XOR singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_ASSIGN_BITWISE_OR singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_BITWISE_OR singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_ASSIGN_POWER singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_POWER singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression
         { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression
         { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_ASSIGN_NULLISH_COALESCING singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_NULLISH_COALESCING singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_LOGICAL_OR singleExpression
         { Print("- R: singleExpression OPERATOR_LOGICAL_OR singleExpression -> singleExpression"); }
-    
+
     | singleExpression OPERATOR_LOGICAL_AND singleExpression
         { Print("- R: singleExpression OPERATOR_LOGICAL_AND singleExpression -> singleExpression"); }
-    
-    | singleExpression '|' singleExpression
-        { Print("- R: singleExpression '|' singleExpression -> singleExpression"); }
-    
-    | singleExpression '^' singleExpression
-        { Print("- R: singleExpression '^' singleExpression -> singleExpression"); }
-    
-    | singleExpression '&' singleExpression
-        { Print("- R: singleExpression '&' singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_SHIFT_LEFT singleExpression
-        { Print("- R: singleExpression OPERATOR_SHIFT_LEFT singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_SHIFT_RIGHT singleExpression
-        { Print("- R: singleExpression OPERATOR_SHIFT_RIGHT singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_UNSIGNED_SHIFT_RIGHT singleExpression
-        { Print("- R: singleExpression OPERATOR_UNSIGNED_SHIFT_RIGHT singleExpression -> singleExpression"); }
-    
-    | singleExpression OPERATOR_NULLISH_COALESCING singleExpression
-        { Print("- R: singleExpression OPERATOR_NULLISH_COALESCING singleExpression -> singleExpression"); }
 
     | singleExpression INSTANCEOF singleExpression  { Print("- R: singleExpression INSTANCEOF singleExpression -> singleExpression"); }
     | singleExpression IN singleExpression          { Print("- R: singleExpression IN singleExpression -> singleExpression"); }
 
     | singleExpression TEMPLATE_LITERAL
         { Print("- R: singleExpression TEMPLATE_LITERAL -> singleExpression"); }
-    
-    | singleExpression '?' singleExpression ':' singleExpression {
-         Print("- R: singleExpression '?' singleExpression ':' singleExpression -> singleExpression"); }
 
-    | '(' expressionList ')' { Print("- R: '(' expressionList ')' -> singleExpression"); }
+    | singleExpression '?' singleExpression ':' singleExpression 
+        { Print("- R: singleExpression '?' singleExpression ':' singleExpression -> singleExpression"); }
 
-    | singleExpression arguments { Print("- R: singleExpression arguments -> singleExpression"); }
-    
+    | singleExpression ',' singleExpression %prec COMMA_OPERATOR 
+        { Print("- R: singleExpression ',' singleExpressionn -> singleExpression"); }
+
+    | '(' singleExpression ')' { Print("- R: '(' expressionList ')' -> singleExpression"); }
+
+    | singleExpression '(' ')' { Print("- R: singleExpression '(' ')' -> singleExpression"); }
+    | singleExpression '(' singleExpression ')' { Print("- R: singleExpression '(' singleExpression ')' -> singleExpression"); }
+    | singleExpression '(' singleExpression ',' ')' { Print("- R: singleExpression '(' singleExpression ',' ')' -> singleExpression"); }
+
     | singleExpression OPTIONAL_CHAINING_OPERATOR singleExpression 
         { Print("- R: singleExpression OPTIONAL_CHAINING_OPERATOR singleExpression -> singleExpression"); }
-    
+
     | singleExpression '.' identifier { Print("- R: singleExpression '.' identifier -> singleExpression"); }
 
-    | arrayLiteral                                          { Print("- R: arrayLiteral -> singleExpression"); }
-    | singleExpression '[' expressionList ']'               { Print("- R: singleExpression '[' expressionList ']' -> singleExpression"); }
-    | singleExpression ENDL_BRACKET_OPEN expressionList ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN expressionList ']' -> singleExpression"); }
+    | arrayLiteral                                            { Print("- R: arrayLiteral -> singleExpression"); }
+    | singleExpression '[' singleExpression ']'               { Print("- R: singleExpression '[' expressionList ']' -> singleExpression"); }
+    | singleExpression ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN expressionList ']' -> singleExpression"); }
 
     | NEW singleExpression { Print("- R: NEW singleExpression -> singleExpression"); }
     ;
 
-arguments
-    : '(' ')'                   { Print("- R: '(' ')' -> arguments"); }
-    | '(' argumentList ')'      { Print("- R: '(' argumentList ')' -> arguments"); }
-    | '(' argumentList ',' ')'  { Print("- R: '(' argumentList ',' ') -> arguments"); }
-    ;
-
-argumentList
-    : argument                      { Print("- R: argument -> argumentList"); }
-    | argumentList ',' arguments    { Print("- R: argumentList ',' arguments -> argumentList"); }
-    ;
-
-argument
-    : singleExpression          { Print("- R: singleExpression -> argument"); }
-    | ELLIPSIS singleExpression { Print("- R: ELLIPSIS singleExpression -> argument"); }
-    ;
-
-    /* ====== Variables ====== */
+    // ====== Variables ======
 
 varStatement
     : varModifier varDeclarationList ';' { Print("- R: varModifier varDeclarationList ';' -> varStatement"); }
@@ -461,10 +360,8 @@ varDeclarationList
     ;
 
 varDeclaration
-    : identifier                                        { Print("- R: identifier -> varDeclaration"); }
-    | identifier typeAnnotation                         { Print("- R: identifier typeAnnotation -> varDeclaration"); }
-    | identifier '=' singleExpression                   { Print("- R: identifier '=' singleExpression -> varDeclaration"); }
-    | identifier typeAnnotation '=' singleExpression    { Print("- R: identifier typeAnnotation '=' singleExpression -> varDeclaration"); }
+    : identifier typeAnnotationOpt                         { Print("- R: identifier typeAnnotationOpt -> varDeclaration"); }
+    | identifier typeAnnotationOpt '=' singleExpression    { Print("- R: identifier typeAnnotationOpt '=' singleExpression -> varDeclaration"); }
     ;
 
 varModifier
@@ -473,27 +370,30 @@ varModifier
     | CONST { Print("- R: CONST -> varModifier"); }
     ;
 
-    /* ====== Conditions ====== */
+    // ====== Conditions ====== 
 
 ifStatement
-    : IF '(' expressionList ')' statementListItemWithoutEmptyStatement %prec IF_ONLY_PREC 
+    : IF '(' singleExpression ')' statementListItemWithoutEmptyStatement %prec IF_ONLY_PREC 
         { Print("- R: IF '(' expressionList ')' statementListItem -> ifStatement"); }
-    
-    | IF '(' expressionList ')' statementListItemWithoutEmptyStatement ELSE statementListItem 
+
+    | IF '(' singleExpression ')' statementListItemWithoutEmptyStatement ELSE statementListItem 
         { Print("- R: IF '(' expressionList ')' statementListItem ELSE statementListItem -> ifStatement"); }
     ;
 
 switchStatement
-    : SWITCH '(' expressionList ')' '{' '}' 
+    : SWITCH '(' singleExpression ')' '{' '}' 
         { Print("- R: SWITCH '(' expressionList ')' '{' '}' -> switchStatement"); }
-    
-    | SWITCH '(' expressionList ')' '{' caseClauseList '}' 
+
+    | SWITCH '(' singleExpression ')' '{' caseClauseList '}' 
         { Print("- R: SWITCH '(' expressionList ')' '{' caseClauseList '}' -> switchStatement"); }
-    
-    | SWITCH '(' expressionList ')' '{' caseClauseList defaultClause '}' 
+
+    | SWITCH '(' singleExpression ')' '{' caseClauseList defaultClause '}' 
         { Print("- R: SWITCH '(' expressionList ')' '{' caseClauseList defaultClause '}' -> switchStatement"); }
-    
-    | SWITCH '(' expressionList ')' '{' caseClauseList defaultClause caseClauseList '}' 
+
+    | SWITCH '(' singleExpression ')' '{' defaultClause caseClauseList '}' 
+        { Print("- R: SWITCH '(' expressionList ')' '{' defaultClause caseClauseList '}' -> switchStatement"); }
+
+    | SWITCH '(' singleExpression ')' '{' caseClauseList defaultClause caseClauseList '}' 
         { Print("- R: SWITCH '(' expressionList ')' '{' caseClauseList defaultClause caseClauseList '}' -> switchStatement"); }
     ;
 
@@ -503,8 +403,8 @@ caseClauseList
     ;
 
 caseClause
-    : CASE expressionList ':'               { Print("- R: CASE expressionList ':' -> caseClause"); }
-    | CASE expressionList ':' statementList { Print("- R: CASE expressionList ':' statementList -> caseClause"); }
+    : CASE singleExpression ':'               { Print("- R: CASE expressionList ':' -> caseClause"); }
+    | CASE singleExpression ':' statementList { Print("- R: CASE expressionList ':' statementList -> caseClause"); }
     ;
 
 defaultClause
@@ -512,53 +412,38 @@ defaultClause
     | DEFAULT ':' statementList { Print("- R: DEFAULT ':' statementList -> defaultClause"); }
     ;
 
-    /* ====== Iterations ====== */
+    // ====== Iterations ======
 
 iterationStatement
-    : DO { isInIterationBody = 1; } statementListItem WHILE '(' expressionList ')' { doWhileASI(); } ';'                           
-        { isInIterationBody = 0; Print("- R: DO statementListItem WHILE '(' expressionList ')' ';' -> iterationStatement"); }
+    : DO statementListItem WHILE '(' singleExpression ')' { doWhileASI(); } ';'                           
+        { Print("- R: DO statementListItem WHILE '(' expressionList ')' ';' -> iterationStatement"); }
 
-    | WHILE '(' expressionList ')' { isInIterationBody = 1; } statementListItem                                                             
-        { isInIterationBody = 0; Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
-        
-    | forHeader expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                
-        { isInIterationBody = 0; Print("- R: FOR '(' expressionListOpt ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    
-    | forHeader varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem   
-        { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclarationList ';' expressionListOpt ';' expressionListOpt ')' statementListItem -> iterationStatement"); }
-    
-    | forHeader singleExpression IN singleExpression ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                         
-        { isInIterationBody = 0; Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
-    
-    | forHeader varModifier varDeclaration IN expressionList ')' { isInForHeader = 0; isInIterationBody = 1; } statementListItem                                 
-        { isInIterationBody = 0; Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
+    | WHILE '(' singleExpression ')' statementListItem                                                             
+        { Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
+
+    | forHeader singleExpressionOpt ';' singleExpressionOpt ';' singleExpressionOpt ')' { isInForHeader = 0; } statementListItem                
+        { Print("- R: FOR '(' singleExpressionOpt ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement"); }
+
+    | forHeader varModifier varDeclarationList ';' singleExpressionOpt ';' singleExpressionOpt ')' { isInForHeader = 0; } statementListItem   
+        { Print("- R: FOR '(' varModifier varDeclarationList ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement"); }
+
+    | forHeader singleExpression IN singleExpression ')' { isInForHeader = 0; } statementListItem                                         
+        { Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
+
+    | forHeader varModifier varDeclaration IN singleExpression ')' { isInForHeader = 0; } statementListItem                                 
+        { Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
     ;
 
 forHeader
     :  FOR '(' { isInForHeader = 1; }
     ;
 
-continueStatement
-    : CONTINUE ';'              { Print("- R: CONTINUE ';' -> returnStatement"); }
-    | CONTINUE identifier ';'   { Print("- R: CONTINUE identifier ';' -> returnStatement"); }
-    ;
-
-breakStatement
-    : BREAK  ';'                { Print("- R: BREAK ';' -> returnStatement"); }
-    | BREAK identifier ';'      { Print("- R: BREAK identifier ';' -> returnStatement"); }
-    ;
-
-labelledStatement
-    : identifier ':' statementListItem { Print("- R: identifier ':' statementListItem -> labelledStatement"); }
-    ;
-
-    /* === Functions === */
+    // === Functions ===
 
 returnStatement
     : RETURN ';'                    { Print("- R: RETURN ';' -> returnStatement"); }
     | RETURN singleExpression ';'   { Print("- R: RETURN singleExpression ';' -> returnStatement"); }
     ;
-
 
 functionDeclaration
     : FUNCTION identifier callSignature functionBody { Print("- R: FUNCTION ID callSignature functionBody -> functionDeclaration"); }
@@ -570,31 +455,13 @@ functionBody
     ;
 
 callSignature
-    : '(' parameterList ')'                 { Print("- R: '(' parameterList ')' -> callSignature"); }
-    | '(' parameterList ')' typeAnnotation  { Print("- R: '(' parameterList ')' typeAnnotation -> callSignature"); }
+    : '(' parameterList ')' typeAnnotationOpt  { Print("- R : '(' parameterList ')' typeAnnotation -> callSignature"); }
     ;
 
 parameterList
-    : /* empty */           { Print("- R: #empty# -> parameterList"); }
+    : /* empty */        { Print("- R: #empty# -> parameterList"); }
     | requiredParameterList { Print("- R: requiredParameterList -> parameterList"); }
-    | optionalParameterList { Print("- R: optionalParameterList -> parameterList"); }
-    | restParameter         { Print("- R: restParameter -> parameterList"); }
-    
-    | requiredParameterList ',' optionalParameterList   { Print("- R: requiredParameterList ',' optionalParameterList -> parameterList"); }
-    | requiredParameterList ',' restParameter           { Print("- R: requiredParameterList ',' restParameter -> parameterList"); }
-    | optionalParameterList ',' restParameter           { Print("- R: optionalParameterList ',' restParameter -> parameterList"); }
-    
-    | requiredParameterList ',' optionalParameterList ',' restParameter { Print("- R: requiredParameterList ',' optionalParameterList ',' restParameter -> parameterList"); }
-    
     | requiredParameterList ',' { Print("- R: requiredParameterList ',' -> parameterList"); }
-    | optionalParameterList ',' { Print("- R: optionalParameterList ',' -> parameterList"); }
-    | restParameter ','         { Print("- R: restParameter ',' -> parameterList"); }
-    
-    | requiredParameterList ',' optionalParameterList ','   { Print("- R: requiredParameterList ',' optionalParameterList ',' -> parameterList"); }
-    | requiredParameterList ',' restParameter ','           { Print("- R: requiredParameterList ',' restParameter ',' -> parameterList"); }
-    | optionalParameterList ',' restParameter ','           { Print("- R: optionalParameterList ',' restParameter ',' -> parameterList"); }
-    
-    | requiredParameterList ',' optionalParameterList ',' restParameter ',' { Print("- R: requiredParameterList ',' optionalParameterList ',' restParameter ',' -> parameterList"); }
     ;
 
 requiredParameterList
@@ -602,29 +469,11 @@ requiredParameterList
     | requiredParameterList ',' requiredParameter   { Print("- R: requiredParameterList ',' requiredParameter -> requiredParameterList"); }
     ;
 
-optionalParameterList
-    : optionalParameter                             { Print("- R: optionalParameter -> optionalParameterList"); }
-    | optionalParameterList ',' optionalParameter   { Print("- R: optionalParameterList ',' optionalParameter -> optionalParameterList"); }
-    ;
-
 requiredParameter
-    : identifier                { Print("- R: ID -> requiredParameter"); }
-    | identifier typeAnnotation { Print("- R: ID typeAnnotation -> requiredParameter"); }
+    : identifier typeAnnotationOpt { Print("- R: ID typeAnnotationOpt -> requiredParameter"); }
     ;
 
-optionalParameter
-    : identifier '?'                        { Print("- R: ID '?' -> optionalParameter"); }
-    | identifier '?' typeAnnotation         { Print("- R: ID '?' typeAnnotation -> optionalParameter"); }
-    | identifier initializer                { Print("- R: ID initializer -> optionalParameter"); }
-    | identifier typeAnnotation initializer { Print("- R: ID typeAnnotation initializer -> optionalParameter"); }
-    ;
-
-restParameter
-    : ELLIPSIS singleExpression                 { Print("- R: ELLIPSIS singleExpression -> restParameter"); }
-    | ELLIPSIS singleExpression typeAnnotation  { Print("- R: ELLIPSIS singleExpression typeAnnotation -> restParameter"); }
-    ;
-
-    /* === Classes === */
+    // === Classes ===
 
 classDeclaration
     : CLASS identifier classTail                { Print("- R: CLASS identifier classTail -> classDeclaration"); }
@@ -648,18 +497,15 @@ classElementList
 classElement
     : CONSTRUCTOR constructorCallSignature functionBody { Print("- R: CONSTRUCTOR callSignature functionBody -> classElement"); }
 
-    /* PropertyDeclarationExpression */
-    | propertyName ';'                              { Print("- R: propertyName ';' -> classElement"); }
-    | propertyName typeAnnotation ';'               { Print("- R: propertyName typeAnnotation ';' -> classElement"); }
-    | propertyName initializer ';'                  { Print("- R: propertyName initializer ';' -> classElement"); }
-    | propertyName typeAnnotation initializer ';'   { Print("- R: propertyName typeAnnotation initializer ';' -> classElement"); }
+    // PropertyDeclarationExpression 
+    | propertyName typeAnnotationOpt ';'               { Print("- R: propertyName typeAnnotationOpt ';' -> classElement"); }
+    | propertyName typeAnnotationOpt initializer ';'   { Print("- R: propertyName typeAnnotationOpt initializer ';' -> classElement"); }
 
-    /* MethodDeclarationExpression */
+    // MethodDeclarationExpression 
     | propertyName callSignature functionBody { Print("- R: propertyName callSignature functionBody -> classElement"); }
 
-    /* GetterSetterDeclarationExpression */
-    | GET propertyName '(' ')' functionBody                 { Print("- R: GET propertyName '(' ')' functionBody -> classElement"); }
-    | GET propertyName '(' ')' typeAnnotation functionBody  { Print("- R: GET propertyName '(' ')' typeAnnotation functionBody -> classElement"); }
+    // GetterSetterDeclarationExpression 
+    | GET propertyName '(' ')' typeAnnotationOpt functionBody  { Print("- R: GET propertyName '(' ')' typeAnnotationOpt functionBody -> classElement"); }
     | SET propertyName callSignature functionBody           { Print("- R: SET propertyName callSignature functionBody -> classElement"); }
     ;
 
@@ -669,9 +515,6 @@ constructorCallSignature
 
 propertyName
     : identifier                            { Print("- R: identifier -> propertyName"); }
-    | simpleLiteral                         { Print("- R: STRING_LIT -> propertyName"); }
-    | '[' simpleLiteral ']'                 { Print("- R: '[' simpleLiteral ']' -> propertyName"); }
-    | ENDL_BRACKET_OPEN simpleLiteral ']'   { Print("- R: ENDL_BRACKET_OPEN simpleLiteral ']' -> propertyName"); }
     ;
 
 identifier
@@ -778,6 +621,9 @@ int simpleASI(int yychar, int yyn, int yystate, short *yyssp) {
  */
 int yyfilter(int yychar, int yyn, int yystate, short *yyssp) {
     if (yychar == '}' && !isASIActivated) {
+        return simpleASI(yychar, yyn, yystate, yyssp);
+    }
+    if (yychar == YYEOF && !isASIActivated) {
         return simpleASI(yychar, yyn, yystate, yyssp);
     }
     isASIActivated = 0;

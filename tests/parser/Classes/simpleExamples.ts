@@ -119,3 +119,12 @@ class WithGetterAndSetter {
 
     set name(a,) {}
 }
+switch(1) {
+    
+    case 1: {}
+    
+    case 1: {}
+    default: {
+         
+    }
+}

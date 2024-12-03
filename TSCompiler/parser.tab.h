@@ -67,89 +67,73 @@ extern int yydebug;
     DO = 268,                      /* DO  */
     WHILE = 269,                   /* WHILE  */
     FOR = 270,                     /* FOR  */
-    CONTINUE = 271,                /* CONTINUE  */
-    BREAK = 272,                   /* BREAK  */
-    SWITCH = 273,                  /* SWITCH  */
-    CASE = 274,                    /* CASE  */
-    DEFAULT = 275,                 /* DEFAULT  */
-    RETURN = 276,                  /* RETURN  */
-    SUPER = 277,                   /* SUPER  */
-    THIS = 278,                    /* THIS  */
-    NEW = 279,                     /* NEW  */
-    ELLIPSIS = 280,                /* ELLIPSIS  */
-    OF = 281,                      /* OF  */
-    ASYNC = 282,                   /* ASYNC  */
-    AS = 283,                      /* AS  */
-    FROM = 284,                    /* FROM  */
-    YIELD = 285,                   /* YIELD  */
-    KEYOF = 286,                   /* KEYOF  */
-    CONSTRUCTOR = 287,             /* CONSTRUCTOR  */
-    NAMESPACE = 288,               /* NAMESPACE  */
-    ABSTRACT = 289,                /* ABSTRACT  */
-    REQUIRE = 290,                 /* REQUIRE  */
-    ANY = 291,                     /* ANY  */
-    NUMBER = 292,                  /* NUMBER  */
-    BOOLEAN = 293,                 /* BOOLEAN  */
-    STRING = 294,                  /* STRING  */
-    NEVER = 295,                   /* NEVER  */
-    UNDEFINED = 296,               /* UNDEFINED  */
-    UNIQUE = 297,                  /* UNIQUE  */
-    SYMBOL = 298,                  /* SYMBOL  */
-    OBJECT = 299,                  /* OBJECT  */
-    VOID = 300,                    /* VOID  */
-    UNKNOWN = 301,                 /* UNKNOWN  */
-    STRING_LIT = 302,              /* STRING_LIT  */
-    INT_LIT = 303,                 /* INT_LIT  */
-    FLOAT_LIT = 304,               /* FLOAT_LIT  */
-    NULL_KW = 305,                 /* NULL_KW  */
-    TRUE_KW = 306,                 /* TRUE_KW  */
-    FALSE_KW = 307,                /* FALSE_KW  */
-    ID = 308,                      /* ID  */
-    ENDL = 309,                    /* ENDL  */
-    TEMPLATE_LITERAL = 310,        /* TEMPLATE_LITERAL  */
-    OPERATOR_INCREMENT = 311,      /* OPERATOR_INCREMENT  */
-    OPERATOR_DECREMENT = 312,      /* OPERATOR_DECREMENT  */
-    ENDL_OPERATOR_INCREMENT = 313, /* ENDL_OPERATOR_INCREMENT  */
-    ENDL_OPERATOR_DECREMENT = 314, /* ENDL_OPERATOR_DECREMENT  */
-    IF_ONLY_PREC = 315,            /* IF_ONLY_PREC  */
-    OPERATOR_ASSIGN_PLUS = 316,    /* OPERATOR_ASSIGN_PLUS  */
-    OPERATOR_ASSIGN_MINUS = 317,   /* OPERATOR_ASSIGN_MINUS  */
-    OPERATOR_ASSIGN_POWER = 318,   /* OPERATOR_ASSIGN_POWER  */
-    OPERATOR_ASSIGN_MULTIPLY = 319, /* OPERATOR_ASSIGN_MULTIPLY  */
-    OPERATOR_ASSIGN_DIVIDE = 320,  /* OPERATOR_ASSIGN_DIVIDE  */
-    OPERATOR_ASSIGN_MOD = 321,     /* OPERATOR_ASSIGN_MOD  */
-    OPERATOR_ASSIGN_SHIFT_LEFT = 322, /* OPERATOR_ASSIGN_SHIFT_LEFT  */
-    OPERATOR_ASSIGN_SHIFT_RIGHT = 323, /* OPERATOR_ASSIGN_SHIFT_RIGHT  */
-    OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT = 324, /* OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT  */
-    OPERATOR_ASSIGN_BITWISE_AND = 325, /* OPERATOR_ASSIGN_BITWISE_AND  */
-    OPERATOR_ASSIGN_BITWISE_XOR = 326, /* OPERATOR_ASSIGN_BITWISE_XOR  */
-    OPERATOR_ASSIGN_BITWISE_OR = 327, /* OPERATOR_ASSIGN_BITWISE_OR  */
-    OPERATOR_ASSIGN_LOGICAL_AND = 328, /* OPERATOR_ASSIGN_LOGICAL_AND  */
-    OPERATOR_ASSIGN_LOGICAL_OR = 329, /* OPERATOR_ASSIGN_LOGICAL_OR  */
-    OPERATOR_ASSIGN_NULLISH_COALESCING = 330, /* OPERATOR_ASSIGN_NULLISH_COALESCING  */
-    OPERATOR_NULLISH_COALESCING = 331, /* OPERATOR_NULLISH_COALESCING  */
-    OPERATOR_LOGICAL_OR = 332,     /* OPERATOR_LOGICAL_OR  */
-    OPERATOR_LOGICAL_AND = 333,    /* OPERATOR_LOGICAL_AND  */
-    OPERATOR_EQUAL = 334,          /* OPERATOR_EQUAL  */
-    OPERATOR_NOT_EQUAL = 335,      /* OPERATOR_NOT_EQUAL  */
-    OPERATOR_STRICT_EQUAL = 336,   /* OPERATOR_STRICT_EQUAL  */
-    OPERATOR_STRICT_NOT_EQUAL = 337, /* OPERATOR_STRICT_NOT_EQUAL  */
-    OPERATOR_GREATER_THAN_EQUAL = 338, /* OPERATOR_GREATER_THAN_EQUAL  */
-    OPERATOR_LESS_THAN_EQUAL = 339, /* OPERATOR_LESS_THAN_EQUAL  */
-    INSTANCEOF = 340,              /* INSTANCEOF  */
-    IN = 341,                      /* IN  */
-    OPERATOR_SHIFT_LEFT = 342,     /* OPERATOR_SHIFT_LEFT  */
-    OPERATOR_SHIFT_RIGHT = 343,    /* OPERATOR_SHIFT_RIGHT  */
-    OPERATOR_UNSIGNED_SHIFT_RIGHT = 344, /* OPERATOR_UNSIGNED_SHIFT_RIGHT  */
-    OPERATOR_POWER = 345,          /* OPERATOR_POWER  */
-    UMINUS = 346,                  /* UMINUS  */
-    UPLUS = 347,                   /* UPLUS  */
-    PREF_INCREMENT = 348,          /* PREF_INCREMENT  */
-    PREF_DECREMENT = 349,          /* PREF_DECREMENT  */
-    POST_INCREMENT = 350,          /* POST_INCREMENT  */
-    POST_DECREMENT = 351,          /* POST_DECREMENT  */
-    ENDL_BRACKET_OPEN = 352,       /* ENDL_BRACKET_OPEN  */
-    OPTIONAL_CHAINING_OPERATOR = 353 /* OPTIONAL_CHAINING_OPERATOR  */
+    SWITCH = 271,                  /* SWITCH  */
+    CASE = 272,                    /* CASE  */
+    DEFAULT = 273,                 /* DEFAULT  */
+    RETURN = 274,                  /* RETURN  */
+    SUPER = 275,                   /* SUPER  */
+    THIS = 276,                    /* THIS  */
+    NEW = 277,                     /* NEW  */
+    ASYNC = 278,                   /* ASYNC  */
+    AS = 279,                      /* AS  */
+    FROM = 280,                    /* FROM  */
+    YIELD = 281,                   /* YIELD  */
+    KEYOF = 282,                   /* KEYOF  */
+    CONSTRUCTOR = 283,             /* CONSTRUCTOR  */
+    NAMESPACE = 284,               /* NAMESPACE  */
+    ABSTRACT = 285,                /* ABSTRACT  */
+    REQUIRE = 286,                 /* REQUIRE  */
+    ANY = 287,                     /* ANY  */
+    NUMBER = 288,                  /* NUMBER  */
+    BOOLEAN = 289,                 /* BOOLEAN  */
+    STRING = 290,                  /* STRING  */
+    NEVER = 291,                   /* NEVER  */
+    UNDEFINED = 292,               /* UNDEFINED  */
+    UNIQUE = 293,                  /* UNIQUE  */
+    SYMBOL = 294,                  /* SYMBOL  */
+    OBJECT = 295,                  /* OBJECT  */
+    VOID = 296,                    /* VOID  */
+    UNKNOWN = 297,                 /* UNKNOWN  */
+    STRING_LIT = 298,              /* STRING_LIT  */
+    INT_LIT = 299,                 /* INT_LIT  */
+    FLOAT_LIT = 300,               /* FLOAT_LIT  */
+    NULL_KW = 301,                 /* NULL_KW  */
+    TRUE_KW = 302,                 /* TRUE_KW  */
+    FALSE_KW = 303,                /* FALSE_KW  */
+    ID = 304,                      /* ID  */
+    ENDL = 305,                    /* ENDL  */
+    TEMPLATE_LITERAL = 306,        /* TEMPLATE_LITERAL  */
+    OPERATOR_INCREMENT = 307,      /* OPERATOR_INCREMENT  */
+    OPERATOR_DECREMENT = 308,      /* OPERATOR_DECREMENT  */
+    ENDL_OPERATOR_INCREMENT = 309, /* ENDL_OPERATOR_INCREMENT  */
+    ENDL_OPERATOR_DECREMENT = 310, /* ENDL_OPERATOR_DECREMENT  */
+    IF_ONLY_PREC = 311,            /* IF_ONLY_PREC  */
+    COMMA_OPERATOR = 312,          /* COMMA_OPERATOR  */
+    COMMA_SEPARATOR = 313,         /* COMMA_SEPARATOR  */
+    OPERATOR_ASSIGN_PLUS = 314,    /* OPERATOR_ASSIGN_PLUS  */
+    OPERATOR_ASSIGN_MINUS = 315,   /* OPERATOR_ASSIGN_MINUS  */
+    OPERATOR_ASSIGN_MULTIPLY = 316, /* OPERATOR_ASSIGN_MULTIPLY  */
+    OPERATOR_ASSIGN_DIVIDE = 317,  /* OPERATOR_ASSIGN_DIVIDE  */
+    OPERATOR_ASSIGN_LOGICAL_AND = 318, /* OPERATOR_ASSIGN_LOGICAL_AND  */
+    OPERATOR_ASSIGN_LOGICAL_OR = 319, /* OPERATOR_ASSIGN_LOGICAL_OR  */
+    OPERATOR_LOGICAL_OR = 320,     /* OPERATOR_LOGICAL_OR  */
+    OPERATOR_LOGICAL_AND = 321,    /* OPERATOR_LOGICAL_AND  */
+    OPERATOR_EQUAL = 322,          /* OPERATOR_EQUAL  */
+    OPERATOR_NOT_EQUAL = 323,      /* OPERATOR_NOT_EQUAL  */
+    OPERATOR_STRICT_EQUAL = 324,   /* OPERATOR_STRICT_EQUAL  */
+    OPERATOR_STRICT_NOT_EQUAL = 325, /* OPERATOR_STRICT_NOT_EQUAL  */
+    OPERATOR_GREATER_THAN_EQUAL = 326, /* OPERATOR_GREATER_THAN_EQUAL  */
+    OPERATOR_LESS_THAN_EQUAL = 327, /* OPERATOR_LESS_THAN_EQUAL  */
+    INSTANCEOF = 328,              /* INSTANCEOF  */
+    IN = 329,                      /* IN  */
+    UMINUS = 330,                  /* UMINUS  */
+    UPLUS = 331,                   /* UPLUS  */
+    PREF_INCREMENT = 332,          /* PREF_INCREMENT  */
+    PREF_DECREMENT = 333,          /* PREF_DECREMENT  */
+    POST_INCREMENT = 334,          /* POST_INCREMENT  */
+    POST_DECREMENT = 335,          /* POST_DECREMENT  */
+    ENDL_BRACKET_OPEN = 336,       /* ENDL_BRACKET_OPEN  */
+    OPTIONAL_CHAINING_OPERATOR = 337 /* OPTIONAL_CHAINING_OPERATOR  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -158,14 +142,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 34 "parser.y"
+#line 33 "parser.y"
 
     int _integer;
     char* _string;
     char* _id;
     double _floatingPoint;
 
-#line 169 "parser.tab.h"
+#line 153 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
