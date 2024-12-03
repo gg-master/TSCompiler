@@ -37,7 +37,7 @@ int syntaxErrorCounter = 0;
     double _floatingPoint;
 }
 
-%token VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS GET SET DO WHILE FOR SWITCH CASE DEFAULT RETURN SUPER THIS NEW
+%token VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS GET SET DO WHILE FOR RETURN SUPER THIS NEW
 %token ASYNC AS FROM YIELD KEYOF CONSTRUCTOR NAMESPACE ABSTRACT REQUIRE
 
 %token ANY NUMBER BOOLEAN STRING NEVER UNDEFINED UNIQUE SYMBOL OBJECT VOID UNKNOWN
@@ -114,7 +114,6 @@ statementListItem
     | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); }
     | varStatement                  { Print("- R: varStatement -> statementListItem"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
-    | switchStatement               { Print("- R: switchStatement -> statementListItem"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
     | returnStatement 
         { 
@@ -130,7 +129,6 @@ statementListItemWithoutEmptyStatement
     : expressionStatement           { Print("- R: expressionStatement -> statementListItemWithoutEmptyStatement"); }
     | varStatement                  { Print("- R: varStatement -> statementListItemWithoutEmptyStatement"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItemWithoutEmptyStatement"); }
-    | switchStatement               { Print("- R: switchStatement -> statementListItemWithoutEmptyStatement"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItemWithoutEmptyStatement"); }
     | returnStatement
         { 
@@ -378,38 +376,6 @@ ifStatement
 
     | IF '(' singleExpression ')' statementListItemWithoutEmptyStatement ELSE statementListItem 
         { Print("- R: IF '(' expressionList ')' statementListItem ELSE statementListItem -> ifStatement"); }
-    ;
-
-switchStatement
-    : SWITCH '(' singleExpression ')' '{' '}' 
-        { Print("- R: SWITCH '(' expressionList ')' '{' '}' -> switchStatement"); }
-
-    | SWITCH '(' singleExpression ')' '{' caseClauseList '}' 
-        { Print("- R: SWITCH '(' expressionList ')' '{' caseClauseList '}' -> switchStatement"); }
-
-    | SWITCH '(' singleExpression ')' '{' caseClauseList defaultClause '}' 
-        { Print("- R: SWITCH '(' expressionList ')' '{' caseClauseList defaultClause '}' -> switchStatement"); }
-
-    | SWITCH '(' singleExpression ')' '{' defaultClause caseClauseList '}' 
-        { Print("- R: SWITCH '(' expressionList ')' '{' defaultClause caseClauseList '}' -> switchStatement"); }
-
-    | SWITCH '(' singleExpression ')' '{' caseClauseList defaultClause caseClauseList '}' 
-        { Print("- R: SWITCH '(' expressionList ')' '{' caseClauseList defaultClause caseClauseList '}' -> switchStatement"); }
-    ;
-
-caseClauseList
-    : caseClause                { Print("- R: caseClause -> caseClauseList"); }
-    | caseClauseList caseClause { Print("- R: caseClauseList caseClause -> caseClauseList"); }
-    ;
-
-caseClause
-    : CASE singleExpression ':'               { Print("- R: CASE expressionList ':' -> caseClause"); }
-    | CASE singleExpression ':' statementList { Print("- R: CASE expressionList ':' statementList -> caseClause"); }
-    ;
-
-defaultClause
-    : DEFAULT ':'               { Print("- R: DEFAULT ':' -> defaultClause"); }
-    | DEFAULT ':' statementList { Print("- R: DEFAULT ':' statementList -> defaultClause"); }
     ;
 
     // ====== Iterations ======

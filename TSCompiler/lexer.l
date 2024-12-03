@@ -367,22 +367,25 @@ else        {
 }
 
 switch      {
+    PrintError("Unsupported KW_SWITCH in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_SWITCH: " + std::string{yytext});
     }
-    return SWITCH;
+    return -1;
 }
 case        {
+    PrintError("Unsupported KW_CASE in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_CASE: " + std::string{yytext}); 
     }
-    return CASE;
+    return -1;
 }
 default     {
+    PrintError("Unsupported KW_DEFAULT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_DEFAULT: " + std::string{yytext});
     }
-    return DEFAULT;
+    return -1;
 }
 
 for         {
