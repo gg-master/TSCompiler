@@ -212,18 +212,21 @@ tupleTypeElements
     ;
 
 predefinedType
-    : ANY           { Print("- R: ANY -> predefinedType"); }
-    | NUMBER        { Print("- R: NUMBER -> predefinedType"); }
-    | STRING        { Print("- R: STRING -> predefinedType"); }
-    | BOOLEAN       { Print("- R: BOOLEAN -> predefinedType"); }
-    | NEVER         { Print("- R: NEVER -> predefinedType"); }
-    | UNKNOWN       { Print("- R: UNKNOWN -> predefinedType"); }
-    | UNDEFINED     { Print("- R: UNDEFINED -> predefinedType"); }
-    | VOID          { Print("- R: VOID -> predefinedType"); }
-    | NULL_KW       { Print("- R: NULL_KW -> predefinedType"); }
-    | TRUE_KW       { Print("- R: TRUE_WD -> predefinedType"); }
-    | FALSE_KW      { Print("- R: FALSE_KW -> predefinedType"); }
-    | simpleLiteral { Print("- R: simpleLiteral -> predefinedType"); }
+    : ANY               { Print("- R: ANY -> predefinedType"); }
+    | NUMBER            { Print("- R: NUMBER -> predefinedType"); }
+    | STRING            { Print("- R: STRING -> predefinedType"); }
+    | BOOLEAN           { Print("- R: BOOLEAN -> predefinedType"); }
+    | NEVER             { Print("- R: NEVER -> predefinedType"); }
+    | UNKNOWN           { Print("- R: UNKNOWN -> predefinedType"); }
+    | UNDEFINED         { Print("- R: UNDEFINED -> predefinedType"); }
+    | VOID              { Print("- R: VOID -> predefinedType"); }
+    | NULL_KW           { Print("- R: NULL_KW -> predefinedType"); }
+    | TRUE_KW           { Print("- R: TRUE_WD -> predefinedType"); }
+    | FALSE_KW          { Print("- R: FALSE_KW -> predefinedType"); }
+    | STRING_LIT        { Print("- R: STRING_LIT -> predefinedType"); }
+    | INT_LIT           { Print("- R: INT_LIT -> predefinedType"); }
+    | FLOAT_LIT         { Print("- R: FLOAT_LIT -> predefinedType"); }
+    | TEMPLATE_LITERAL  { Print("- R: TEMPLATE_LITERAL -> predefinedType"); }
     ;
 
 typeAnnotationOpt
@@ -233,13 +236,6 @@ typeAnnotationOpt
 
 typeAnnotation
     : ':' type { Print("- R: ':' type -> typeAnnotation"); }
-    ;
-
-simpleLiteral
-    : STRING_LIT        { Print("- R: STRING_LIT -> simpleLiteral"); }
-    | INT_LIT           { Print("- R: INT_LIT -> simpleLiteral"); }
-    | FLOAT_LIT         { Print("- R: FLOAT_LIT -> simpleLiteral"); }
-    | TEMPLATE_LITERAL  { Print("- R: TEMPLATE_LITERAL -> simpleLiteral"); }
     ;
 
 // JavaScript supports arrasys like [,,1,2,,].
@@ -272,12 +268,16 @@ singleExpressionOpt
 
 singleExpression
     : identifier    { Print("- R: identifier -> singleExpression"); $$ = createIDExpression($1); }
-    | simpleLiteral { Print("- R: simpleLiteral -> singleExpression"); }
     | THIS          { Print("- R: THIS -> singleExpression"); }
     | SUPER         { Print("- R: SUPER -> singleExpression"); }
     | TRUE_KW       { Print("- R: TRUE_LITERAL -> singleExpression"); }
     | FALSE_KW      { Print("- R: FALSE_LITERAL -> singleExpression"); }
     | NULL_KW       { Print("- R: NULL_LITERAL -> singleExpression"); }
+
+    | STRING_LIT        { Print("- R: STRING_LIT -> singleExpression"); }
+    | INT_LIT           { Print("- R: INT_LIT -> singleExpression"); }
+    | FLOAT_LIT         { Print("- R: FLOAT_LIT -> singleExpression"); }
+    | TEMPLATE_LITERAL  { Print("- R: TEMPLATE_LITERAL -> singleExpression"); }
 
     | '-' singleExpression %prec UMINUS { Print("- R: '-' singleExpression -> singleExpression"); }
     | '+' singleExpression %prec UPLUS  { Print("- R: '+' singleExpression -> singleExpression"); }
@@ -514,23 +514,23 @@ propertyName
 
 identifier
     : ID        { Print("- R: ID -> identifier"); $$ = $1; }
-    | ASYNC     { Print("- R: ASYNC -> identifier"); }
-    | AS        { Print("- R: AS -> identifier"); }
-    | FROM      { Print("- R: FROM -> identifier"); }
-    | YIELD     { Print("- R: YIELD -> identifier"); }
-    | ANY       { Print("- R: ANY -> identifier"); }
-    | NUMBER    { Print("- R: NUMBER -> identifier"); }
-    | BOOLEAN   { Print("- R: BOOLEAN -> identifier"); }
-    | STRING    { Print("- R: STRING -> identifier"); }
-    | UNIQUE    { Print("- R: UNIQUE -> identifier"); }
-    | SYMBOL    { Print("- R: SYMBOL -> identifier"); }
-    | NEVER     { Print("- R: NEVER -> identifier"); }
-    | UNDEFINED { Print("- R: UNDEFINED -> identifier"); }
-    | OBJECT    { Print("- R: OBJECT -> identifier"); }
-    | KEYOF     { Print("- R: KEYOF -> identifier"); }
-    | NAMESPACE { Print("- R: NAMESPACE -> identifier"); }
-    | ABSTRACT  { Print("- R: ABSTRACT -> identifier"); }
-    | REQUIRE   { Print("- R: REQUIRE -> identifier"); }
+    | ASYNC     { Print("- R: ASYNC -> identifier"); $$ = "async"; }
+    | AS        { Print("- R: AS -> identifier"); $$ = "as";}
+    | FROM      { Print("- R: FROM -> identifier"); $$ = "from";}
+    | YIELD     { Print("- R: YIELD -> identifier"); $$ = "yield";}
+    | ANY       { Print("- R: ANY -> identifier"); $$ = "any";}
+    | NUMBER    { Print("- R: NUMBER -> identifier"); $$ = "number"; }
+    | BOOLEAN   { Print("- R: BOOLEAN -> identifier"); $$ = "boolean"; }
+    | STRING    { Print("- R: STRING -> identifier"); $$ = "string"; }
+    | UNIQUE    { Print("- R: UNIQUE -> identifier"); $$ = "unique"; }
+    | SYMBOL    { Print("- R: SYMBOL -> identifier"); $$ = "symbol"; }
+    | NEVER     { Print("- R: NEVER -> identifier"); $$ = "never"; }
+    | UNDEFINED { Print("- R: UNDEFINED -> identifier"); $$ = "undefined"; }
+    | OBJECT    { Print("- R: OBJECT -> identifier"); $$ = "object"; }
+    | KEYOF     { Print("- R: KEYOF -> identifier"); $$ = "keyof"; }
+    | NAMESPACE { Print("- R: NAMESPACE -> identifier"); $$ = "namespace"; }
+    | ABSTRACT  { Print("- R: ABSTRACT -> identifier"); $$ = "abstract"; }
+    | REQUIRE   { Print("- R: REQUIRE -> identifier"); $$ = "require"; }
     ;
 
 %%
