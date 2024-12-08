@@ -35,6 +35,16 @@ int syntaxErrorCounter = 0;
     char* _string;
     char* _id;
     double _floatingPoint;
+
+    struct TSScriptNode* tsscript;
+    struct TSElementListNode* tsscriptElementList;
+    struct TSElementNode* tsscriptElement;
+
+    struct StatementListNode* stmtList;
+    struct StatementNode* stmt;
+
+    struct ExpressionNode* exprStmt;
+
 }
 
 %token VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS GET SET DO WHILE FOR RETURN SUPER THIS NEW
@@ -42,7 +52,10 @@ int syntaxErrorCounter = 0;
 
 %token ANY NUMBER BOOLEAN STRING NEVER UNDEFINED UNIQUE SYMBOL OBJECT VOID UNKNOWN
 
-%token STRING_LIT INT_LIT FLOAT_LIT NULL_KW TRUE_KW FALSE_KW ID
+%token STRING_LIT
+%token INT_LIT
+%token FLOAT_LIT NULL_KW TRUE_KW FALSE_KW 
+%token <_id> ID
 
 %nonassoc ENDL
 %nonassoc TEMPLATE_LITERAL
@@ -79,29 +92,42 @@ int syntaxErrorCounter = 0;
 
 %start script
 
+%type <tsscript>script
+%type <tsscriptElementList>scriptElementList
+%type <tsscriptElement>scriptElement
+
+%type <stmtList>statementList
+%type <stmt>statementListItem
+
+%type <exprStmt>expressionStatement
+
 %%
 
 script
-    : globalStatementList 
+    : scriptElementList 
         { 
             if ( syntaxErrorCounter > 0 ) {
                 PrintError("Found " + std::to_string(syntaxErrorCounter) + " syntax errors. Fix them and rerun.");
                 exit(1);
             }
-            Print("- R: globalStatementList -> script"); 
+            Print("- R: scriptElementList -> script"); 
+        
+            $$ = root = createTSScriptNode($1);
         }
     ;
 
-globalStatementList
-    : statementList                             { Print("- R: statementList -> globalStatementList"); }
-
-    | functionDeclaration                       { Print("- R: functionDeclaration -> globalStatementList"); }
-    | classDeclaration                          { Print("- R: classDeclaration -> globalStatementList"); }
-    | globalStatementList functionDeclaration   { Print("- R: globalStatementList functionDeclaration -> globalStatementList"); }
-    | globalStatementList classDeclaration      { Print("- R: globalStatementList classDeclaration -> globalStatementList"); }
+scriptElementList
+    : scriptElement                     { Print("- R: scriptElement -> scriptElementList"); $$ = createTSElementListNode($1); }
+    | scriptElementList scriptElement   { Print("- R: scriptElementList scriptElement -> scriptElementList"); $$ = createTSElementListNode($1); }
 
     | error
-    | globalStatementList error
+    | scriptElementList error
+    ;
+
+scriptElement
+    : statementListItem     { Print("- R: statementListItem -> scriptElement"); }
+    | functionDeclaration   { Print("- R: functionDeclaration -> scriptElement"); }
+    | classDeclaration      { Print("- R: classDeclaration -> scriptElement"); }
     ;
 
 statementList
