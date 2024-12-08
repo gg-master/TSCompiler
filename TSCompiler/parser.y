@@ -3,9 +3,11 @@
 #include <iostream>
 
 #include "utils.h"
+#include "parsing_tree.h"
 
 int debug = 1;
 extern FILE* yyin;
+extern TSScriptNode* root;
 
 extern char* yytext_ptr;
 extern int yyleng;
@@ -33,7 +35,7 @@ int syntaxErrorCounter = 0;
 %union {
     int _integer;
     char* _string;
-    char* _id;
+    char* ident;
     double _floatingPoint;
 
     struct TSScriptNode* tsscript;
@@ -55,7 +57,7 @@ int syntaxErrorCounter = 0;
 %token STRING_LIT
 %token INT_LIT
 %token FLOAT_LIT NULL_KW TRUE_KW FALSE_KW 
-%token <_id> ID
+%token <ident> ID
 
 %nonassoc ENDL
 %nonassoc TEMPLATE_LITERAL
@@ -100,6 +102,9 @@ int syntaxErrorCounter = 0;
 %type <stmt>statementListItem
 
 %type <exprStmt>expressionStatement
+%type <exprStmt>singleExpression
+
+%type <ident>identifier
 
 %%
 
@@ -118,26 +123,24 @@ script
 
 scriptElementList
     : scriptElement                     { Print("- R: scriptElement -> scriptElementList"); $$ = createTSElementListNode($1); }
-    | scriptElementList scriptElement   { Print("- R: scriptElementList scriptElement -> scriptElementList"); $$ = createTSElementListNode($1); }
-
-    | error
-    | scriptElementList error
+    | scriptElementList scriptElement   { Print("- R: scriptElementList scriptElement -> scriptElementList"); $$ = addTSElementNodeToList($1, $2); }
     ;
 
 scriptElement
-    : statementListItem     { Print("- R: statementListItem -> scriptElement"); }
+    : statementListItem     { Print("- R: statementListItem -> scriptElement"); $$ = createElementFromStatement($1); }
     | functionDeclaration   { Print("- R: functionDeclaration -> scriptElement"); }
     | classDeclaration      { Print("- R: classDeclaration -> scriptElement"); }
+    | error
     ;
 
 statementList
-    : statementListItem                 { Print("- R: statementListItem -> statementList"); }
-    | statementList statementListItem   { Print("- R: statementList statementListItem -> statementList"); }
+    : statementListItem                 { Print("- R: statementListItem -> statementList"); $$ = createStatementListNode($1); }
+    | statementList statementListItem   { Print("- R: statementList statementListItem -> statementList"); $$ = addStatementToStatementList($1, $2); }
     ;
 
 statementListItem
     : emptyStatement                { Print("- R: emptyStatement -> statementListItem"); }
-    | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); }
+    | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); $$ = createStatementFromExpression($1); }
     | varStatement                  { Print("- R: varStatement -> statementListItem"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
@@ -259,7 +262,7 @@ elementListItem
     // ====== EXPRESSIONS ======
 
 expressionStatement
-    : singleExpression ';' { Print("- R: expressionList ';' -> expressionStatement"); }
+    : singleExpression ';' { Print("- R: expressionList ';' -> expressionStatement"); $$ = $1; }
     ;
 
 singleExpressionOpt
@@ -268,7 +271,7 @@ singleExpressionOpt
     ;
 
 singleExpression
-    : identifier    { Print("- R: identifier -> singleExpression"); }
+    : identifier    { Print("- R: identifier -> singleExpression"); $$ = createIDExpression($1); }
     | simpleLiteral { Print("- R: simpleLiteral -> singleExpression"); }
     | THIS          { Print("- R: THIS -> singleExpression"); }
     | SUPER         { Print("- R: SUPER -> singleExpression"); }
@@ -506,11 +509,11 @@ constructorCallSignature
     ;
 
 propertyName
-    : identifier                            { Print("- R: identifier -> propertyName"); }
+    : identifier { Print("- R: identifier -> propertyName"); }
     ;
 
 identifier
-    : ID        { Print("- R: ID -> identifier"); }
+    : ID        { Print("- R: ID -> identifier"); $$ = $1; }
     | ASYNC     { Print("- R: ASYNC -> identifier"); }
     | AS        { Print("- R: AS -> identifier"); }
     | FROM      { Print("- R: FROM -> identifier"); }

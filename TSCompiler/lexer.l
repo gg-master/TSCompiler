@@ -54,8 +54,6 @@ ESCAPE_CHAR ({SINGLE_ESCAPE_CHAR}|{DEC_DIGIT}|x|u)
 
 %x MULTILINE_COMMENT
 
-%x OVER
-
 %x ENDL_OPERATOR
 %x DO_WHILE_ASI
 
@@ -158,6 +156,13 @@ await       {
         Print("Found KW_AWAIT: " + std::string{yytext});
     }
     return -1;
+}
+async       {
+    PrintError("Unsupported KW_ASYNC in this version: " + std::string{yytext});
+    if ( debug ) {
+        Print("Found KW_ASYNC: " + std::string{yytext});
+    }
+    return ASYNC;
 }
 
 const       {
@@ -1233,7 +1238,7 @@ new         {
 
 [[:alpha:]_$][[:alnum:]_$]* { 
     Print("Found identifier: " + std::string{yytext}); 
-    yylval._id = Dublicate(yytext);
+    yylval.ident = Dublicate(yytext);
     return ID;
 }
 

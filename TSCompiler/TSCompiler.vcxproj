@@ -54,7 +54,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="..\win_flex_bison-2.5.25\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.props" />
+    <Import Project="..\ThirdParty\win_flex_bison-2.5.25\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -150,9 +150,11 @@
     </Flex>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dot.cpp" />
     <ClCompile Include="lexer.flex.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.tab.cpp" />
+    <ClCompile Include="parsing_tree.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,7 +164,10 @@
     </Bison>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dot.h" />
+    <ClInclude Include="nodes.h" />
     <ClInclude Include="parser.tab.h" />
+    <ClInclude Include="parsing_tree.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +175,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\win_flex_bison-2.5.25\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.targets" />
+    <Import Project="..\ThirdParty\win_flex_bison-2.5.25\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.targets" />
   </ImportGroup>
 </Project>
