@@ -1,6 +1,6 @@
 #pragma once
 #include <ostream>
-#include "Tree/nodes.h"
+#include "../Tree/nodes.h"
 
 void RunDot(std::string dotPath, std::string dotFilePath);
 

@@ -150,12 +150,12 @@
     </Flex>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dot.cpp" />
     <ClCompile Include="lexer.flex.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.tab.cpp" />
     <ClCompile Include="Tree\parsing_tree.cpp" />
-    <ClCompile Include="utils.cpp" />
+    <ClCompile Include="Utils\dot.cpp" />
+    <ClCompile Include="Utils\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Bison Include="parser.y">
@@ -163,11 +163,11 @@
     </Bison>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dot.h" />
     <ClInclude Include="parser.tab.h" />
     <ClInclude Include="Tree\nodes.h" />
     <ClInclude Include="Tree\parsing_tree.h" />
-    <ClInclude Include="utils.h" />
+    <ClInclude Include="Utils\dot.h" />
+    <ClInclude Include="Utils\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bison.m4" />

@@ -3,7 +3,7 @@
 #include <filesystem>
 
 #include "parser.tab.h"
-#include "dot.h"
+#include "Utils/dot.h"
 
 extern FILE* yyin;
 extern int yyparse();

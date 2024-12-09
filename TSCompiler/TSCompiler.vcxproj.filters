@@ -35,13 +35,13 @@
     <ClCompile Include="parser.tab.cpp">
       <Filter>generated_files</Filter>
     </ClCompile>
-    <ClCompile Include="utils.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="dot.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Tree\parsing_tree.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\dot.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\utils.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,16 +54,16 @@
     <ClInclude Include="parser.tab.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="utils.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="dot.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Tree\parsing_tree.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Tree\nodes.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\dot.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\utils.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
