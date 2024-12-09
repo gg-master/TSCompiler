@@ -52,7 +52,7 @@ int syntaxErrorCounter = 0;
 %token VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS GET SET DO WHILE FOR RETURN SUPER THIS NEW
 %token ASYNC AS FROM YIELD KEYOF CONSTRUCTOR NAMESPACE ABSTRACT REQUIRE
 
-%token ANY NUMBER BOOLEAN STRING NEVER UNDEFINED UNIQUE SYMBOL OBJECT VOID UNKNOWN
+%token ANY NUMBER BOOLEAN STRING NEVER UNDEFINED UNIQUE SYMBOL OBJECT VOID
 
 %token STRING_LIT
 %token INT_LIT
@@ -60,7 +60,7 @@ int syntaxErrorCounter = 0;
 %token <ident> ID
 
 %nonassoc ENDL
-%nonassoc TEMPLATE_LITERAL
+%nonassoc TEMPLATE_LIT
 %nonassoc OPERATOR_INCREMENT OPERATOR_DECREMENT ENDL_OPERATOR_INCREMENT ENDL_OPERATOR_DECREMENT
 
 %precedence IF_ONLY_PREC
@@ -187,22 +187,14 @@ blockStatement
     | '{' statementList '}' { Print("- R: '{' statementList '}' -> blockStatement"); }
     ;
 
-initializer
-    : '=' singleExpression { Print("- R: '=' singleExpression -> initializer"); }
-    ;
-
     // ====== TYPES ======
 
 type
-    : primaryType { Print("- R: primaryType -> type"); }
-    ;
-
-primaryType
-    : '(' type ')'                              { Print("- R: '(' type ')' -> primaryType"); }
-    | predefinedType                            { Print("- R: predefinedType -> primaryType"); }
-    | primaryType '[' ']'                       { Print("- R: primaryType '[' ']' -> primaryType"); }
-    | '[' tupleTypeElements ']'                 { Print("- R: '[' tupleTypeElements ']' -> primaryType"); }
-    | ENDL_BRACKET_OPEN tupleTypeElements ']'   { Print("- R: '[' tupleTypeElements ']' -> primaryType"); }
+    : '(' type ')'                              { Print("- R: '(' type ')' -> type"); }
+    | predefinedType                            { Print("- R: predefinedType -> type"); }
+    | type '[' ']'                              { Print("- R: type '[' ']' -> type"); }
+    | '[' tupleTypeElements ']'                 { Print("- R: '[' tupleTypeElements ']' -> type"); }
+    | ENDL_BRACKET_OPEN tupleTypeElements ']'   { Print("- R: '[' tupleTypeElements ']' -> type"); }
     ;
 
 tupleTypeElements
@@ -212,21 +204,12 @@ tupleTypeElements
     ;
 
 predefinedType
-    : ANY               { Print("- R: ANY -> predefinedType"); }
-    | NUMBER            { Print("- R: NUMBER -> predefinedType"); }
-    | STRING            { Print("- R: STRING -> predefinedType"); }
-    | BOOLEAN           { Print("- R: BOOLEAN -> predefinedType"); }
-    | NEVER             { Print("- R: NEVER -> predefinedType"); }
-    | UNKNOWN           { Print("- R: UNKNOWN -> predefinedType"); }
-    | UNDEFINED         { Print("- R: UNDEFINED -> predefinedType"); }
-    | VOID              { Print("- R: VOID -> predefinedType"); }
-    | NULL_KW           { Print("- R: NULL_KW -> predefinedType"); }
-    | TRUE_KW           { Print("- R: TRUE_WD -> predefinedType"); }
-    | FALSE_KW          { Print("- R: FALSE_KW -> predefinedType"); }
-    | STRING_LIT        { Print("- R: STRING_LIT -> predefinedType"); }
-    | INT_LIT           { Print("- R: INT_LIT -> predefinedType"); }
-    | FLOAT_LIT         { Print("- R: FLOAT_LIT -> predefinedType"); }
-    | TEMPLATE_LITERAL  { Print("- R: TEMPLATE_LITERAL -> predefinedType"); }
+    : NUMBER        { Print("- R: NUMBER -> predefinedType"); }
+    | STRING        { Print("- R: STRING -> predefinedType"); }
+    | BOOLEAN       { Print("- R: BOOLEAN -> predefinedType"); }
+    | UNDEFINED     { Print("- R: UNDEFINED -> predefinedType"); }
+    | VOID          { Print("- R: VOID -> predefinedType"); }
+    | NULL_KW       { Print("- R: NULL_KW -> predefinedType"); }
     ;
 
 typeAnnotationOpt
@@ -277,7 +260,7 @@ singleExpression
     | STRING_LIT        { Print("- R: STRING_LIT -> singleExpression"); }
     | INT_LIT           { Print("- R: INT_LIT -> singleExpression"); }
     | FLOAT_LIT         { Print("- R: FLOAT_LIT -> singleExpression"); }
-    | TEMPLATE_LITERAL  { Print("- R: TEMPLATE_LITERAL -> singleExpression"); }
+    | TEMPLATE_LIT  { Print("- R: TEMPLATE_LIT -> singleExpression"); }
 
     | '-' singleExpression %prec UMINUS { Print("- R: '-' singleExpression -> singleExpression"); }
     | '+' singleExpression %prec UPLUS  { Print("- R: '+' singleExpression -> singleExpression"); }
@@ -347,9 +330,6 @@ singleExpression
     | singleExpression INSTANCEOF singleExpression  { Print("- R: singleExpression INSTANCEOF singleExpression -> singleExpression"); }
     | singleExpression IN singleExpression          { Print("- R: singleExpression IN singleExpression -> singleExpression"); }
 
-    | singleExpression TEMPLATE_LITERAL
-        { Print("- R: singleExpression TEMPLATE_LITERAL -> singleExpression"); }
-
     | singleExpression '?' singleExpression ':' singleExpression 
         { Print("- R: singleExpression '?' singleExpression ':' singleExpression -> singleExpression"); }
 
@@ -366,6 +346,8 @@ singleExpression
     | identifier '(' singleExpression ')' 
         { 
             Print("- R: identifier '(' singleExpression ')' -> singleExpression");
+
+            $$ = createFuncCallExpressionNode($1, createExpressionListFromExpression($3));
         }
     | identifier '(' singleExpression ',' ')' { Print("- R: identifier '(' singleExpression ',' ')' -> singleExpression"); }
 
@@ -507,7 +489,7 @@ classElement
 
     // PropertyDeclarationExpression 
     | propertyName typeAnnotationOpt ';'               { Print("- R: propertyName typeAnnotationOpt ';' -> classElement"); }
-    | propertyName typeAnnotationOpt initializer ';'   { Print("- R: propertyName typeAnnotationOpt initializer ';' -> classElement"); }
+    | propertyName typeAnnotationOpt '=' singleExpression ';'   { Print("- R: propertyName typeAnnotationOpt '=' singleExpression ';' -> classElement"); }
 
     // MethodDeclarationExpression 
     | propertyName callSignature functionBody { Print("- R: propertyName callSignature functionBody -> classElement"); }

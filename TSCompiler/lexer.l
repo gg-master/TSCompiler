@@ -193,6 +193,7 @@ as          {
 }
 
 any         {
+    PrintError("Unsupported TYPE_ANY in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found TYPE_ANY: " + std::string{yytext});
     }
@@ -206,12 +207,14 @@ boolean     {
     return BOOLEAN; 
 }
 never       {
+    PrintError("Unsupported TYPE_NEVER in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found TYPE_NEVER: " + std::string{yytext});
     }
     return NEVER;
 } 
 symbol      {
+    PrintError("Unsupported TYPE_SYMBOL in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found TYPE_SYMBOL: " + std::string{yytext});
     }
@@ -230,16 +233,18 @@ string      {
     return STRING;
 }
 object      {
+    PrintError("Unsupported TYPE_OBJECT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found TYPE_OBJECT: " + std::string{yytext});
     }
     return OBJECT;
 }
 unknown     {
+    PrintError("Unsupported TYPE_UNKNOWN in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found TYPE_UNKNOWN: " + std::string{yytext});
     }
-    return UNKNOWN;
+    return -1;
 }
 undefined   {
     if ( debug ) {
@@ -260,6 +265,7 @@ null        {
     return NULL_KW;
 }
 unique      {
+    PrintError("Unsupported KW_UNIQUE in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found KW_UNIQUE: " + std::string{yytext});
     }
@@ -1121,7 +1127,7 @@ new         {
     PrintStringLiteral(currentString);
     yylval._string = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
-    return STRING_LIT;
+    return TEMPLATE_LIT;
 }
 
 
