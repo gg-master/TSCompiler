@@ -267,7 +267,7 @@ singleExpressionOpt
     ;
 
 singleExpression
-    : identifier    { Print("- R: identifier -> singleExpression"); $$ = createIDExpression($1); }
+    : identifier    { Print("- R: identifier -> singleExpression"); $$ = createIDExpressionNode($1); }
     | THIS          { Print("- R: THIS -> singleExpression"); }
     | SUPER         { Print("- R: SUPER -> singleExpression"); }
     | TRUE_KW       { Print("- R: TRUE_LITERAL -> singleExpression"); }
@@ -354,24 +354,37 @@ singleExpression
         { Print("- R: singleExpression '?' singleExpression ':' singleExpression -> singleExpression"); }
 
     | singleExpression ',' singleExpression %prec COMMA_OPERATOR 
-        { Print("- R: singleExpression ',' singleExpressionn -> singleExpression"); }
+        { 
+            Print("- R: singleExpression ',' singleExpressionn -> singleExpression"); 
+            $$ = createCommaExpressionNode($1, $3);
+        }
 
     | '(' singleExpression ')' { Print("- R: '(' expressionList ')' -> singleExpression"); }
 
-    | singleExpression '(' ')' { Print("- R: singleExpression '(' ')' -> singleExpression"); }
-    | singleExpression '(' singleExpression ')' { Print("- R: singleExpression '(' singleExpression ')' -> singleExpression"); }
-    | singleExpression '(' singleExpression ',' ')' { Print("- R: singleExpression '(' singleExpression ',' ')' -> singleExpression"); }
+    // XXX: dissallow syntax exrp '(' optParams ')' cause this grammar dont have func types
+    | identifier '(' ')' { Print("- R: identifier '(' ')' -> singleExpression"); }
+    | identifier '(' singleExpression ')' 
+        { 
+            Print("- R: identifier '(' singleExpression ')' -> singleExpression");
+        }
+    | identifier '(' singleExpression ',' ')' { Print("- R: identifier '(' singleExpression ',' ')' -> singleExpression"); }
 
     | singleExpression OPTIONAL_CHAINING_OPERATOR singleExpression 
         { Print("- R: singleExpression OPTIONAL_CHAINING_OPERATOR singleExpression -> singleExpression"); }
 
+    // XXX: dissallow syntax expr.exrp with '(' optParams ')' cause this grammar dont have func types
     | singleExpression '.' identifier { Print("- R: singleExpression '.' identifier -> singleExpression"); }
+    | singleExpression '.' identifier '(' ')' { Print("- R: singleExpression '.' identifier '(' ')' -> singleExpression"); }
+    | singleExpression '.' identifier '(' singleExpression ')' { Print("- R: singleExpression '.' identifier '(' singleExpression ')' -> singleExpression"); }
+    | singleExpression '.' identifier '(' singleExpression ',' ')' { Print("- R: singleExpression '.' identifier '(' singleExpression ',' ')' -> singleExpression"); }
 
     | arrayLiteral                                            { Print("- R: arrayLiteral -> singleExpression"); }
     | singleExpression '[' singleExpression ']'               { Print("- R: singleExpression '[' expressionList ']' -> singleExpression"); }
     | singleExpression ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN expressionList ']' -> singleExpression"); }
 
     | NEW singleExpression { Print("- R: NEW singleExpression -> singleExpression"); }
+    | NEW singleExpression '(' ')' { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); }
+    | NEW singleExpression '(' singleExpression ')'  { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); }
     ;
 
     // ====== Variables ======
@@ -514,23 +527,23 @@ propertyName
 
 identifier
     : ID        { Print("- R: ID -> identifier"); $$ = $1; }
-    | ASYNC     { Print("- R: ASYNC -> identifier"); $$ = "async"; }
-    | AS        { Print("- R: AS -> identifier"); $$ = "as";}
-    | FROM      { Print("- R: FROM -> identifier"); $$ = "from";}
-    | YIELD     { Print("- R: YIELD -> identifier"); $$ = "yield";}
-    | ANY       { Print("- R: ANY -> identifier"); $$ = "any";}
-    | NUMBER    { Print("- R: NUMBER -> identifier"); $$ = "number"; }
-    | BOOLEAN   { Print("- R: BOOLEAN -> identifier"); $$ = "boolean"; }
-    | STRING    { Print("- R: STRING -> identifier"); $$ = "string"; }
-    | UNIQUE    { Print("- R: UNIQUE -> identifier"); $$ = "unique"; }
-    | SYMBOL    { Print("- R: SYMBOL -> identifier"); $$ = "symbol"; }
-    | NEVER     { Print("- R: NEVER -> identifier"); $$ = "never"; }
-    | UNDEFINED { Print("- R: UNDEFINED -> identifier"); $$ = "undefined"; }
-    | OBJECT    { Print("- R: OBJECT -> identifier"); $$ = "object"; }
-    | KEYOF     { Print("- R: KEYOF -> identifier"); $$ = "keyof"; }
-    | NAMESPACE { Print("- R: NAMESPACE -> identifier"); $$ = "namespace"; }
-    | ABSTRACT  { Print("- R: ABSTRACT -> identifier"); $$ = "abstract"; }
-    | REQUIRE   { Print("- R: REQUIRE -> identifier"); $$ = "require"; }
+    | ASYNC     { Print("- R: ASYNC -> identifier"); $$ = strdup("async"); }
+    | AS        { Print("- R: AS -> identifier"); $$ = strdup("as"); }
+    | FROM      { Print("- R: FROM -> identifier"); $$ = strdup("from"); }
+    | YIELD     { Print("- R: YIELD -> identifier"); $$ = strdup("yield"); }
+    | ANY       { Print("- R: ANY -> identifier"); $$ = strdup("any"); }
+    | NUMBER    { Print("- R: NUMBER -> identifier"); $$ = strdup("number"); }
+    | BOOLEAN   { Print("- R: BOOLEAN -> identifier"); $$ = strdup("boolean"); }
+    | STRING    { Print("- R: STRING -> identifier"); $$ = strdup("string"); }
+    | UNIQUE    { Print("- R: UNIQUE -> identifier"); $$ = strdup("unique"); }
+    | SYMBOL    { Print("- R: SYMBOL -> identifier"); $$ = strdup("symbol"); }
+    | NEVER     { Print("- R: NEVER -> identifier"); $$ = strdup("never"); }
+    | UNDEFINED { Print("- R: UNDEFINED -> identifier"); $$ = strdup("undefined"); }
+    | OBJECT    { Print("- R: OBJECT -> identifier"); $$ = strdup("object"); }
+    | KEYOF     { Print("- R: KEYOF -> identifier"); $$ = strdup("keyof"); }
+    | NAMESPACE { Print("- R: NAMESPACE -> identifier"); $$ = strdup("namespace"); }
+    | ABSTRACT  { Print("- R: ABSTRACT -> identifier"); $$ = strdup("abstract"); }
+    | REQUIRE   { Print("- R: REQUIRE -> identifier"); $$ = strdup("require"); }
     ;
 
 %%
