@@ -54,43 +54,43 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    VAR = 258,                     /* VAR  */
-    LET = 259,                     /* LET  */
-    CONST = 260,                   /* CONST  */
-    IF = 261,                      /* IF  */
-    ELSE = 262,                    /* ELSE  */
-    FUNCTION = 263,                /* FUNCTION  */
-    CLASS = 264,                   /* CLASS  */
-    EXTENDS = 265,                 /* EXTENDS  */
-    GET = 266,                     /* GET  */
-    SET = 267,                     /* SET  */
-    DO = 268,                      /* DO  */
-    WHILE = 269,                   /* WHILE  */
-    FOR = 270,                     /* FOR  */
-    RETURN = 271,                  /* RETURN  */
-    SUPER = 272,                   /* SUPER  */
-    THIS = 273,                    /* THIS  */
-    NEW = 274,                     /* NEW  */
-    ASYNC = 275,                   /* ASYNC  */
-    AS = 276,                      /* AS  */
-    FROM = 277,                    /* FROM  */
-    YIELD = 278,                   /* YIELD  */
-    KEYOF = 279,                   /* KEYOF  */
-    CONSTRUCTOR = 280,             /* CONSTRUCTOR  */
-    NAMESPACE = 281,               /* NAMESPACE  */
-    ABSTRACT = 282,                /* ABSTRACT  */
-    REQUIRE = 283,                 /* REQUIRE  */
-    ANY = 284,                     /* ANY  */
-    NUMBER = 285,                  /* NUMBER  */
-    BOOLEAN = 286,                 /* BOOLEAN  */
-    STRING = 287,                  /* STRING  */
-    NEVER = 288,                   /* NEVER  */
-    UNDEFINED = 289,               /* UNDEFINED  */
-    UNIQUE = 290,                  /* UNIQUE  */
-    SYMBOL = 291,                  /* SYMBOL  */
-    OBJECT = 292,                  /* OBJECT  */
-    VOID = 293,                    /* VOID  */
-    UNKNOWN = 294,                 /* UNKNOWN  */
+    ENDL = 258,                    /* ENDL  */
+    VAR = 259,                     /* VAR  */
+    LET = 260,                     /* LET  */
+    CONST = 261,                   /* CONST  */
+    IF = 262,                      /* IF  */
+    ELSE = 263,                    /* ELSE  */
+    FUNCTION = 264,                /* FUNCTION  */
+    CLASS = 265,                   /* CLASS  */
+    EXTENDS = 266,                 /* EXTENDS  */
+    GET = 267,                     /* GET  */
+    SET = 268,                     /* SET  */
+    DO = 269,                      /* DO  */
+    WHILE = 270,                   /* WHILE  */
+    FOR = 271,                     /* FOR  */
+    RETURN = 272,                  /* RETURN  */
+    SUPER = 273,                   /* SUPER  */
+    THIS = 274,                    /* THIS  */
+    NEW = 275,                     /* NEW  */
+    ASYNC = 276,                   /* ASYNC  */
+    AS = 277,                      /* AS  */
+    FROM = 278,                    /* FROM  */
+    YIELD = 279,                   /* YIELD  */
+    KEYOF = 280,                   /* KEYOF  */
+    CONSTRUCTOR = 281,             /* CONSTRUCTOR  */
+    NAMESPACE = 282,               /* NAMESPACE  */
+    ABSTRACT = 283,                /* ABSTRACT  */
+    REQUIRE = 284,                 /* REQUIRE  */
+    ANY = 285,                     /* ANY  */
+    NUMBER = 286,                  /* NUMBER  */
+    BOOLEAN = 287,                 /* BOOLEAN  */
+    STRING = 288,                  /* STRING  */
+    NEVER = 289,                   /* NEVER  */
+    UNDEFINED = 290,               /* UNDEFINED  */
+    UNIQUE = 291,                  /* UNIQUE  */
+    SYMBOL = 292,                  /* SYMBOL  */
+    OBJECT = 293,                  /* OBJECT  */
+    VOID = 294,                    /* VOID  */
     STRING_LIT = 295,              /* STRING_LIT  */
     INT_LIT = 296,                 /* INT_LIT  */
     FLOAT_LIT = 297,               /* FLOAT_LIT  */
@@ -98,39 +98,38 @@ extern int yydebug;
     TRUE_KW = 299,                 /* TRUE_KW  */
     FALSE_KW = 300,                /* FALSE_KW  */
     ID = 301,                      /* ID  */
-    ENDL = 302,                    /* ENDL  */
-    TEMPLATE_LITERAL = 303,        /* TEMPLATE_LITERAL  */
-    OPERATOR_INCREMENT = 304,      /* OPERATOR_INCREMENT  */
-    OPERATOR_DECREMENT = 305,      /* OPERATOR_DECREMENT  */
-    ENDL_OPERATOR_INCREMENT = 306, /* ENDL_OPERATOR_INCREMENT  */
-    ENDL_OPERATOR_DECREMENT = 307, /* ENDL_OPERATOR_DECREMENT  */
-    IF_ONLY_PREC = 308,            /* IF_ONLY_PREC  */
-    COMMA_OPERATOR = 309,          /* COMMA_OPERATOR  */
-    COMMA_SEPARATOR = 310,         /* COMMA_SEPARATOR  */
-    OPERATOR_ASSIGN_PLUS = 311,    /* OPERATOR_ASSIGN_PLUS  */
-    OPERATOR_ASSIGN_MINUS = 312,   /* OPERATOR_ASSIGN_MINUS  */
-    OPERATOR_ASSIGN_MULTIPLY = 313, /* OPERATOR_ASSIGN_MULTIPLY  */
-    OPERATOR_ASSIGN_DIVIDE = 314,  /* OPERATOR_ASSIGN_DIVIDE  */
-    OPERATOR_ASSIGN_LOGICAL_AND = 315, /* OPERATOR_ASSIGN_LOGICAL_AND  */
-    OPERATOR_ASSIGN_LOGICAL_OR = 316, /* OPERATOR_ASSIGN_LOGICAL_OR  */
-    OPERATOR_LOGICAL_OR = 317,     /* OPERATOR_LOGICAL_OR  */
-    OPERATOR_LOGICAL_AND = 318,    /* OPERATOR_LOGICAL_AND  */
-    OPERATOR_EQUAL = 319,          /* OPERATOR_EQUAL  */
-    OPERATOR_NOT_EQUAL = 320,      /* OPERATOR_NOT_EQUAL  */
-    OPERATOR_STRICT_EQUAL = 321,   /* OPERATOR_STRICT_EQUAL  */
-    OPERATOR_STRICT_NOT_EQUAL = 322, /* OPERATOR_STRICT_NOT_EQUAL  */
-    OPERATOR_GREATER_THAN_EQUAL = 323, /* OPERATOR_GREATER_THAN_EQUAL  */
-    OPERATOR_LESS_THAN_EQUAL = 324, /* OPERATOR_LESS_THAN_EQUAL  */
-    INSTANCEOF = 325,              /* INSTANCEOF  */
-    IN = 326,                      /* IN  */
-    UMINUS = 327,                  /* UMINUS  */
-    UPLUS = 328,                   /* UPLUS  */
-    PREF_INCREMENT = 329,          /* PREF_INCREMENT  */
-    PREF_DECREMENT = 330,          /* PREF_DECREMENT  */
-    POST_INCREMENT = 331,          /* POST_INCREMENT  */
-    POST_DECREMENT = 332,          /* POST_DECREMENT  */
-    ENDL_BRACKET_OPEN = 333,       /* ENDL_BRACKET_OPEN  */
-    OPTIONAL_CHAINING_OPERATOR = 334 /* OPTIONAL_CHAINING_OPERATOR  */
+    TEMPLATE_LIT = 302,            /* TEMPLATE_LIT  */
+    OPERATOR_INCREMENT = 303,      /* OPERATOR_INCREMENT  */
+    OPERATOR_DECREMENT = 304,      /* OPERATOR_DECREMENT  */
+    ENDL_OPERATOR_INCREMENT = 305, /* ENDL_OPERATOR_INCREMENT  */
+    ENDL_OPERATOR_DECREMENT = 306, /* ENDL_OPERATOR_DECREMENT  */
+    IF_ONLY_PREC = 307,            /* IF_ONLY_PREC  */
+    COMMA_OPERATOR = 308,          /* COMMA_OPERATOR  */
+    COMMA_SEPARATOR = 309,         /* COMMA_SEPARATOR  */
+    OPERATOR_ASSIGN_PLUS = 310,    /* OPERATOR_ASSIGN_PLUS  */
+    OPERATOR_ASSIGN_MINUS = 311,   /* OPERATOR_ASSIGN_MINUS  */
+    OPERATOR_ASSIGN_MULTIPLY = 312, /* OPERATOR_ASSIGN_MULTIPLY  */
+    OPERATOR_ASSIGN_DIVIDE = 313,  /* OPERATOR_ASSIGN_DIVIDE  */
+    OPERATOR_ASSIGN_LOGICAL_AND = 314, /* OPERATOR_ASSIGN_LOGICAL_AND  */
+    OPERATOR_ASSIGN_LOGICAL_OR = 315, /* OPERATOR_ASSIGN_LOGICAL_OR  */
+    OPERATOR_LOGICAL_OR = 316,     /* OPERATOR_LOGICAL_OR  */
+    OPERATOR_LOGICAL_AND = 317,    /* OPERATOR_LOGICAL_AND  */
+    OPERATOR_EQUAL = 318,          /* OPERATOR_EQUAL  */
+    OPERATOR_NOT_EQUAL = 319,      /* OPERATOR_NOT_EQUAL  */
+    OPERATOR_STRICT_EQUAL = 320,   /* OPERATOR_STRICT_EQUAL  */
+    OPERATOR_STRICT_NOT_EQUAL = 321, /* OPERATOR_STRICT_NOT_EQUAL  */
+    OPERATOR_GREATER_THAN_EQUAL = 322, /* OPERATOR_GREATER_THAN_EQUAL  */
+    OPERATOR_LESS_THAN_EQUAL = 323, /* OPERATOR_LESS_THAN_EQUAL  */
+    INSTANCEOF = 324,              /* INSTANCEOF  */
+    IN = 325,                      /* IN  */
+    UMINUS = 326,                  /* UMINUS  */
+    UPLUS = 327,                   /* UPLUS  */
+    PREF_INCREMENT = 328,          /* PREF_INCREMENT  */
+    PREF_DECREMENT = 329,          /* PREF_DECREMENT  */
+    POST_INCREMENT = 330,          /* POST_INCREMENT  */
+    POST_DECREMENT = 331,          /* POST_DECREMENT  */
+    ENDL_BRACKET_OPEN = 332,       /* ENDL_BRACKET_OPEN  */
+    OPTIONAL_CHAINING_OPERATOR = 333 /* OPTIONAL_CHAINING_OPERATOR  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -139,24 +138,32 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 35 "parser.y"
+#line 36 "parser.y"
 
     int _integer;
     char* _string;
     char* ident;
     double _floatingPoint;
 
-    struct TSScriptNode* tsscript;
-    struct TSElementListNode* tsscriptElementList;
-    struct TSElementNode* tsscriptElement;
+    struct TSScriptNode* tsscriptNode;
+    struct TSElementListNode* tsscriptElementListNode;
+    struct TSElementNode* tsscriptElementNode;
 
-    struct StatementListNode* stmtList;
-    struct StatementNode* stmt;
+    struct StatementListNode* stmtListNode;
+    struct StatementNode* stmtNode;
 
-    struct ExpressionNode* exprStmt;
+    struct ExpressionNode* exprStmtNode;
 
+    struct TypeNode* typeNode;
+    struct TupleTypeNode* tupleTypeNode;
 
-#line 160 "parser.tab.h"
+    enum class VarModifierType varModifierType;
+    struct VarStatementNode* varStmtNode;
+
+    struct VarDeclarationNode* varDeclNode;
+    struct VarDeclarationListNode* varDeclListNode;
+
+#line 167 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

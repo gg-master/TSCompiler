@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+
+	// ====== Expression ====== //
 
 enum class ExpressionType 
 {
@@ -7,6 +10,7 @@ enum class ExpressionType
 	_INT_LIT,
 	_FLOAT_LIT,
 	_STRING_LIT,
+	_NULL_LIT,
 	
 	_UPLUS,
 	_UMINUS,
@@ -71,10 +75,14 @@ struct ExpressionNode
 
 	enum ExpressionType type;
 
-	struct ExpressionNode* leftOperand;
-	struct ExpressionNode* rightOperand;
+	struct ExpressionNode* firstOperand;
+	struct ExpressionNode* secondOperand;
+	struct ExpressionNode* thirdOperand;
 
-	struct ExpressionNode* nextExpression;
+	// using for ExpressionListNode
+	struct ExpressionNode* next;
+
+	struct ExpressionListNode* params;
 };
 
 struct ExpressionListNode
@@ -85,15 +93,18 @@ struct ExpressionListNode
 	struct ExpressionNode* last;
 };
 
+
+	// ====== Statement ====== //
+
 enum class StatementType
 {
-	_EXPRESSION,
 	_EMPTY,
-	_RETURN,
+	_EXPRESSION,
 	_VAR,
 	_WHILE,
 	_DOWHILE,
 	_FOR,
+	_RETURN,
 };
 
 struct StatementNode
@@ -103,6 +114,7 @@ struct StatementNode
 	enum StatementType type;
 
 	struct ExpressionNode* expression;
+	struct VarStatementNode* varStmt;
 
 	struct StatementNode * next;
 };
@@ -114,6 +126,96 @@ struct StatementListNode
 	struct StatementNode* first;
 	struct StatementNode* last;
 };
+
+	// ====== Types ====== //
+
+enum class TypeType
+{
+	_NUMBER,
+	_STRING,
+	_BOOLEAN,
+	_UNDEFINED,
+	_VOID,
+	_NULL,
+
+	_ARRAY,
+	_TUPLE,
+};
+
+struct TupleTypeNode;
+
+struct TypeNode
+{
+	int id;
+
+	enum TypeType type;
+
+	struct TypeNode* arrayType;
+	struct TupleTypeNode* tupleNode;
+
+	// using for TupleType
+	struct TypeNode* next;
+};
+
+struct TupleTypeNode
+{
+	int id;
+
+	struct TypeNode* first;
+	struct TypeNode* last;
+};
+
+
+	// ====== VarDeclaration ====== //
+
+enum class VarModifierType
+{
+	_LET,
+	_VAR,
+	_CONST,
+};
+
+inline std::string ToString(VarModifierType type) {
+	switch (type)
+	{
+	case VarModifierType::_LET: return "let";
+	case VarModifierType::_VAR: return "var";
+	case VarModifierType::_CONST: return "const";
+	default:
+		return "";
+	}
+}
+
+struct VarStatementNode
+{
+	int id;
+
+	enum VarModifierType modifierType;
+
+	struct VarDeclarationListNode* declList;
+};
+
+struct VarDeclarationNode
+{
+	int id;
+
+	char* identifierStr;
+	struct TypeNode* varType;
+	struct ExpressionNode* initExpression;
+	
+	struct VarDeclarationNode* next;
+};
+
+struct VarDeclarationListNode
+{
+	int id;
+
+	struct VarDeclarationNode* first;
+	struct VarDeclarationNode* last;
+};
+
+
+	// ====== TS Script ====== //
 
 enum class TSElementType
 {

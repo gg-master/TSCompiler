@@ -3,7 +3,8 @@
 #include <iostream>
 
 #include "utils.h"
-#include "parsing_tree.h"
+#include "Tree/parsing_tree.h"
+#include "Tree/nodes.h"
 
 int debug = 1;
 extern FILE* yyin;
@@ -38,18 +39,26 @@ int syntaxErrorCounter = 0;
     char* ident;
     double _floatingPoint;
 
-    struct TSScriptNode* tsscript;
-    struct TSElementListNode* tsscriptElementList;
-    struct TSElementNode* tsscriptElement;
+    struct TSScriptNode* tsscriptNode;
+    struct TSElementListNode* tsscriptElementListNode;
+    struct TSElementNode* tsscriptElementNode;
 
-    struct StatementListNode* stmtList;
-    struct StatementNode* stmt;
+    struct StatementListNode* stmtListNode;
+    struct StatementNode* stmtNode;
 
-    struct ExpressionNode* exprStmt;
+    struct ExpressionNode* exprStmtNode;
 
+    struct TypeNode* typeNode;
+    struct TupleTypeNode* tupleTypeNode;
+
+    enum class VarModifierType varModifierType;
+    struct VarStatementNode* varStmtNode;
+
+    struct VarDeclarationNode* varDeclNode;
+    struct VarDeclarationListNode* varDeclListNode;
 }
 
-%token VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS GET SET DO WHILE FOR RETURN SUPER THIS NEW
+%token ENDL VAR LET CONST IF ELSE FUNCTION CLASS EXTENDS GET SET DO WHILE FOR RETURN SUPER THIS NEW
 %token ASYNC AS FROM YIELD KEYOF CONSTRUCTOR NAMESPACE ABSTRACT REQUIRE
 
 %token ANY NUMBER BOOLEAN STRING NEVER UNDEFINED UNIQUE SYMBOL OBJECT VOID
@@ -59,7 +68,6 @@ int syntaxErrorCounter = 0;
 %token FLOAT_LIT NULL_KW TRUE_KW FALSE_KW 
 %token <ident> ID
 
-%nonassoc ENDL
 %nonassoc TEMPLATE_LIT
 %nonassoc OPERATOR_INCREMENT OPERATOR_DECREMENT ENDL_OPERATOR_INCREMENT ENDL_OPERATOR_DECREMENT
 
@@ -94,15 +102,27 @@ int syntaxErrorCounter = 0;
 
 %start script
 
-%type <tsscript>script
-%type <tsscriptElementList>scriptElementList
-%type <tsscriptElement>scriptElement
+%type <tsscriptNode>script
+%type <tsscriptElementListNode>scriptElementList
+%type <tsscriptElementNode>scriptElement
 
-%type <stmtList>statementList
-%type <stmt>statementListItem
+%type <stmtListNode>statementList
+%type <stmtNode>statementListItem
+%type <stmtNode>statementListItemWithoutEmptyStatement
 
-%type <exprStmt>expressionStatement
-%type <exprStmt>singleExpression
+%type <exprStmtNode>expressionStatement
+%type <exprStmtNode>singleExpression
+
+%type <typeNode>type
+%type <typeNode>predefinedType
+%type <typeNode>typeAnnotation
+%type <typeNode>typeAnnotationOpt
+%type <tupleTypeNode>tupleTypeElements
+
+%type <varModifierType>varModifier
+%type <varStmtNode>varStatement
+%type <varDeclNode>varDeclaration
+%type <varDeclListNode>varDeclarationList
 
 %type <ident>identifier
 
@@ -141,7 +161,7 @@ statementList
 statementListItem
     : emptyStatement                { Print("- R: emptyStatement -> statementListItem"); }
     | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); $$ = createStatementFromExpression($1); }
-    | varStatement                  { Print("- R: varStatement -> statementListItem"); }
+    | varStatement                  { Print("- R: varStatement -> statementListItem"); $$ = createStatementFromVarStatement($1); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
     | returnStatement 
@@ -155,8 +175,8 @@ statementListItem
     ;
 
 statementListItemWithoutEmptyStatement
-    : expressionStatement           { Print("- R: expressionStatement -> statementListItemWithoutEmptyStatement"); }
-    | varStatement                  { Print("- R: varStatement -> statementListItemWithoutEmptyStatement"); }
+    : expressionStatement           { Print("- R: expressionStatement -> statementListItemWithoutEmptyStatement"); $$ = createStatementFromExpression($1); }
+    | varStatement                  { Print("- R: varStatement -> statementListItemWithoutEmptyStatement"); $$ = createStatementFromVarStatement($1); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItemWithoutEmptyStatement"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItemWithoutEmptyStatement"); }
     | returnStatement
@@ -190,35 +210,35 @@ blockStatement
     // ====== TYPES ======
 
 type
-    : '(' type ')'                              { Print("- R: '(' type ')' -> type"); }
-    | predefinedType                            { Print("- R: predefinedType -> type"); }
-    | type '[' ']'                              { Print("- R: type '[' ']' -> type"); }
-    | '[' tupleTypeElements ']'                 { Print("- R: '[' tupleTypeElements ']' -> type"); }
-    | ENDL_BRACKET_OPEN tupleTypeElements ']'   { Print("- R: '[' tupleTypeElements ']' -> type"); }
+    : '(' type ')'                              { Print("- R: '(' type ')' -> type"); $$ = $2; }
+    | predefinedType                            { Print("- R: predefinedType -> type"); $$ = $1; }
+    | type '[' ']'                              { Print("- R: type '[' ']' -> type"); $$ = createArrayTypeNode($1); }
+    | '[' tupleTypeElements ']'                 { Print("- R: '[' tupleTypeElements ']' -> type"); $$ = createTypeFromTupleType($2); }
+    | ENDL_BRACKET_OPEN tupleTypeElements ']'   { Print("- R: '[' tupleTypeElements ']' -> type"); $$ = createTypeFromTupleType($2); }
     ;
 
 tupleTypeElements
-    : /* empty */                   { Print("- R: #empty# -> tupleTypeElements"); }
-    | type                          { Print("- R: type -> tupleTypeElements"); }
-    | tupleTypeElements ',' type    { Print("- R: tupleTypeElements ',' type -> tupleTypeElements"); }
+    : /* empty */                   { Print("- R: #empty# -> tupleTypeElements"); $$ = createTupleTypeNode(nullptr); }
+    | type                          { Print("- R: type -> tupleTypeElements"); $$ = createTupleTypeNode($1); }
+    | tupleTypeElements ',' type    { Print("- R: tupleTypeElements ',' type -> tupleTypeElements"); $$ = addTypeToTupleType($1, $3); }
     ;
 
 predefinedType
-    : NUMBER        { Print("- R: NUMBER -> predefinedType"); }
-    | STRING        { Print("- R: STRING -> predefinedType"); }
-    | BOOLEAN       { Print("- R: BOOLEAN -> predefinedType"); }
-    | UNDEFINED     { Print("- R: UNDEFINED -> predefinedType"); }
-    | VOID          { Print("- R: VOID -> predefinedType"); }
-    | NULL_KW       { Print("- R: NULL_KW -> predefinedType"); }
+    : NUMBER        { Print("- R: NUMBER -> predefinedType"); $$ = createNumberTypeNode(); }
+    | STRING        { Print("- R: STRING -> predefinedType"); $$ = createStringTypeNode(); }
+    | BOOLEAN       { Print("- R: BOOLEAN -> predefinedType"); $$ = createBooleanTypeNode(); }
+    | UNDEFINED     { Print("- R: UNDEFINED -> predefinedType"); $$ = createUndefinedTypeNode(); }
+    | VOID          { Print("- R: VOID -> predefinedType"); $$ = createVoidTypeNode(); }
+    | NULL_KW       { Print("- R: NULL_KW -> predefinedType"); $$ = createNullTypeNode(); }
     ;
 
 typeAnnotationOpt
-    : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); }
-    | typeAnnotation    { Print("- R: typeAnnotation -> typeAnnotationOpt"); }
+    : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); $$ = nullptr; }
+    | typeAnnotation    { Print("- R: typeAnnotation -> typeAnnotationOpt"); $$ = $1; }
     ;
 
 typeAnnotation
-    : ':' type { Print("- R: ':' type -> typeAnnotation"); }
+    : ':' type { Print("- R: ':' type -> typeAnnotation"); $$ = $2; }
     ;
 
 // JavaScript supports arrasys like [,,1,2,,].
@@ -251,15 +271,15 @@ singleExpressionOpt
 
 singleExpression
     : identifier    { Print("- R: identifier -> singleExpression"); $$ = createIDExpressionNode($1); }
-    | THIS          { Print("- R: THIS -> singleExpression"); }
+    | THIS          { Print("- R: THIS -> singleExpression"); $$ = createThisExpressionNode(); }
     | SUPER         { Print("- R: SUPER -> singleExpression"); }
     | TRUE_KW       { Print("- R: TRUE_LITERAL -> singleExpression"); }
     | FALSE_KW      { Print("- R: FALSE_LITERAL -> singleExpression"); }
     | NULL_KW       { Print("- R: NULL_LITERAL -> singleExpression"); }
 
-    | STRING_LIT        { Print("- R: STRING_LIT -> singleExpression"); }
-    | INT_LIT           { Print("- R: INT_LIT -> singleExpression"); }
-    | FLOAT_LIT         { Print("- R: FLOAT_LIT -> singleExpression"); }
+    | STRING_LIT    { Print("- R: STRING_LIT -> singleExpression"); }
+    | INT_LIT       { Print("- R: INT_LIT -> singleExpression"); }
+    | FLOAT_LIT     { Print("- R: FLOAT_LIT -> singleExpression"); }
     | TEMPLATE_LIT  { Print("- R: TEMPLATE_LIT -> singleExpression"); }
 
     | '-' singleExpression %prec UMINUS { Print("- R: '-' singleExpression -> singleExpression"); }
@@ -275,7 +295,7 @@ singleExpression
     | OPERATOR_INCREMENT singleExpression %prec PREF_INCREMENT { Print("- R: OPERATOR_INCREMENT singleExpression -> singleExpression"); }
     | OPERATOR_DECREMENT singleExpression %prec PREF_DECREMENT { Print("- R: OPERATOR_DECREMENT singleExpression -> singleExpression"); }
 
-    | singleExpression '+' singleExpression { Print("- R: singleExpression '+' singleExpression -> singleExpression"); }
+    | singleExpression '+' singleExpression { Print("- R: singleExpression '+' singleExpression -> singleExpression"); $$ = createPlusExpressionNode($1, $3); }
     | singleExpression '-' singleExpression { Print("- R: singleExpression '-' singleExpression -> singleExpression"); }
     | singleExpression '*' singleExpression { Print("- R: singleExpression '*' singleExpression -> singleExpression"); }
     | singleExpression '/' singleExpression { Print("- R: singleExpression '/' singleExpression -> singleExpression"); }
@@ -372,24 +392,40 @@ singleExpression
     // ====== Variables ======
 
 varStatement
-    : varModifier varDeclarationList ';' { Print("- R: varModifier varDeclarationList ';' -> varStatement"); }
+    : varModifier varDeclarationList ';' { Print("- R: varModifier varDeclarationList ';' -> varStatement"); $$ = createVarStatementNode($1, $2); }
     | varModifier error ';'
     ;
 
 varDeclarationList
-    : varDeclaration                        { Print("- R: varDeclaration -> varDeclarationList"); }
-    | varDeclarationList ',' varDeclaration { Print("- R: varDeclarationList ',' varDeclaration -> varDeclarationList"); }
+    : varDeclaration                       
+        {
+             Print("- R: varDeclaration -> varDeclarationList");
+             $$ = createVarDeclarationListNode($1);
+        }
+    | varDeclarationList ',' varDeclaration 
+        { 
+            Print("- R: varDeclarationList ',' varDeclaration -> varDeclarationList");
+            $$ = addVarDeclarationToVarDeclarationList($1, $3);
+        }
     ;
 
 varDeclaration
-    : identifier typeAnnotationOpt                         { Print("- R: identifier typeAnnotationOpt -> varDeclaration"); }
-    | identifier typeAnnotationOpt '=' singleExpression    { Print("- R: identifier typeAnnotationOpt '=' singleExpression -> varDeclaration"); }
+    : identifier typeAnnotationOpt                         
+        { 
+            Print("- R: identifier typeAnnotationOpt -> varDeclaration"); 
+            $$ = createVarDeclarationNode($1, $2, nullptr); 
+        }
+    | identifier typeAnnotationOpt '=' singleExpression    
+        { 
+            Print("- R: identifier typeAnnotationOpt '=' singleExpression -> varDeclaration"); 
+            $$ = createVarDeclarationNode($1, $2, $4); 
+        }
     ;
 
 varModifier
-    : VAR   { Print("- R: VAR -> varModifier"); }
-    | LET   { Print("- R: LET -> varModifier"); }
-    | CONST { Print("- R: CONST -> varModifier"); }
+    : VAR   { Print("- R: VAR -> varModifier"); $$ = VarModifierType::_VAR; }
+    | LET   { Print("- R: LET -> varModifier"); $$ = VarModifierType::_LET; }
+    | CONST { Print("- R: CONST -> varModifier"); $$ = VarModifierType::_CONST; }
     ;
 
     // ====== Conditions ====== 

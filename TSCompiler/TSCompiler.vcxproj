@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CustomBuildAfterTargets>BuildGenerateSources</CustomBuildAfterTargets>
-    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -154,20 +154,19 @@
     <ClCompile Include="lexer.flex.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.tab.cpp" />
-    <ClCompile Include="parsing_tree.cpp" />
+    <ClCompile Include="Tree\parsing_tree.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Bison Include="parser.y">
-      <Verbose Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</Verbose>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">--report=lookahead --report=solved --report=counterexamples --report=itemset %(AdditionalOptions)</AdditionalOptions>
+      <Verbose Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</Verbose>
     </Bison>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dot.h" />
-    <ClInclude Include="nodes.h" />
     <ClInclude Include="parser.tab.h" />
-    <ClInclude Include="parsing_tree.h" />
+    <ClInclude Include="Tree\nodes.h" />
+    <ClInclude Include="Tree\parsing_tree.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
