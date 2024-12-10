@@ -139,12 +139,44 @@ ExpressionNode* createFuncCallExpressionNode(char* idStr, ExpressionListNode* pa
     return node;
 }
 
+ExpressionNode* createEmptyArrayElementExpressionNode() {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_ARRAY_EMPTY_ELEMENT;
+    node->id = ID++;
+    return node;
+}
+
+ExpressionNode* createExpressionFromExpressionList(ExpressionListNode* params) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_ARRAY_CREATION;
+
+    // removing last empty array element
+    if (params->first != nullptr && params->last != nullptr 
+        && params->last->type == ExpressionType::_ARRAY_EMPTY_ELEMENT) {
+        auto* child = params->first;
+        while (child->next != nullptr && child->next != params->last) {
+            child = child->next;
+        }
+
+        child->next = nullptr;
+        free(params->last);
+        params->last = child;
+    }
+    node->params = params;
+    node->id = ID++;
+    return node;
+}
+
+
     // ====== ExpressionList ====== //
 
 ExpressionListNode* createExpressionListFromExpression(ExpressionNode* expr) {
     ExpressionListNode* leftExprList = nullptr;
     ExpressionListNode* rightExprList = nullptr;
 
+    if (expr == nullptr) {
+        return new ExpressionListNode{};
+    }
     switch (expr->type)
     {
     case ExpressionType::_COMMA:
@@ -153,8 +185,9 @@ ExpressionListNode* createExpressionListFromExpression(ExpressionNode* expr) {
 
         leftExprList->last->next = rightExprList->first;
         leftExprList->last = rightExprList->last;
+
+        free(rightExprList);
         return leftExprList;
-    
     default:
         auto* node = new ExpressionListNode{};
         node->first = expr;
@@ -164,6 +197,25 @@ ExpressionListNode* createExpressionListFromExpression(ExpressionNode* expr) {
     }
 }
 
+ExpressionListNode* createExpressionListNode(ExpressionNode* firstChild) {
+    auto* node = new ExpressionListNode{};
+    node->first = firstChild;
+    node->last = firstChild;
+    node->id = ID++;
+    return node;
+}
+ExpressionListNode* addExpressionToExpressionList(ExpressionListNode* list, ExpressionNode* child) {
+    list->last->next = child;
+    list->last = child;
+    return list;
+}
+ExpressionListNode* addExpressionListToExpressionList(ExpressionListNode* fisrtList, ExpressionListNode* secondList) {
+    fisrtList->last->next = secondList->first;
+    fisrtList->last = secondList->last;
+
+    free(secondList);
+    return fisrtList;
+}
 
     // ====== Statement ====== //
 

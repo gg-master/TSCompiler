@@ -46,6 +46,7 @@ int syntaxErrorCounter = 0;
     struct StatementListNode* stmtListNode;
     struct StatementNode* stmtNode;
 
+    struct ExpressionListNode* exprListNode;
     struct ExpressionNode* exprStmtNode;
 
     struct TypeNode* typeNode;
@@ -112,6 +113,11 @@ int syntaxErrorCounter = 0;
 
 %type <exprStmtNode>expressionStatement
 %type <exprStmtNode>singleExpression
+%type <exprStmtNode>singleExpressionOpt
+%type <exprStmtNode>elementListItem
+%type <exprStmtNode>arrayLiteral
+
+%type <exprListNode>elementList
 
 %type <typeNode>type
 %type <typeNode>predefinedType
@@ -243,19 +249,31 @@ typeAnnotation
 
 // JavaScript supports arrasys like [,,1,2,,].
 arrayLiteral
-    : '[' elementList ']'               { Print("- R: [ elementList ']' -> arrayLiteral"); }
-    | ENDL_BRACKET_OPEN elementList ']' { Print("- R: ENDL_BRACKET_OPEN elementList ']' -> arrayLiteral"); }
+    : '[' elementList ']'               { Print("- R: [ elementList ']' -> arrayLiteral"); $$ = createExpressionFromExpressionList($2); }
+    | ENDL_BRACKET_OPEN elementList ']' { Print("- R: ENDL_BRACKET_OPEN elementList ']' -> arrayLiteral"); $$ = createExpressionFromExpressionList($2); }
     ;
 
 elementList
-    : elementListItem { Print("- R: elementListItem -> elementList"); }
-    | elementList ',' elementListItem %prec COMMA_SEPARATOR { Print("- R: elementList ',' elementListItem -> elementList"); }
+    : elementListItem 
+        { 
+            Print("- R: elementListItem -> elementList");
+            $$ = createExpressionListFromExpression($1);
+        }
+    | elementList ',' elementListItem %prec COMMA_SEPARATOR 
+        { 
+            Print("- R: elementList ',' elementListItem -> elementList"); 
+            $$ = addExpressionListToExpressionList($1, createExpressionListFromExpression($3)); 
+        }
     ;
 
 elementListItem
-    : /* empty */ { Print("- R: #empty# -> elementListItem"); }
-    | singleExpression { Print("- R: singleExpression -> elementListItem"); }
-    | singleExpression ',' { Print("- R: singleExpression ',' -> elementListItem"); }
+    : /* empty */ { Print("- R: #empty# -> elementListItem"); $$ = createEmptyArrayElementExpressionNode(); }
+    | singleExpression { Print("- R: singleExpression -> elementListItem"); $$ = $1; }
+    | singleExpression ',' 
+        { 
+            Print("- R: singleExpression ',' -> elementListItem"); 
+            $$ = createCommaExpressionNode($1, createEmptyArrayElementExpressionNode());
+        }
     ;
 
     // ====== EXPRESSIONS ======
@@ -265,8 +283,8 @@ expressionStatement
     ;
 
 singleExpressionOpt
-    : /* empty */       { Print("- R: #empty# -> singleExpressionOpt"); }
-    | singleExpression    { Print("- R: singleExpression -> singleExpressionOpt"); }
+    : /* empty */       { Print("- R: #empty# -> singleExpressionOpt"); $$ = nullptr; }
+    | singleExpression    { Print("- R: singleExpression -> singleExpressionOpt"); $$ = $1; }
     ;
 
 singleExpression
@@ -380,7 +398,7 @@ singleExpression
     | singleExpression '.' identifier '(' singleExpression ')' { Print("- R: singleExpression '.' identifier '(' singleExpression ')' -> singleExpression"); }
     | singleExpression '.' identifier '(' singleExpression ',' ')' { Print("- R: singleExpression '.' identifier '(' singleExpression ',' ')' -> singleExpression"); }
 
-    | arrayLiteral                                            { Print("- R: arrayLiteral -> singleExpression"); }
+    | arrayLiteral                                            { Print("- R: arrayLiteral -> singleExpression"); $$ = $1; }
     | singleExpression '[' singleExpression ']'               { Print("- R: singleExpression '[' expressionList ']' -> singleExpression"); }
     | singleExpression ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN expressionList ']' -> singleExpression"); }
 

@@ -172,6 +172,14 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
+    case ExpressionType::_ARRAY_CREATION:
+        out << MakeNode(node->id, "ArrayCreation");
+        ToDot(node->params, out);
+        out << MakeConnection(node->id, node->params->id);
+        break;
+    case ExpressionType::_ARRAY_EMPTY_ELEMENT:
+        out << MakeNode(node->id, "ArrayEmptyElement");
+        break;
     default:
         break;
     }

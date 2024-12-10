@@ -55,6 +55,7 @@ enum class ExpressionType
 	_THIS,
 	_SUPER,
 
+	_ARRAY_EMPTY_ELEMENT,
 	_ARRAY_CREATION,
 	_ARRAY_ACCESS,
 

@@ -37,9 +37,18 @@ ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, E
 ExpressionNode* createFuncCallExpressionNode(char* idStr, ExpressionListNode* params);
 
 
+ExpressionNode* createEmptyArrayElementExpressionNode();
+
+ExpressionNode* createExpressionFromExpressionList(ExpressionListNode* params);
+
+
     // ====== ExpressionList ====== //
 
 ExpressionListNode* createExpressionListFromExpression(ExpressionNode* expr);
+
+ExpressionListNode* createExpressionListNode(ExpressionNode* firstChild);
+ExpressionListNode* addExpressionToExpressionList(ExpressionListNode* list, ExpressionNode* child);
+ExpressionListNode* addExpressionListToExpressionList(ExpressionListNode* fisrtList, ExpressionListNode* secondList);
 
 
 	// ====== Statement ====== //

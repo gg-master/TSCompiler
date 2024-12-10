@@ -152,6 +152,7 @@ union YYSTYPE
     struct StatementListNode* stmtListNode;
     struct StatementNode* stmtNode;
 
+    struct ExpressionListNode* exprListNode;
     struct ExpressionNode* exprStmtNode;
 
     struct TypeNode* typeNode;
@@ -163,7 +164,7 @@ union YYSTYPE
     struct VarDeclarationNode* varDeclNode;
     struct VarDeclarationListNode* varDeclListNode;
 
-#line 167 "parser.tab.h"
+#line 168 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
