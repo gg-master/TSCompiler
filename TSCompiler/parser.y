@@ -47,13 +47,12 @@ int syntaxErrorCounter = 0;
     struct StatementNode* stmtNode;
 
     struct ExpressionListNode* exprListNode;
-    struct ExpressionNode* exprStmtNode;
+    struct ExpressionNode* exprNode;
 
     struct TypeNode* typeNode;
     struct TupleTypeNode* tupleTypeNode;
 
     enum class VarModifierType varModifierType;
-    struct VarStatementNode* varStmtNode;
 
     struct VarDeclarationNode* varDeclNode;
     struct VarDeclarationListNode* varDeclListNode;
@@ -112,12 +111,13 @@ int syntaxErrorCounter = 0;
 %type <stmtListNode>statementList
 %type <stmtNode>statementListItem
 %type <stmtNode>statementListItemWithoutEmptyStatement
+%type <stmtNode>expressionStatement
+%type <stmtNode>varStatement
 
-%type <exprStmtNode>expressionStatement
-%type <exprStmtNode>singleExpression
-%type <exprStmtNode>singleExpressionOpt
-%type <exprStmtNode>elementListItem
-%type <exprStmtNode>arrayLiteral
+%type <exprNode>singleExpression
+%type <exprNode>singleExpressionOpt
+%type <exprNode>elementListItem
+%type <exprNode>arrayLiteral
 
 %type <exprListNode>elementList
 
@@ -128,7 +128,6 @@ int syntaxErrorCounter = 0;
 %type <tupleTypeNode>tupleTypeElements
 
 %type <varModifierType>varModifier
-%type <varStmtNode>varStatement
 %type <varDeclNode>varDeclaration
 %type <varDeclListNode>varDeclarationList
 
@@ -168,8 +167,8 @@ statementList
 
 statementListItem
     : emptyStatement                { Print("- R: emptyStatement -> statementListItem"); }
-    | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); $$ = createStatementFromExpression($1); }
-    | varStatement                  { Print("- R: varStatement -> statementListItem"); $$ = createStatementFromVarStatement($1); }
+    | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); $$ = $1; }
+    | varStatement                  { Print("- R: varStatement -> statementListItem"); $$ = $1; }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
     | returnStatement 
@@ -183,8 +182,8 @@ statementListItem
     ;
 
 statementListItemWithoutEmptyStatement
-    : expressionStatement           { Print("- R: expressionStatement -> statementListItemWithoutEmptyStatement"); $$ = createStatementFromExpression($1); }
-    | varStatement                  { Print("- R: varStatement -> statementListItemWithoutEmptyStatement"); $$ = createStatementFromVarStatement($1); }
+    : expressionStatement           { Print("- R: expressionStatement -> statementListItemWithoutEmptyStatement"); $$ = $1; }
+    | varStatement                  { Print("- R: varStatement -> statementListItemWithoutEmptyStatement"); $$ = $1; }
     | ifStatement                   { Print("- R: ifStatement -> statementListItemWithoutEmptyStatement"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItemWithoutEmptyStatement"); }
     | returnStatement
@@ -281,7 +280,7 @@ elementListItem
     // ====== EXPRESSIONS ======
 
 expressionStatement
-    : singleExpression ';' { Print("- R: expressionList ';' -> expressionStatement"); $$ = $1; }
+    : singleExpression ';' { Print("- R: expressionList ';' -> expressionStatement"); $$ = createExpressionStatementNode($1); }
     ;
 
 singleExpressionOpt

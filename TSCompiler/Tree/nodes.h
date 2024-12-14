@@ -95,39 +95,6 @@ struct ExpressionListNode
 };
 
 
-	// ====== Statement ====== //
-
-enum class StatementType
-{
-	_EMPTY,
-	_EXPRESSION,
-	_VAR,
-	_WHILE,
-	_DOWHILE,
-	_FOR,
-	_RETURN,
-};
-
-struct StatementNode
-{
-	int id;
-
-	enum StatementType type;
-
-	struct ExpressionNode* expression;
-	struct VarStatementNode* varStmt;
-
-	struct StatementNode * next;
-};
-
-struct StatementListNode
-{
-	int id;
-
-	struct StatementNode* first;
-	struct StatementNode* last;
-};
-
 	// ====== Types ====== //
 
 enum class TypeType
@@ -187,15 +154,6 @@ inline std::string ToString(VarModifierType type) {
 	}
 }
 
-struct VarStatementNode
-{
-	int id;
-
-	enum VarModifierType modifierType;
-
-	struct VarDeclarationListNode* declList;
-};
-
 struct VarDeclarationNode
 {
 	int id;
@@ -213,6 +171,44 @@ struct VarDeclarationListNode
 
 	struct VarDeclarationNode* first;
 	struct VarDeclarationNode* last;
+};
+
+
+	// ====== Statement ====== //
+
+enum class StatementType
+{
+	_EMPTY,
+	_EXPRESSION,
+	_VAR,
+	_WHILE,
+	_DOWHILE,
+	_FOR,
+	_RETURN,
+};
+
+struct StatementNode
+{
+	int id;
+
+	enum StatementType type;
+	
+	// exprStmt
+	struct ExpressionNode* expression;
+
+	// varStmt
+	enum class VarModifierType modifierType;
+	struct VarDeclarationListNode* declList;
+
+	struct StatementNode * next;
+};
+
+struct StatementListNode
+{
+	int id;
+
+	struct StatementNode* first;
+	struct StatementNode* last;
 };
 
 

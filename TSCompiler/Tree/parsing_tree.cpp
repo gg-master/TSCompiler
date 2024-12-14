@@ -217,40 +217,6 @@ ExpressionListNode* addExpressionListToExpressionList(ExpressionListNode* fisrtL
     return fisrtList;
 }
 
-    // ====== Statement ====== //
-
-StatementNode* createStatementFromExpression(ExpressionNode* expr) {
-    auto* stmt = new StatementNode{};
-    stmt->type = StatementType::_EXPRESSION;
-    stmt->expression = expr;
-    stmt->id = ID++;
-    return stmt;
-}
-
-StatementNode* createStatementFromVarStatement(VarStatementNode* varStmt) {
-    auto* stmt = new StatementNode{};
-    stmt->type = StatementType::_VAR;
-    stmt->varStmt = varStmt;
-    stmt->id = ID++;
-    return stmt;
-}
-
-    // ====== StatementList ====== //
-
-StatementListNode* createStatementListNode(StatementNode* firstChild) {
-    auto* node = new StatementListNode{};
-    node->first = firstChild;
-    node->last = firstChild;
-    node->id = ID++;
-    return node;
-}
-
-StatementListNode* addStatementToStatementList(StatementListNode* list, StatementNode* statement) {
-    list->last->next = statement;
-    list->last = statement;
-    return list;
-}
-
 
 	// ====== Types ====== //
 
@@ -320,14 +286,6 @@ TupleTypeNode* addTypeToTupleType(TupleTypeNode* list, TypeNode* typeNode) {
 
 	// ====== Variables ====== //
 
-VarStatementNode* createVarStatementNode(enum VarModifierType modifierType, VarDeclarationListNode* declList) {
-    auto* node = new VarStatementNode{};
-    node->modifierType = modifierType;
-    node->declList = declList;
-    node->id = ID++;
-    return node;
-}
-
 VarDeclarationNode* createVarDeclarationNode(char* idStr, TypeNode* varType, ExpressionNode* initExpr) {
     auto* node = new VarDeclarationNode{};
     node->identifierStr = idStr;
@@ -347,6 +305,42 @@ VarDeclarationListNode* createVarDeclarationListNode(VarDeclarationNode* firstCh
 VarDeclarationListNode* addVarDeclarationToVarDeclarationList(VarDeclarationListNode* list, VarDeclarationNode* child) {
     list->last->next = child;
     list->last = child;
+    return list;
+}
+
+
+    // ====== Statement ====== //
+
+StatementNode* createExpressionStatementNode(ExpressionNode* expr) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_EXPRESSION;
+    stmt->expression = expr;
+    stmt->id = ID++;
+    return stmt;
+}
+
+StatementNode* createVarStatementNode(enum VarModifierType modifierType, VarDeclarationListNode* declList) {
+    auto* node = new StatementNode{};
+    node->type = StatementType::_VAR;
+    node->modifierType = modifierType;
+    node->declList = declList;
+    node->id = ID++;
+    return node;
+}
+
+    // ====== StatementList ====== //
+
+StatementListNode* createStatementListNode(StatementNode* firstChild) {
+    auto* node = new StatementListNode{};
+    node->first = firstChild;
+    node->last = firstChild;
+    node->id = ID++;
+    return node;
+}
+
+StatementListNode* addStatementToStatementList(StatementListNode* list, StatementNode* statement) {
+    list->last->next = statement;
+    list->last = statement;
     return list;
 }
 

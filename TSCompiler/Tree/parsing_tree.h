@@ -50,19 +50,6 @@ ExpressionListNode* createExpressionListNode(ExpressionNode* firstChild);
 ExpressionListNode* addExpressionToExpressionList(ExpressionListNode* list, ExpressionNode* child);
 ExpressionListNode* addExpressionListToExpressionList(ExpressionListNode* fisrtList, ExpressionListNode* secondList);
 
-
-	// ====== Statement ====== //
-
-StatementNode* createStatementFromExpression(ExpressionNode* expr);
-StatementNode* createStatementFromVarStatement(VarStatementNode* varStmt);
-
-
-	// ====== StatementList ====== //
-
-StatementListNode* createStatementListNode(StatementNode* firstChild);
-StatementListNode* addStatementToStatementList(StatementListNode* list, StatementNode* statement);
-
-
 	// ====== Types ====== //
 
 TypeNode* createNumberTypeNode();
@@ -81,12 +68,22 @@ TupleTypeNode* addTypeToTupleType(TupleTypeNode* list, TypeNode* typeNode);
 
 	// ====== VarDeclaration ====== //
 
-VarStatementNode* createVarStatementNode(VarModifierType modifierType, VarDeclarationListNode* declList);
-
 VarDeclarationNode* createVarDeclarationNode(char* idStr, TypeNode* varType, ExpressionNode* initExpr);
 
 VarDeclarationListNode* createVarDeclarationListNode(VarDeclarationNode* firstChild);
 VarDeclarationListNode* addVarDeclarationToVarDeclarationList(VarDeclarationListNode* list, VarDeclarationNode* child);
+
+
+	// ====== Statement ====== //
+
+StatementNode* createExpressionStatementNode(ExpressionNode* expr);
+StatementNode* createVarStatementNode(VarModifierType modifierType, VarDeclarationListNode* declList);
+
+
+	// ====== StatementList ====== //
+
+StatementListNode* createStatementListNode(StatementNode* firstChild);
+StatementListNode* addStatementToStatementList(StatementListNode* list, StatementNode* statement);
 
 
 	// ====== TSElementNode ====== //

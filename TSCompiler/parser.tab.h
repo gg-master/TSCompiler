@@ -153,18 +153,17 @@ union YYSTYPE
     struct StatementNode* stmtNode;
 
     struct ExpressionListNode* exprListNode;
-    struct ExpressionNode* exprStmtNode;
+    struct ExpressionNode* exprNode;
 
     struct TypeNode* typeNode;
     struct TupleTypeNode* tupleTypeNode;
 
     enum class VarModifierType varModifierType;
-    struct VarStatementNode* varStmtNode;
 
     struct VarDeclarationNode* varDeclNode;
     struct VarDeclarationListNode* varDeclListNode;
 
-#line 168 "parser.tab.h"
+#line 167 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -128,14 +128,6 @@ void ToDot(VarDeclarationListNode* node, std::ostream& out) {
     }
 }
 
-void ToDot(VarStatementNode* node, std::ostream& out) {
-    std::string name = "VarStatementNode\\nModifierType: " + ToString(node->modifierType);
-    out << MakeNode(node->id, name);
-
-    ToDot(node->declList, out);
-    out << MakeConnection(node->id, node->declList->id);
-}
-
 void ToDot(ExpressionListNode* node, std::ostream& out) {
     out << MakeNode(node->id, "ExpressionListNode");
 
@@ -195,16 +187,20 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
 }
 
 void ToDot(StatementNode* node, std::ostream& out) {
-    out << MakeNode(node->id, "StatementNode");
+    std::string name;
     switch (node->type)
     {
     case StatementType::_EXPRESSION:
+        out << MakeNode(node->id, "ExprStmtNode");
         ToDot(node->expression, out);
-        out << MakeConnection(node->id, node->expression->id, "exprStmt");
+        out << MakeConnection(node->id, node->expression->id);
         break;
     case StatementType::_VAR:
-        ToDot(node->varStmt, out);
-        out << MakeConnection(node->id, node->varStmt->id);
+        name = "VarStmtNode\\nModifierType: " + ToString(node->modifierType);
+        out << MakeNode(node->id, name);
+
+        ToDot(node->declList, out);
+        out << MakeConnection(node->id, node->declList->id);
         break;
     default:
         break;

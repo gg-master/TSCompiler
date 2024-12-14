@@ -20,4 +20,3 @@ void ToDot(TypeNode* node, std::ostream& out);
 
 void ToDot(VarDeclarationListNode* node, std::ostream& out);
 void ToDot(VarDeclarationNode* node, std::ostream& out);
-void ToDot(VarStatementNode* node, std::ostream& out);
