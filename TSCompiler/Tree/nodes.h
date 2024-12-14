@@ -5,38 +5,43 @@
 
 enum class ExpressionType 
 {
-	_IDENTIFIER,
-	_BOOLEAN_LIT,
-	_INT_LIT,
-	_FLOAT_LIT,
-	_STRING_LIT,
-	_NULL_LIT,
-	
-	_UPLUS,
-	_UMINUS,
-	
-	_PREF_INCREMENT,
-	_PREF_DECREMENT,
-	_POST_INCREMENT,
-	_POST_DECREMENT,
+	_IDENTIFIER, // Сделано
 
-	_PLUS,
-	_MINUS,
-	_DIV,
-	_MUL,
+	_PLUS, // Сделано
+	_MINUS, // Сделано
+	_MUL, // Сделано
+	_DIV, // Сделано
+	_LESS, // Сделано
+	_GREAT, // Сделано
 
-	_LESS,
-	_GREAT,
-	_EQUAL,
-	_NOT_EQUAL,
-	_STRICT_EQUAL,
-	_STRICT_NOT_EQUAL,
-	_LESS_EQUAL,
-	_GREAT_EQUAL,
+	_UPLUS, // Сделано
+	_UMINUS, // Сделано
 
-	_NOT,
-	_LOGICAL_OR,
-	_LOGICAL_AND,
+	_NOT, // Сделано
+	_LOGICAL_OR, // Сделано
+	_LOGICAL_AND, // Сделано
+
+	_COMMA, // Сделано
+	_BRACKETS, // Сделано
+
+	_THIS, // Сделано
+	_SUPER, // Сделано
+	_FUNC_CALL, // Сделано
+
+	_ARRAY_EMPTY_ELEMENT, // Сделано
+	_ARRAY_CREATION, // Сделано
+	_ARRAY_ACCESS,
+
+	_PREF_INCREMENT, // Сделано
+	_PREF_DECREMENT, // Сделано
+	_POST_INCREMENT, // Сделано
+	_POST_DECREMENT, // Сделано
+
+	_BOOLEAN_LIT, // ?
+	_INT_LIT, // ?
+	_FLOAT_LIT, // ?
+	_STRING_LIT, // ?
+	_NULL_LIT, // ?
 
 	_ASSIGN,
 	_ASSIGN_PLUS,
@@ -46,18 +51,15 @@ enum class ExpressionType
 	_ASSIGN_LOGICAL_OR,
 	_ASSIGN_LOGICAL_AND,
 
-	_COMMA,
-	_BRACKETS,
+	_EQUAL,
+	_NOT_EQUAL,
+	_STRICT_EQUAL,
+	_STRICT_NOT_EQUAL,
+	_LESS_EQUAL,
+	_GREAT_EQUAL,
+
 	_FIELD_ACCESS,
 	_METHOD_ACCESS,
-	_FUNC_CALL,
-	
-	_THIS,
-	_SUPER,
-
-	_ARRAY_EMPTY_ELEMENT,
-	_ARRAY_CREATION,
-	_ARRAY_ACCESS,
 
 	_NEW,
 };
