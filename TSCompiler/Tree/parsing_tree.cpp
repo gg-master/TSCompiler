@@ -311,6 +311,12 @@ VarDeclarationListNode* addVarDeclarationToVarDeclarationList(VarDeclarationList
 
     // ====== Statement ====== //
 
+StatementNode* createEmptyStatementNode() {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_EMPTY;
+    stmt->id = ID++;
+    return stmt;
+}
 StatementNode* createExpressionStatementNode(ExpressionNode* expr) {
     auto* stmt = new StatementNode{};
     stmt->type = StatementType::_EXPRESSION;
@@ -318,7 +324,6 @@ StatementNode* createExpressionStatementNode(ExpressionNode* expr) {
     stmt->id = ID++;
     return stmt;
 }
-
 StatementNode* createVarStatementNode(enum VarModifierType modifierType, VarDeclarationListNode* declList) {
     auto* node = new StatementNode{};
     node->type = StatementType::_VAR;
@@ -327,6 +332,21 @@ StatementNode* createVarStatementNode(enum VarModifierType modifierType, VarDecl
     node->id = ID++;
     return node;
 }
+StatementNode* createReturnStatementNode(ExpressionNode* expr) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_RETURN;
+    stmt->expression = expr;
+    stmt->id = ID++;
+    return stmt;
+}
+StatementNode* createBlockStatementNode(StatementListNode* stmtList) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_BLOCK;
+    stmt->stmtList = stmtList;
+    stmt->id = ID++;
+    return stmt;
+}
+
 
     // ====== StatementList ====== //
 

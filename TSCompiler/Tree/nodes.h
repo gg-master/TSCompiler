@@ -185,7 +185,10 @@ enum class StatementType
 	_DOWHILE,
 	_FOR,
 	_RETURN,
+	_BLOCK,
 };
+
+struct StatementListNode;
 
 struct StatementNode
 {
@@ -193,14 +196,17 @@ struct StatementNode
 
 	enum StatementType type;
 	
-	// exprStmt
+	// exprStmt, returnStmt
 	struct ExpressionNode* expression;
 
 	// varStmt
 	enum class VarModifierType modifierType;
 	struct VarDeclarationListNode* declList;
 
-	struct StatementNode * next;
+	// blockStmt
+	struct StatementListNode* stmtList;
+
+	struct StatementNode* next;
 };
 
 struct StatementListNode

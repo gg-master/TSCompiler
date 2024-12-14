@@ -111,8 +111,12 @@ int syntaxErrorCounter = 0;
 %type <stmtListNode>statementList
 %type <stmtNode>statementListItem
 %type <stmtNode>statementListItemWithoutEmptyStatement
+
 %type <stmtNode>expressionStatement
 %type <stmtNode>varStatement
+%type <stmtNode>emptyStatement
+%type <stmtNode>returnStatement
+%type <stmtNode>blockStatement
 
 %type <exprNode>singleExpression
 %type <exprNode>singleExpressionOpt
@@ -166,7 +170,7 @@ statementList
     ;
 
 statementListItem
-    : emptyStatement                { Print("- R: emptyStatement -> statementListItem"); }
+    : emptyStatement                { Print("- R: emptyStatement -> statementListItem"); $$ = $1; }
     | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); $$ = $1; }
     | varStatement                  { Print("- R: varStatement -> statementListItem"); $$ = $1; }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
@@ -176,9 +180,10 @@ statementListItem
             if ( !isInFunctionBody ) { 
                 yyerror("illegal return statement."); YYERROR;
             } 
-            Print("- R: returnStatement -> statementListItem"); 
+            Print("- R: returnStatement -> statementListItem");
+            $$ = $1;
         }
-    | blockStatement                { Print("- R: blockStatement -> statementListItem"); }
+    | blockStatement                { Print("- R: blockStatement -> statementListItem"); $$ = $1; }
     ;
 
 statementListItemWithoutEmptyStatement
@@ -191,9 +196,10 @@ statementListItemWithoutEmptyStatement
             if ( !isInFunctionBody ) { 
                 yyerror("illegal return statement."); YYERROR;
             } 
-            Print("- R: returnStatement -> statementListItemWithoutEmptyStatement"); 
+            Print("- R: returnStatement -> statementListItemWithoutEmptyStatement");
+            $$ = $1; 
         }
-    | blockStatement                { Print("- R: blockStatement -> statementListItemWithoutEmptyStatement"); }
+    | blockStatement                { Print("- R: blockStatement -> statementListItemWithoutEmptyStatement"); $$ = $1; }
 
     | error
     ;
@@ -205,13 +211,14 @@ emptyStatement
                 std::string text(yytext_ptr, yyleng);
                 yyerror(("syntax error on token: " + text).c_str()); YYERROR;
             }
-            Print("- R: ';' -> emptyStatement"); 
+            Print("- R: ';' -> emptyStatement");
+            $$ = createEmptyStatementNode();
         }
     ;
 
 blockStatement
-    : '{' '}' { Print("- R: '{' '}' -> blockStatement"); }
-    | '{' statementList '}' { Print("- R: '{' statementList '}' -> blockStatement"); }
+    : '{' '}' { Print("- R: '{' '}' -> blockStatement"); $$ = createBlockStatementNode(nullptr); }
+    | '{' statementList '}' { Print("- R: '{' statementList '}' -> blockStatement"); $$ = createBlockStatementNode($2); }
     ;
 
     // ====== TYPES ======
@@ -486,8 +493,8 @@ forHeader
     // === Functions ===
 
 returnStatement
-    : RETURN ';'                    { Print("- R: RETURN ';' -> returnStatement"); }
-    | RETURN singleExpression ';'   { Print("- R: RETURN singleExpression ';' -> returnStatement"); }
+    : RETURN ';'                    { Print("- R: RETURN ';' -> returnStatement"); $$ = createReturnStatementNode(nullptr); }
+    | RETURN singleExpression ';'   { Print("- R: RETURN singleExpression ';' -> returnStatement"); $$ = createReturnStatementNode($2); }
     ;
 
 functionDeclaration

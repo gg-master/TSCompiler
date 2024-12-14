@@ -190,6 +190,9 @@ void ToDot(StatementNode* node, std::ostream& out) {
     std::string name;
     switch (node->type)
     {
+    case StatementType::_EMPTY:
+        out << MakeNode(node->id, "EmptyStmtNode");
+        break;
     case StatementType::_EXPRESSION:
         out << MakeNode(node->id, "ExprStmtNode");
         ToDot(node->expression, out);
@@ -201,6 +204,16 @@ void ToDot(StatementNode* node, std::ostream& out) {
 
         ToDot(node->declList, out);
         out << MakeConnection(node->id, node->declList->id);
+        break;
+    case StatementType::_RETURN:
+        out << MakeNode(node->id, "ReturnStmtNode");
+        ToDot(node->expression, out);
+        out << MakeConnection(node->id, node->expression->id);
+        break;
+    case StatementType::_BLOCK:
+        out << MakeNode(node->id, "BlockStmtNode");
+        ToDot(node->stmtList, out);
+        out << MakeConnection(node->id, node->stmtList->id);
         break;
     default:
         break;

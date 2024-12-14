@@ -76,8 +76,11 @@ VarDeclarationListNode* addVarDeclarationToVarDeclarationList(VarDeclarationList
 
 	// ====== Statement ====== //
 
+StatementNode* createEmptyStatementNode();
 StatementNode* createExpressionStatementNode(ExpressionNode* expr);
 StatementNode* createVarStatementNode(VarModifierType modifierType, VarDeclarationListNode* declList);
+StatementNode* createReturnStatementNode(ExpressionNode* expr);
+StatementNode* createBlockStatementNode(StatementListNode* stmtList);
 
 
 	// ====== StatementList ====== //
