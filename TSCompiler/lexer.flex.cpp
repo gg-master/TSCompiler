@@ -3078,7 +3078,7 @@ YY_RULE_SETUP
 #line 1096 "lexer.l"
 {
     PrintStringLiteral(currentString);
-    yylval._string = Dublicate(currentString.c_str());
+    yylval.stringValue = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
     return STRING_LIT;
 }
@@ -3103,7 +3103,7 @@ YY_RULE_SETUP
 #line 1110 "lexer.l"
 {
     PrintStringLiteral(currentString);
-    yylval._string = Dublicate(currentString.c_str());
+    yylval.stringValue = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
     return STRING_LIT;
 }
@@ -3136,7 +3136,7 @@ YY_RULE_SETUP
 #line 1127 "lexer.l"
 {
     PrintStringLiteral(currentString);
-    yylval._string = Dublicate(currentString.c_str());
+    yylval.stringValue = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
     return TEMPLATE_LIT;
 }
@@ -3195,7 +3195,7 @@ YY_RULE_SETUP
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentInteger);
     PrintIntegerLiteral("decimal", currentInteger); 
-    yylval._integer = currentInteger;
+    yylval.integerValue = currentInteger;
     return INT_LIT;
 }
 	YY_BREAK
@@ -3214,7 +3214,7 @@ YY_RULE_SETUP
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
-    yylval._floatingPoint = currentFloatingPoint;
+    yylval.floatingPointValue = currentFloatingPoint;
     return FLOAT_LIT;
 }
 	YY_BREAK
@@ -3233,7 +3233,7 @@ YY_RULE_SETUP
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
-    yylval._floatingPoint = currentFloatingPoint;
+    yylval.floatingPointValue = currentFloatingPoint;
     return FLOAT_LIT;
 }
 	YY_BREAK
@@ -3253,7 +3253,7 @@ YY_RULE_SETUP
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 2);
     PrintIntegerLiteral("binary", currentInteger); 
-    yylval._integer = currentInteger;
+    yylval.integerValue = currentInteger;
     return INT_LIT;
 }
 	YY_BREAK
@@ -3280,7 +3280,7 @@ YY_RULE_SETUP
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 8);
     PrintIntegerLiteral("octal", currentInteger); 
-    yylval._integer = currentInteger;
+    yylval.integerValue = currentInteger;
     return INT_LIT;
 }
 	YY_BREAK
@@ -3307,7 +3307,7 @@ YY_RULE_SETUP
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 16);
     PrintIntegerLiteral("hexadecimal", currentInteger);
-    yylval._integer = currentInteger;
+    yylval.integerValue = currentInteger;
     return INT_LIT;
 }
 	YY_BREAK
@@ -3330,7 +3330,7 @@ YY_RULE_SETUP
 #line 1246 "lexer.l"
 { 
     Print("Found identifier: " + std::string{yytext}); 
-    yylval.ident = Dublicate(yytext);
+    yylval.identName = Dublicate(yytext);
     return ID;
 }
 	YY_BREAK

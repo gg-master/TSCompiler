@@ -1094,7 +1094,7 @@ new         {
 }
 <DOUBLE_STR>\" {
     PrintStringLiteral(currentString);
-    yylval._string = Dublicate(currentString.c_str());
+    yylval.stringValue = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
     return STRING_LIT;
 }
@@ -1108,7 +1108,7 @@ new         {
 }
 <SINGLE_STR>\' {
     PrintStringLiteral(currentString);
-    yylval._string = Dublicate(currentString.c_str());
+    yylval.stringValue = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
     return STRING_LIT;
 }
@@ -1125,7 +1125,7 @@ new         {
 }
 <TEMPLATE_STR>\` {
     PrintStringLiteral(currentString);
-    yylval._string = Dublicate(currentString.c_str());
+    yylval.stringValue = Dublicate(currentString.c_str());
     BEGIN(INITIAL);
     return TEMPLATE_LIT;
 }
@@ -1159,7 +1159,7 @@ new         {
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentInteger);
     PrintIntegerLiteral("decimal", currentInteger); 
-    yylval._integer = currentInteger;
+    yylval.integerValue = currentInteger;
     return INT_LIT;
 }
 {INVALID_UNDERLINE_DEC_INT_LIT} {
@@ -1171,7 +1171,7 @@ new         {
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
-    yylval._floatingPoint = currentFloatingPoint;
+    yylval.floatingPointValue = currentFloatingPoint;
     return FLOAT_LIT;
 }
 {INVALID_UNDERLINE_DEC_INT_LIT}(_*)(\.|(\.?{INVALID_UNDERLINE_EXPONENT_PART})) {
@@ -1183,7 +1183,7 @@ new         {
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str(), number_string.c_str() + number_string.size(), currentFloatingPoint);
     PrintFloatingPointLiteral(currentFloatingPoint);
-    yylval._floatingPoint = currentFloatingPoint;
+    yylval.floatingPointValue = currentFloatingPoint;
     return FLOAT_LIT;
 }
 ({INVALID_UNDERLINE_DEC_INT_LIT})?(_*)\.{INVALID_UNDERLINE_DEC_DIGITS}({INVALID_UNDERLINE_EXPONENT_PART})? {
@@ -1197,7 +1197,7 @@ new         {
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 2);
     PrintIntegerLiteral("binary", currentInteger); 
-    yylval._integer = currentInteger;
+    yylval.integerValue = currentInteger;
     return INT_LIT;
 }
 0(_*)[bB](_*){INVALID_UNDERLINE_BIN_DIGITS} {
@@ -1214,7 +1214,7 @@ new         {
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 8);
     PrintIntegerLiteral("octal", currentInteger); 
-    yylval._integer = currentInteger;
+    yylval.integerValue = currentInteger;
     return INT_LIT;
 }
 0(_*)[oO](_*){INVALID_UNDERLINE_OCTAL_DIGITS} {
@@ -1231,7 +1231,7 @@ new         {
     RemoveCharacterFromString(number_string, '_');
     std::from_chars(number_string.c_str() + 2, number_string.c_str() + number_string.size(), currentInteger, 16);
     PrintIntegerLiteral("hexadecimal", currentInteger);
-    yylval._integer = currentInteger;
+    yylval.integerValue = currentInteger;
     return INT_LIT;
 }
 0(_*)[xX](_*){INVALID_UNDERLINE_HEX_DIGITS} {
@@ -1244,7 +1244,7 @@ new         {
 
 [[:alpha:]_$][[:alnum:]_$]* { 
     Print("Found identifier: " + std::string{yytext}); 
-    yylval.ident = Dublicate(yytext);
+    yylval.identName = Dublicate(yytext);
     return ID;
 }
 

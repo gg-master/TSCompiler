@@ -151,7 +151,16 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
     switch (node->type)
     {
     case ExpressionType::_IDENTIFIER:
-        out << MakeNode(node->id, std::string{ node->identifierString });
+        out << MakeNode(node->id, "IdentName:\n" + std::string{ node->identifierString });
+        break;
+    case ExpressionType::_INT_LIT:
+        out << MakeNode(node->id, "IntLiteral:\n" + std::to_string(node->intValue));
+        break;
+    case ExpressionType::_FLOAT_LIT:
+        out << MakeNode(node->id, "FloatLiteral:\n" + std::to_string(node->floatValue));
+        break;
+    case ExpressionType::_STRING_LIT:
+        out << MakeNode(node->id, "StringLiteral:\n\\\"" + std::string{ node->stringValue } + "\\\"");
         break;
     case ExpressionType::_COMMA:
         out << MakeNode(node->id, "CommaOperator");
@@ -191,7 +200,7 @@ void ToDot(StatementNode* node, std::ostream& out) {
     {
     case StatementType::_EXPRESSION:
         ToDot(node->expression, out);
-        out << MakeConnection(node->id, node->expression->id);
+        out << MakeConnection(node->id, node->expression->id, "exprStmt");
         break;
     case StatementType::_VAR:
         ToDot(node->varStmt, out);

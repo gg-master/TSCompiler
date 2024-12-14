@@ -28,14 +28,14 @@ ExpressionNode* createFloatLiteralExpressionNode(double value) {
     node->id = ID++;
     return node;
 }
-ExpressionNode* createTrueLiteralExpressionNode(double value) {
+ExpressionNode* createTrueLiteralExpressionNode() {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_BOOLEAN_LIT;
     node->boolValue = 1;
     node->id = ID++;
     return node;
 }
-ExpressionNode* createFalseLiteralExpressionNode(double value) {
+ExpressionNode* createFalseLiteralExpressionNode() {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_BOOLEAN_LIT;
     node->boolValue = 0;

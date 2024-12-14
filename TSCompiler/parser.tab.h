@@ -91,14 +91,14 @@ extern int yydebug;
     SYMBOL = 292,                  /* SYMBOL  */
     OBJECT = 293,                  /* OBJECT  */
     VOID = 294,                    /* VOID  */
-    STRING_LIT = 295,              /* STRING_LIT  */
-    INT_LIT = 296,                 /* INT_LIT  */
-    FLOAT_LIT = 297,               /* FLOAT_LIT  */
-    NULL_KW = 298,                 /* NULL_KW  */
-    TRUE_KW = 299,                 /* TRUE_KW  */
-    FALSE_KW = 300,                /* FALSE_KW  */
-    ID = 301,                      /* ID  */
-    TEMPLATE_LIT = 302,            /* TEMPLATE_LIT  */
+    NULL_KW = 295,                 /* NULL_KW  */
+    TRUE_KW = 296,                 /* TRUE_KW  */
+    FALSE_KW = 297,                /* FALSE_KW  */
+    TEMPLATE_LIT = 298,            /* TEMPLATE_LIT  */
+    STRING_LIT = 299,              /* STRING_LIT  */
+    INT_LIT = 300,                 /* INT_LIT  */
+    FLOAT_LIT = 301,               /* FLOAT_LIT  */
+    ID = 302,                      /* ID  */
     OPERATOR_INCREMENT = 303,      /* OPERATOR_INCREMENT  */
     OPERATOR_DECREMENT = 304,      /* OPERATOR_DECREMENT  */
     ENDL_OPERATOR_INCREMENT = 305, /* ENDL_OPERATOR_INCREMENT  */
@@ -140,10 +140,10 @@ union YYSTYPE
 {
 #line 36 "parser.y"
 
-    int _integer;
-    char* _string;
-    char* ident;
-    double _floatingPoint;
+    int integerValue;
+    char* stringValue;
+    char* identName;
+    double floatingPointValue;
 
     struct TSScriptNode* tsscriptNode;
     struct TSElementListNode* tsscriptElementListNode;

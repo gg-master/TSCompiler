@@ -34,10 +34,10 @@ int syntaxErrorCounter = 0;
 %define parse.error verbose
 
 %union {
-    int _integer;
-    char* _string;
-    char* ident;
-    double _floatingPoint;
+    int integerValue;
+    char* stringValue;
+    char* identName;
+    double floatingPointValue;
 
     struct TSScriptNode* tsscriptNode;
     struct TSElementListNode* tsscriptElementListNode;
@@ -64,10 +64,12 @@ int syntaxErrorCounter = 0;
 
 %token ANY NUMBER BOOLEAN STRING NEVER UNDEFINED UNIQUE SYMBOL OBJECT VOID
 
-%token STRING_LIT
-%token INT_LIT
-%token FLOAT_LIT NULL_KW TRUE_KW FALSE_KW 
-%token <ident> ID
+%token NULL_KW TRUE_KW FALSE_KW 
+%token <stringValue> TEMPLATE_LIT
+%token <stringValue> STRING_LIT
+%token <integerValue> INT_LIT
+%token <floatingPointValue> FLOAT_LIT 
+%token <identName> ID
 
 %nonassoc TEMPLATE_LIT
 %nonassoc OPERATOR_INCREMENT OPERATOR_DECREMENT ENDL_OPERATOR_INCREMENT ENDL_OPERATOR_DECREMENT
@@ -130,7 +132,7 @@ int syntaxErrorCounter = 0;
 %type <varDeclNode>varDeclaration
 %type <varDeclListNode>varDeclarationList
 
-%type <ident>identifier
+%type <identName>identifier
 
 %%
 
@@ -295,10 +297,10 @@ singleExpression
     | FALSE_KW      { Print("- R: FALSE_LITERAL -> singleExpression"); }
     | NULL_KW       { Print("- R: NULL_LITERAL -> singleExpression"); }
 
-    | STRING_LIT    { Print("- R: STRING_LIT -> singleExpression"); }
-    | INT_LIT       { Print("- R: INT_LIT -> singleExpression"); }
-    | FLOAT_LIT     { Print("- R: FLOAT_LIT -> singleExpression"); }
-    | TEMPLATE_LIT  { Print("- R: TEMPLATE_LIT -> singleExpression"); }
+    | STRING_LIT    { Print("- R: STRING_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
+    | TEMPLATE_LIT  { Print("- R: TEMPLATE_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
+    | INT_LIT       { Print("- R: INT_LIT -> singleExpression"); $$ = createIntLiteralExpressionNode($1); }
+    | FLOAT_LIT     { Print("- R: FLOAT_LIT -> singleExpression"); $$ = createFloatLiteralExpressionNode($1); }
 
     | '-' singleExpression %prec UMINUS { Print("- R: '-' singleExpression -> singleExpression"); }
     | '+' singleExpression %prec UPLUS  { Print("- R: '+' singleExpression -> singleExpression"); }
