@@ -107,12 +107,12 @@ void ToDot(VarDeclarationNode* node, std::ostream& out) {
 
     if (node->varType != nullptr) {
         ToDot(node->varType, out);
-        out << MakeConnection(node->id, node->varType->id, "Var type");
+        out << MakeConnection(node->id, node->varType->id, "type");
     }
 
     if (node->initExpression != nullptr) {
         ToDot(node->initExpression, out);
-        out << MakeConnection(node->id, node->initExpression->id, "Init");
+        out << MakeConnection(node->id, node->initExpression->id, "init");
     }
 }
 
@@ -207,13 +207,80 @@ void ToDot(StatementNode* node, std::ostream& out) {
         break;
     case StatementType::_RETURN:
         out << MakeNode(node->id, "ReturnStmtNode");
-        ToDot(node->expression, out);
-        out << MakeConnection(node->id, node->expression->id);
+
+        if (node->expression != nullptr) {
+            ToDot(node->expression, out);
+            out << MakeConnection(node->id, node->expression->id);
+        }
         break;
     case StatementType::_BLOCK:
         out << MakeNode(node->id, "BlockStmtNode");
-        ToDot(node->stmtList, out);
-        out << MakeConnection(node->id, node->stmtList->id);
+
+        if (node->stmtList != nullptr) {
+            ToDot(node->stmtList, out);
+            out << MakeConnection(node->id, node->stmtList->id);
+        }
+        break;
+    case StatementType::_CONDITION:
+        out << MakeNode(node->id, "ConditionStmtNode");
+        ToDot(node->expression, out);
+        out << MakeConnection(node->id, node->expression->id);
+
+        ToDot(node->ifBody, out);
+        out << MakeConnection(node->id, node->ifBody->id);
+
+        if (node->elseBody != nullptr) {
+            ToDot(node->elseBody, out);
+            out << MakeConnection(node->id, node->elseBody->id);
+        }
+        break;
+    case StatementType::_DOWHILE:
+        out << MakeNode(node->id, "DoWhileStmtNode");
+        ToDot(node->iterationBody, out);
+        out << MakeConnection(node->id, node->iterationBody->id, "body");
+
+        ToDot(node->expression, out);
+        out << MakeConnection(node->id, node->expression->id, "condition");
+        break;
+    case StatementType::_WHILE:
+        out << MakeNode(node->id, "WhileStmtNode");
+        ToDot(node->iterationBody, out);
+        out << MakeConnection(node->id, node->iterationBody->id, "body");
+
+        ToDot(node->expression, out);
+        out << MakeConnection(node->id, node->expression->id, "condition");
+        break;
+    case StatementType::_FOR:
+        out << MakeNode(node->id, "ForStmtNode");
+        ToDot(node->iterationBody, out);
+        out << MakeConnection(node->id, node->iterationBody->id, "body");
+
+        if (node->expression != nullptr) {
+            ToDot(node->expression, out);
+            out << MakeConnection(node->id, node->expression->id, "expr");
+        }
+
+        if (node->iterationExprAdd1 != nullptr) {
+            ToDot(node->iterationExprAdd1, out);
+            out << MakeConnection(node->id, node->iterationExprAdd1->id, "exprAdd1");
+        }
+
+        if (node->iterationExprAdd2 != nullptr) {
+            ToDot(node->iterationExprAdd2, out);
+            out << MakeConnection(node->id, node->iterationExprAdd2->id, "exprAdd2");
+        }
+
+        if (node->declList != nullptr) {
+            ToDot(node->declList, out);
+            out << MakeConnection(node->id, node->declList->id, ToString(node->modifierType));
+        }
+
+        if (node->decl != nullptr) {
+            ToDot(node->decl, out);
+            out << MakeConnection(node->id, node->decl->id, ToString(node->modifierType));
+        }
+        
+        
         break;
     default:
         break;

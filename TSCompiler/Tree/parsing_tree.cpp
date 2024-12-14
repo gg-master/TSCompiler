@@ -159,6 +159,11 @@ ExpressionNode* createExpressionFromExpressionList(ExpressionListNode* params) {
         }
 
         child->next = nullptr;
+        
+        if (params->first == params->last) {
+            params->first = nullptr;
+            child = nullptr;
+        }
         free(params->last);
         params->last = child;
     }
@@ -343,6 +348,82 @@ StatementNode* createBlockStatementNode(StatementListNode* stmtList) {
     auto* stmt = new StatementNode{};
     stmt->type = StatementType::_BLOCK;
     stmt->stmtList = stmtList;
+    stmt->id = ID++;
+    return stmt;
+}
+StatementNode* createIfElseStatementNode(ExpressionNode* condition, StatementNode* ifBody, StatementNode* elseBody) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_CONDITION;
+    stmt->expression = condition;
+    stmt->ifBody = ifBody;
+    stmt->elseBody = elseBody;
+    stmt->id = ID++;
+    return stmt;
+}
+
+StatementNode* createDoWhileStatementNode(StatementNode* body, ExpressionNode* condition) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_DOWHILE;
+    stmt->iterationBody = body;
+    stmt->expression = condition;
+    stmt->id = ID++;
+    return stmt;
+}
+StatementNode* createWhileStatementNode(ExpressionNode* condition, StatementNode* body) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_WHILE;
+    stmt->iterationBody = body;
+    stmt->expression = condition;
+    stmt->id = ID++;
+    return stmt;
+}
+StatementNode* createClassicForStatementNode(
+    ExpressionNode* expr1, ExpressionNode* expr2, ExpressionNode* expr3, StatementNode* body
+) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_FOR;
+    stmt->iterationBody = body;
+    stmt->expression = expr1;
+    stmt->iterationExprAdd1 = expr2;
+    stmt->iterationExprAdd2 = expr3;
+    stmt->id = ID++;
+    return stmt;
+}
+StatementNode* createClassicForWithVarDeclStatementNode(
+    VarModifierType modifierType,
+    VarDeclarationListNode* declList,
+    ExpressionNode* expr2,
+    ExpressionNode* expr3,
+    StatementNode* body
+) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_FOR;
+    stmt->iterationBody = body;
+    stmt->modifierType = modifierType;
+    stmt->declList = declList;
+    stmt->iterationExprAdd1 = expr2;
+    stmt->iterationExprAdd2 = expr3;
+    stmt->id = ID++;
+    return stmt;
+}
+StatementNode* createForExprInExprStatementNode(ExpressionNode* expr1, ExpressionNode* expr2, StatementNode* body) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_FOR;
+    stmt->iterationBody = body;
+    stmt->expression = expr1;
+    stmt->iterationExprAdd1 = expr2;
+    stmt->id = ID++;
+    return stmt;
+}
+StatementNode* createForVarDeclInExprStatementNode(
+    VarModifierType modifierType, VarDeclarationNode* decl, ExpressionNode* expr, StatementNode* body
+) {
+    auto* stmt = new StatementNode{};
+    stmt->type = StatementType::_FOR;
+    stmt->iterationBody = body;
+    stmt->modifierType = modifierType;
+    stmt->decl = decl;
+    stmt->expression = expr;
     stmt->id = ID++;
     return stmt;
 }

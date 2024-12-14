@@ -1,0 +1,13 @@
+digraph TSScript {
+6 [label="Script"]
+5 [label="TSElementListNode"]
+4 [label="TSElementNode"]
+3 [label="ExprStmtNode"]
+2 [label="ArrayCreation"]
+1 [label="ExpressionListNode"]
+2 -> 1
+3 -> 2
+4 -> 3
+5 -> 4
+6 -> 5
+}

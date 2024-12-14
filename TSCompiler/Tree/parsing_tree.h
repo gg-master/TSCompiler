@@ -81,6 +81,14 @@ StatementNode* createExpressionStatementNode(ExpressionNode* expr);
 StatementNode* createVarStatementNode(VarModifierType modifierType, VarDeclarationListNode* declList);
 StatementNode* createReturnStatementNode(ExpressionNode* expr);
 StatementNode* createBlockStatementNode(StatementListNode* stmtList);
+StatementNode* createIfElseStatementNode(ExpressionNode* condition, StatementNode* ifBody, StatementNode* elseBody);
+
+StatementNode* createDoWhileStatementNode(StatementNode* body, ExpressionNode* condition);
+StatementNode* createWhileStatementNode(ExpressionNode* condition, StatementNode* body);
+StatementNode* createClassicForStatementNode(ExpressionNode* expr1, ExpressionNode* expr2, ExpressionNode* expr3, StatementNode* body);
+StatementNode* createClassicForWithVarDeclStatementNode(VarModifierType modifierType, VarDeclarationListNode* declList, ExpressionNode* expr2, ExpressionNode* expr3, StatementNode* body);
+StatementNode* createForExprInExprStatementNode(ExpressionNode* expr1, ExpressionNode* expr2, StatementNode* body);
+StatementNode* createForVarDeclInExprStatementNode(VarModifierType modifierType, VarDeclarationNode* decl, ExpressionNode* expr, StatementNode* body);
 
 
 	// ====== StatementList ====== //

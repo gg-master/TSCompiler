@@ -181,6 +181,7 @@ enum class StatementType
 	_EMPTY,
 	_EXPRESSION,
 	_VAR,
+	_CONDITION,
 	_WHILE,
 	_DOWHILE,
 	_FOR,
@@ -196,15 +197,25 @@ struct StatementNode
 
 	enum StatementType type;
 	
-	// exprStmt, returnStmt
+	// exprStmt, returnStmt, conditшon-head
 	struct ExpressionNode* expression;
 
-	// varStmt
+	// varStmt, iterations
 	enum class VarModifierType modifierType;
 	struct VarDeclarationListNode* declList;
+	struct VarDeclarationNode* decl;
 
 	// blockStmt
 	struct StatementListNode* stmtList;
+
+	// condition
+	struct StatementNode* ifBody;
+	struct StatementNode* elseBody;
+
+	// iterations
+	struct StatementNode* iterationBody;
+	struct ExpressionNode* iterationExprAdd1;
+	struct ExpressionNode* iterationExprAdd2;
 
 	struct StatementNode* next;
 };

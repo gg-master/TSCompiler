@@ -117,6 +117,8 @@ int syntaxErrorCounter = 0;
 %type <stmtNode>emptyStatement
 %type <stmtNode>returnStatement
 %type <stmtNode>blockStatement
+%type <stmtNode>ifStatement
+%type <stmtNode>iterationStatement
 
 %type <exprNode>singleExpression
 %type <exprNode>singleExpressionOpt
@@ -170,9 +172,9 @@ statementList
     ;
 
 statementListItem
-    : emptyStatement                { Print("- R: emptyStatement -> statementListItem"); $$ = $1; }
-    | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); $$ = $1; }
-    | varStatement                  { Print("- R: varStatement -> statementListItem"); $$ = $1; }
+    : emptyStatement                { Print("- R: emptyStatement -> statementListItem"); }
+    | expressionStatement           { Print("- R: expressionStatement -> statementListItem"); }
+    | varStatement                  { Print("- R: varStatement -> statementListItem"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItem"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItem"); }
     | returnStatement 
@@ -181,14 +183,13 @@ statementListItem
                 yyerror("illegal return statement."); YYERROR;
             } 
             Print("- R: returnStatement -> statementListItem");
-            $$ = $1;
         }
-    | blockStatement                { Print("- R: blockStatement -> statementListItem"); $$ = $1; }
+    | blockStatement                { Print("- R: blockStatement -> statementListItem"); }
     ;
 
 statementListItemWithoutEmptyStatement
-    : expressionStatement           { Print("- R: expressionStatement -> statementListItemWithoutEmptyStatement"); $$ = $1; }
-    | varStatement                  { Print("- R: varStatement -> statementListItemWithoutEmptyStatement"); $$ = $1; }
+    : expressionStatement           { Print("- R: expressionStatement -> statementListItemWithoutEmptyStatement"); }
+    | varStatement                  { Print("- R: varStatement -> statementListItemWithoutEmptyStatement"); }
     | ifStatement                   { Print("- R: ifStatement -> statementListItemWithoutEmptyStatement"); }
     | iterationStatement            { Print("- R: iterationStatement -> statementListItemWithoutEmptyStatement"); }
     | returnStatement
@@ -197,9 +198,8 @@ statementListItemWithoutEmptyStatement
                 yyerror("illegal return statement."); YYERROR;
             } 
             Print("- R: returnStatement -> statementListItemWithoutEmptyStatement");
-            $$ = $1; 
         }
-    | blockStatement                { Print("- R: blockStatement -> statementListItemWithoutEmptyStatement"); $$ = $1; }
+    | blockStatement                { Print("- R: blockStatement -> statementListItemWithoutEmptyStatement"); }
 
     | error
     ;
@@ -458,32 +458,56 @@ varModifier
 
 ifStatement
     : IF '(' singleExpression ')' statementListItemWithoutEmptyStatement %prec IF_ONLY_PREC 
-        { Print("- R: IF '(' expressionList ')' statementListItem -> ifStatement"); }
+        { 
+            Print("- R: IF '(' expressionList ')' statementListItem -> ifStatement");
+            $$ = createIfElseStatementNode($3, $5, nullptr);
+        }
 
     | IF '(' singleExpression ')' statementListItemWithoutEmptyStatement ELSE statementListItem 
-        { Print("- R: IF '(' expressionList ')' statementListItem ELSE statementListItem -> ifStatement"); }
+        { 
+            Print("- R: IF '(' expressionList ')' statementListItem ELSE statementListItem -> ifStatement");
+            $$ = createIfElseStatementNode($3, $5, $7);
+        }
     ;
 
     // ====== Iterations ======
 
 iterationStatement
     : DO statementListItem WHILE '(' singleExpression ')' { doWhileASI(); } ';'                           
-        { Print("- R: DO statementListItem WHILE '(' expressionList ')' ';' -> iterationStatement"); }
+        { 
+            Print("- R: DO statementListItem WHILE '(' expressionList ')' ';' -> iterationStatement");
+            $$ = createDoWhileStatementNode($2, $5);
+        }
 
     | WHILE '(' singleExpression ')' statementListItem                                                             
-        { Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement"); }
+        { 
+            Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement");
+            $$ = createWhileStatementNode($3, $5);
+        }
 
     | forHeader singleExpressionOpt ';' singleExpressionOpt ';' singleExpressionOpt ')' { isInForHeader = 0; } statementListItem                
-        { Print("- R: FOR '(' singleExpressionOpt ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement"); }
+        { 
+            Print("- R: FOR '(' singleExpressionOpt ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement");
+            $$ = createClassicForStatementNode($2, $4, $6, $9);
+        }
 
     | forHeader varModifier varDeclarationList ';' singleExpressionOpt ';' singleExpressionOpt ')' { isInForHeader = 0; } statementListItem   
-        { Print("- R: FOR '(' varModifier varDeclarationList ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement"); }
+        {
+            Print("- R: FOR '(' varModifier varDeclarationList ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement");
+            $$ = createClassicForWithVarDeclStatementNode($2, $3, $5, $7, $10);
+        }
 
     | forHeader singleExpression IN singleExpression ')' { isInForHeader = 0; } statementListItem                                         
-        { Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement"); }
+        {
+            Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement");
+            $$ = createForExprInExprStatementNode($2, $4, $7);
+        }
 
     | forHeader varModifier varDeclaration IN singleExpression ')' { isInForHeader = 0; } statementListItem                                 
-        { Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement"); }
+        {
+            Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement");
+            $$ = createForVarDeclInExprStatementNode($2, $3, $5, $8);
+        }
     ;
 
 forHeader
