@@ -149,6 +149,11 @@ union YYSTYPE
     struct TSElementListNode* tsscriptElementListNode;
     struct TSElementNode* tsscriptElementNode;
 
+    struct RequiredParameterNode* requiredParameterNode;
+    struct RequiredParameterListNode* requiredParameterListNode;
+    struct CallSignatureNode* callSignatureNode;
+    struct FunctionDeclarationNode* funcDeclarationNode;
+
     struct StatementListNode* stmtListNode;
     struct StatementNode* stmtNode;
 
@@ -163,7 +168,7 @@ union YYSTYPE
     struct VarDeclarationNode* varDeclNode;
     struct VarDeclarationListNode* varDeclListNode;
 
-#line 167 "parser.tab.h"
+#line 172 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

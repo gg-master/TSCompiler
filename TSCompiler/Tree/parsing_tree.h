@@ -97,9 +97,22 @@ StatementListNode* createStatementListNode(StatementNode* firstChild);
 StatementListNode* addStatementToStatementList(StatementListNode* list, StatementNode* statement);
 
 
+	// ====== Function declaration ====== //
+
+FunctionDeclarationNode* createFunctionDeclarationNode(char* funcName, CallSignatureNode* callSignature, StatementListNode* body);
+
+CallSignatureNode* createCallSignatureNode(RequiredParameterListNode* params, TypeNode* returnType);
+
+RequiredParameterListNode* createRequiredParameterListNode(RequiredParameterNode* firstChild);
+RequiredParameterListNode* addRequiredParameterToRequiredParameterList(RequiredParameterListNode* list, RequiredParameterNode* child);
+
+RequiredParameterNode* createRequiredParameterNode(char* paramName, TypeNode* paramType);
+
+
 	// ====== TSElementNode ====== //
 
 TSElementNode* createElementFromStatement(StatementNode* stmt);
+TSElementNode* createElementFromFuncDeclaration(FunctionDeclarationNode* funcDecl);
 
 
 	// ====== TSElementListNode ====== //

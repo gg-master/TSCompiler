@@ -446,16 +446,64 @@ StatementListNode* addStatementToStatementList(StatementListNode* list, Statemen
 }
 
 
+	// ====== Function declaration ====== //
+
+FunctionDeclarationNode* createFunctionDeclarationNode(char* funcName, CallSignatureNode* callSignature, StatementListNode* body) {
+    auto* node = new FunctionDeclarationNode{};
+    node->funcName = funcName;
+    node->callSignature = callSignature;
+    node->body = body;
+    node->id = ID++;
+    return node;
+}
+
+CallSignatureNode* createCallSignatureNode(RequiredParameterListNode* params, TypeNode* returnType) {
+    auto* node = new CallSignatureNode{};
+    node->params = params;
+    node->returnType = returnType;
+    node->id = ID++;
+    return node;
+}
+
+RequiredParameterListNode* createRequiredParameterListNode(RequiredParameterNode* firstChild) {
+    auto* node = new RequiredParameterListNode{};
+    node->first = firstChild;
+    node->last = firstChild;
+    node->id = ID++;
+    return node;
+}
+RequiredParameterListNode* addRequiredParameterToRequiredParameterList(RequiredParameterListNode* list, RequiredParameterNode* child) {
+    list->last->next = child;
+    list->last = child;
+    return list;
+}
+
+RequiredParameterNode* createRequiredParameterNode(char* paramName, TypeNode* paramType) {
+    auto* node = new RequiredParameterNode{};
+    node->paramName = paramName;
+    node->paramType = paramType;
+    node->id = ID++;
+    return node;
+}
+
+
     // ====== TSElementNode ====== //
 
 TSElementNode* createElementFromStatement(StatementNode* stmt) {
     auto* node = new TSElementNode{};
-    node->stmt = stmt;
     node->type = TSElementType::_STATEMENT_LIST;
-    node->next = NULL;
+    node->stmt = stmt;
     node->id = ID++;
     return node;
 }
+TSElementNode* createElementFromFuncDeclaration(FunctionDeclarationNode* funcDecl) {
+    auto* node = new TSElementNode{};
+    node->type = TSElementType::_FUNCTION;
+    node->funcDecl = funcDecl;
+    node->id = ID++;
+    return node;
+}
+
 
     // ====== TSElementListNode ====== //
 

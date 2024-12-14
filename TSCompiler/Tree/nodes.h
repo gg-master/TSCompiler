@@ -229,6 +229,44 @@ struct StatementListNode
 };
 
 
+	// ====== Function declaration ====== //
+
+struct FunctionDeclarationNode
+{
+	int id;
+
+	char* funcName;
+	struct CallSignatureNode* callSignature;
+	struct StatementListNode* body;
+};
+
+struct CallSignatureNode
+{
+	int id;
+
+	struct RequiredParameterListNode* params;
+	struct TypeNode* returnType;
+};
+
+struct RequiredParameterNode
+{
+	int id;
+
+	char* paramName;
+	struct TypeNode* paramType;
+
+	struct RequiredParameterNode* next;
+};
+
+struct RequiredParameterListNode
+{
+	int id;
+
+	struct RequiredParameterNode* first;
+	struct RequiredParameterNode* last;
+};
+
+
 	// ====== TS Script ====== //
 
 enum class TSElementType
@@ -245,6 +283,7 @@ struct TSElementNode
 	enum TSElementType type;
 
 	struct StatementNode* stmt;
+	struct FunctionDeclarationNode* funcDecl;
 
 	struct TSElementNode* next;
 };

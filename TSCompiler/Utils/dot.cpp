@@ -29,32 +29,6 @@ std::string MakeConnection(const size_t id1, const size_t id2, std::string note 
     return res;
 }
 
-std::string ReplaceAll(std::string str, const std::string& from, const std::string& to)
-{
-    size_t start_pos = 0;
-    while ((start_pos = str.find(from, start_pos)) != std::string::npos)
-    {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
-    }
-    return str;
-}
-
-//std::string QualifiedNameToString(IdentifierList* identifiers)
-//{
-//    if (!identifiers)
-//        return "";
-//    std::string name;
-//    for (const auto& id : identifiers->Identifiers)
-//    {
-//        name += id;
-//        name += '.';
-//    }
-//    name.pop_back();
-//    return name;
-//}
-//void ToDot()
-
 void ToDot(TupleTypeNode* node, std::ostream& out) {
     out << MakeNode(node->id, "TupleTypeNode");
     TypeNode* child = node->first;
@@ -279,8 +253,6 @@ void ToDot(StatementNode* node, std::ostream& out) {
             ToDot(node->decl, out);
             out << MakeConnection(node->id, node->decl->id, ToString(node->modifierType));
         }
-        
-        
         break;
     default:
         break;
@@ -298,11 +270,64 @@ void ToDot(StatementListNode* node, std::ostream& out) {
     }
 }
 
+void ToDot(RequiredParameterNode* node, std::ostream& out) {
+    out << MakeNode(node->id, "RequiredParameterNode\\nName: " + std::string{ node->paramName });
+
+    if (node->paramType != nullptr) {
+        ToDot(node->paramType, out);
+        out << MakeConnection(node->id, node->paramType->id, "type");
+    }
+}
+
+void ToDot(RequiredParameterListNode* node, std::ostream& out) {
+    out << MakeNode(node->id, "RequiredParameterListNode");
+
+    RequiredParameterNode* child = node->first;
+    while (child != NULL) {
+        ToDot(child, out);
+        out << MakeConnection(node->id, child->id);
+        child = child->next;
+    }
+}
+
+void ToDot(CallSignatureNode* node, std::ostream& out) {
+    out << MakeNode(node->id, "CallSignatureNode");
+
+    ToDot(node->params, out);
+    out << MakeConnection(node->id, node->params->id, "params");
+
+    if (node->returnType != nullptr) {
+        ToDot(node->returnType, out);
+        out << MakeConnection(node->id, node->returnType->id, "returnType");
+    }
+}
+
+void ToDot(FunctionDeclarationNode* node, std::ostream& out) {
+    out << MakeNode(node->id, "FunctionDeclarationNode\\nName: " + std::string{ node->funcName });
+
+    ToDot(node->callSignature, out);
+    out << MakeConnection(node->id, node->callSignature->id);
+    
+    ToDot(node->body, out);
+    out << MakeConnection(node->id, node->body->id, "body");
+}
+
 void ToDot(TSElementNode* node, std::ostream& out) {
     out << MakeNode(node->id, "TSElementNode");
-    ToDot(node->stmt, out);
-    out << MakeConnection(node->id, node->stmt->id);
 
+    switch (node->type)
+    {
+    case TSElementType::_STATEMENT_LIST:
+        ToDot(node->stmt, out);
+        out << MakeConnection(node->id, node->stmt->id);
+        break;
+    case TSElementType::_FUNCTION:
+        ToDot(node->funcDecl, out);
+        out << MakeConnection(node->id, node->funcDecl->id);
+        break;
+    default:
+        break;
+    }
 }
 
 void ToDot(TSElementListNode* node, std::ostream& out) {

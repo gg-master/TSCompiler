@@ -43,6 +43,11 @@ int syntaxErrorCounter = 0;
     struct TSElementListNode* tsscriptElementListNode;
     struct TSElementNode* tsscriptElementNode;
 
+    struct RequiredParameterNode* requiredParameterNode;
+    struct RequiredParameterListNode* requiredParameterListNode;
+    struct CallSignatureNode* callSignatureNode;
+    struct FunctionDeclarationNode* funcDeclarationNode;
+
     struct StatementListNode* stmtListNode;
     struct StatementNode* stmtNode;
 
@@ -108,7 +113,16 @@ int syntaxErrorCounter = 0;
 %type <tsscriptElementListNode>scriptElementList
 %type <tsscriptElementNode>scriptElement
 
+%type <requiredParameterNode>requiredParameter
+%type <requiredParameterListNode>requiredParameterList
+%type <requiredParameterListNode>parameterList
+
+%type <callSignatureNode>callSignature
+%type <funcDeclarationNode>functionDeclaration
+
+%type <stmtListNode>functionBody
 %type <stmtListNode>statementList
+
 %type <stmtNode>statementListItem
 %type <stmtNode>statementListItemWithoutEmptyStatement
 
@@ -161,7 +175,7 @@ scriptElementList
 
 scriptElement
     : statementListItem     { Print("- R: statementListItem -> scriptElement"); $$ = createElementFromStatement($1); }
-    | functionDeclaration   { Print("- R: functionDeclaration -> scriptElement"); }
+    | functionDeclaration   { Print("- R: functionDeclaration -> scriptElement"); $$ = createElementFromFuncDeclaration($1); }
     | classDeclaration      { Print("- R: classDeclaration -> scriptElement"); }
     | error
     ;
@@ -522,31 +536,56 @@ returnStatement
     ;
 
 functionDeclaration
-    : FUNCTION identifier callSignature functionBody { Print("- R: FUNCTION ID callSignature functionBody -> functionDeclaration"); }
+    : FUNCTION identifier callSignature functionBody 
+        {
+            Print("- R: FUNCTION ID callSignature functionBody -> functionDeclaration");
+            $$ = createFunctionDeclarationNode($2, $3, $4);
+        }
     ;
 
 functionBody
-    : '{' '}'                                           { Print("- R: '{' '}' -> functionBody"); }
-    | '{' { isInFunctionBody = 1; } statementList '}'   { isInFunctionBody = 0; Print("- R: '{' statementList '}' -> functionBody"); }
+    : '{' '}' { Print("- R: '{' '}' -> functionBody"); $$ = createStatementListNode(nullptr); }
+    | '{' { isInFunctionBody = 1; } statementList '}'   
+        { 
+            isInFunctionBody = 0; 
+            Print("- R: '{' statementList '}' -> functionBody");
+            $$ = $3;
+        }
     ;
 
 callSignature
-    : '(' parameterList ')' typeAnnotationOpt  { Print("- R : '(' parameterList ')' typeAnnotation -> callSignature"); }
+    : '(' parameterList ')' typeAnnotationOpt  
+        {
+            Print("- R : '(' parameterList ')' typeAnnotation -> callSignature");
+            $$ = createCallSignatureNode($2, $4);
+        }
     ;
 
 parameterList
-    : /* empty */        { Print("- R: #empty# -> parameterList"); }
-    | requiredParameterList { Print("- R: requiredParameterList -> parameterList"); }
-    | requiredParameterList ',' { Print("- R: requiredParameterList ',' -> parameterList"); }
+    : /* empty */               { Print("- R: #empty# -> parameterList"); $$ = createRequiredParameterListNode(nullptr); }
+    | requiredParameterList     { Print("- R: requiredParameterList -> parameterList"); $$ = $1; }
+    | requiredParameterList ',' { Print("- R: requiredParameterList ',' -> parameterList"); $$ = $1; }
     ;
 
 requiredParameterList
-    : requiredParameter                             { Print("- R: requiredParameter -> requiredParameterList"); }
-    | requiredParameterList ',' requiredParameter   { Print("- R: requiredParameterList ',' requiredParameter -> requiredParameterList"); }
+    : requiredParameter                             
+        {
+            Print("- R: requiredParameter -> requiredParameterList");
+            $$ = createRequiredParameterListNode($1);
+        }
+    | requiredParameterList ',' requiredParameter   
+        {
+            Print("- R: requiredParameterList ',' requiredParameter -> requiredParameterList");
+            $$ = addRequiredParameterToRequiredParameterList($1, $3);
+        }
     ;
 
 requiredParameter
-    : identifier typeAnnotationOpt { Print("- R: ID typeAnnotationOpt -> requiredParameter"); }
+    : identifier typeAnnotationOpt 
+        { 
+            Print("- R: ID typeAnnotationOpt -> requiredParameter");
+            $$ = createRequiredParameterNode($1, $2);
+        }
     ;
 
     // === Classes ===
