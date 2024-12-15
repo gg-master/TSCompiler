@@ -128,6 +128,105 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
     case ExpressionType::_STRING_LIT:
         out << MakeNode(node->id, "StringLiteral:\n\\\"" + std::string{ node->stringValue } + "\\\"");
         break;
+    
+    
+
+    case ExpressionType::_PLUS:
+        out << MakeNode(node->id, "PlusOperator");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id);
+        break;
+    
+    case ExpressionType::_MINUS:
+        out << MakeNode(node->id, "MinusOperator");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id);
+        break;
+    
+    case ExpressionType::_MUL:
+        out << MakeNode(node->id, "MulOperator");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id);
+        break;
+    
+    case ExpressionType::_DIV:
+        out << MakeNode(node->id, "DivOperator");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id);
+        break;
+    
+    case ExpressionType::_LESS:
+        out << MakeNode(node->id, "LessOperator");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id);
+        break;
+    
+    case ExpressionType::_GREAT:
+        out << MakeNode(node->id, "GreatOperator");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id);
+        break;
+    
+
+
+    case ExpressionType::_UPLUS:
+        out << MakeNode(node->id, "UnaryPlusOperator");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+        break;
+    
+    case ExpressionType::_UMINUS:
+        out << MakeNode(node->id, "UnaryMinusOperator");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+        break;
+
+
+
+    case ExpressionType::_NOT:
+        out << MakeNode(node->id, "LogicalNot");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+        break;
+
+    case ExpressionType::_LOGICAL_OR:
+        out << MakeNode(node->id, "LogicalOr");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id);
+        break;
+    
+    case ExpressionType::_LOGICAL_AND:
+        out << MakeNode(node->id, "LogicalAnd");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id);
+        break;
+
+
+
     case ExpressionType::_COMMA:
         out << MakeNode(node->id, "CommaOperator");
         ToDot(node->firstOperand, out);
@@ -136,25 +235,71 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
-    case ExpressionType::_FUNC_CALL:
-        out << MakeNode(node->id, "FuncCall: " + std::string{node->identifierString} );
 
-        ToDot(node->params, out);
-        out << MakeConnection(node->id, node->params->id);
-        break;
     case ExpressionType::_BRACKETS:
         out << MakeNode(node->id, "Brackets");
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
+
+
+
+    case ExpressionType::_THIS:
+        out << MakeNode(node->id, "This");
+        break;
+
+    case ExpressionType::_SUPER:
+        out << MakeNode(node->id, "Super");
+        break;
+
+    case ExpressionType::_FUNC_CALL:
+        out << MakeNode(node->id, "FuncCall: " + std::string{node->identifierString} );
+        ToDot(node->params, out);
+        out << MakeConnection(node->id, node->params->id);
+        break;
+    
+
+
     case ExpressionType::_ARRAY_CREATION:
         out << MakeNode(node->id, "ArrayCreation");
         ToDot(node->params, out);
         out << MakeConnection(node->id, node->params->id);
         break;
+    
     case ExpressionType::_ARRAY_EMPTY_ELEMENT:
         out << MakeNode(node->id, "ArrayEmptyElement");
         break;
+    
+    // Сделано не до конца: требуется ArrayAccess
+
+
+
+    case ExpressionType::_PREF_INCREMENT:
+        out << MakeNode(node->id, "PrefIncrement");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+        break;
+    
+    case ExpressionType::_PREF_DECREMENT:
+        out << MakeNode(node->id, "PrefDecrement");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+        break;
+
+    case ExpressionType::_POST_INCREMENT:
+        out << MakeNode(node->id, "PostIncrement");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+        break;
+    
+    case ExpressionType::_POST_DECREMENT:
+        out << MakeNode(node->id, "PostDecrement");
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id);
+        break;
+
+
+
     default:
         break;
     }
