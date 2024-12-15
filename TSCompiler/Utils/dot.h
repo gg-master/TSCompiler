@@ -9,8 +9,11 @@ void ToDot(TSScriptNode* node, std::ostream& out);
 void ToDot(TSElementListNode* node, std::ostream& out);
 void ToDot(TSElementNode* node, std::ostream& out);
 
+void ToDot(ClassDeclarationNode* node, std::ostream& out);
+void ToDot(ClassElementListNode* node, std::ostream& out);
+void ToDot(ClassElementNode* node, std::ostream& out);
+
 void ToDot(FunctionDeclarationNode* node, std::ostream& out);
-void ToDot(CallSignatureNode* node, std::ostream& out);
 void ToDot(RequiredParameterListNode* node, std::ostream& out);
 void ToDot(RequiredParameterNode* node, std::ostream& out);
 

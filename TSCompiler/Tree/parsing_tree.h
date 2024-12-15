@@ -99,9 +99,7 @@ StatementListNode* addStatementToStatementList(StatementListNode* list, Statemen
 
 	// ====== Function declaration ====== //
 
-FunctionDeclarationNode* createFunctionDeclarationNode(char* funcName, CallSignatureNode* callSignature, StatementListNode* body);
-
-CallSignatureNode* createCallSignatureNode(RequiredParameterListNode* params, TypeNode* returnType);
+FunctionDeclarationNode* createFunctionDeclarationNode(char* funcName, RequiredParameterListNode* params, TypeNode* returnType, StatementListNode* body);
 
 RequiredParameterListNode* createRequiredParameterListNode(RequiredParameterNode* firstChild);
 RequiredParameterListNode* addRequiredParameterToRequiredParameterList(RequiredParameterListNode* list, RequiredParameterNode* child);
@@ -109,10 +107,25 @@ RequiredParameterListNode* addRequiredParameterToRequiredParameterList(RequiredP
 RequiredParameterNode* createRequiredParameterNode(char* paramName, TypeNode* paramType);
 
 
+	// ====== Class declaration ====== //
+
+ClassDeclarationNode* createClassDeclarationNode(char* className, char* heritageName, ClassElementListNode* body);
+
+ClassElementListNode* createClassElementListNode(ClassElementNode* firstChild);
+ClassElementListNode* addClassElementToClassElementList(ClassElementListNode* list, ClassElementNode* child);
+
+ClassElementNode* createClassConstructor(RequiredParameterListNode* params, StatementListNode* body);
+ClassElementNode* createClassProperty(char* name, TypeNode* propertyType, ExpressionNode* expression);
+ClassElementNode* createClassMethod(char* name, RequiredParameterListNode* params, TypeNode* returnType, StatementListNode* body);
+ClassElementNode* createClassGetter(char* name, TypeNode* returnType, StatementListNode* body);
+ClassElementNode* createClassSetter(char* name, RequiredParameterListNode* params, StatementListNode* body);
+
+
 	// ====== TSElementNode ====== //
 
 TSElementNode* createElementFromStatement(StatementNode* stmt);
 TSElementNode* createElementFromFuncDeclaration(FunctionDeclarationNode* funcDecl);
+TSElementNode* createElementFromClassDeclaration(ClassDeclarationNode* classDecl);
 
 
 	// ====== TSElementListNode ====== //

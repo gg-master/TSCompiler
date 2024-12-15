@@ -290,8 +290,8 @@ void ToDot(RequiredParameterListNode* node, std::ostream& out) {
     }
 }
 
-void ToDot(CallSignatureNode* node, std::ostream& out) {
-    out << MakeNode(node->id, "CallSignatureNode");
+void ToDot(FunctionDeclarationNode* node, std::ostream& out) {
+    out << MakeNode(node->id, "FunctionDeclarationNode\\nName: " + std::string{ node->funcName });
 
     ToDot(node->params, out);
     out << MakeConnection(node->id, node->params->id, "params");
@@ -300,17 +300,94 @@ void ToDot(CallSignatureNode* node, std::ostream& out) {
         ToDot(node->returnType, out);
         out << MakeConnection(node->id, node->returnType->id, "returnType");
     }
-}
-
-void ToDot(FunctionDeclarationNode* node, std::ostream& out) {
-    out << MakeNode(node->id, "FunctionDeclarationNode\\nName: " + std::string{ node->funcName });
-
-    ToDot(node->callSignature, out);
-    out << MakeConnection(node->id, node->callSignature->id);
     
     ToDot(node->body, out);
     out << MakeConnection(node->id, node->body->id, "body");
 }
+
+void ToDot(ClassElementNode* node, std::ostream& out) {
+    switch (node->type)
+    {
+    case ClassElementType::_CONSTRUCTOR:
+        out << MakeNode(node->id, "ClassConstructorNode");
+        ToDot(node->params, out);
+        out << MakeConnection(node->id, node->params->id, "params");
+
+        ToDot(node->methodBody, out);
+        out << MakeConnection(node->id, node->methodBody->id, "body");
+        break;
+    case ClassElementType::_PROPERTY:
+        out << MakeNode(node->id, "ClassPropertyNode\\nName: " + std::string{node->name});
+        
+        if (node->propertyAndReturnType != nullptr) {
+            ToDot(node->propertyAndReturnType, out);
+            out << MakeConnection(node->id, node->propertyAndReturnType->id, "type");
+        }
+
+        if (node->expression != nullptr) {
+            ToDot(node->expression, out);
+            out << MakeConnection(node->id, node->expression->id, "init");
+        }
+        break;
+    case ClassElementType::_METHOD:
+        out << MakeNode(node->id, "ClassMethodNode\\nName: " + std::string{node->name});
+        ToDot(node->params, out);
+        out << MakeConnection(node->id, node->params->id, "params");
+
+        if (node->propertyAndReturnType != nullptr) {
+            ToDot(node->propertyAndReturnType, out);
+            out << MakeConnection(node->id, node->propertyAndReturnType->id, "type");
+        }
+
+        ToDot(node->methodBody, out);
+        out << MakeConnection(node->id, node->methodBody->id, "body");
+        break;
+    case ClassElementType::_GETTER:
+        out << MakeNode(node->id, "ClassGetterNode\\nName: " + std::string{node->name});
+
+        if (node->propertyAndReturnType != nullptr) {
+            ToDot(node->propertyAndReturnType, out);
+            out << MakeConnection(node->id, node->propertyAndReturnType->id, "type");
+        }
+        
+        ToDot(node->methodBody, out);
+        out << MakeConnection(node->id, node->methodBody->id, "body");
+        break;
+    case ClassElementType::_SETTER:
+        out << MakeNode(node->id, "ClassSetterNode\\nName: " + std::string{node->name});
+        ToDot(node->params, out);
+        out << MakeConnection(node->id, node->params->id, "params");
+
+        ToDot(node->methodBody, out);
+        out << MakeConnection(node->id, node->methodBody->id, "body");
+        break;
+    default:
+        break;
+    }
+}
+
+void ToDot(ClassElementListNode* node, std::ostream& out) {
+    out << MakeNode(node->id, "ClassElementListNode");
+
+    ClassElementNode* child = node->first;
+    while (child != NULL) {
+        ToDot(child, out);
+        out << MakeConnection(node->id, child->id);
+        child = child->next;
+    }
+}
+
+void ToDot(ClassDeclarationNode* node, std::ostream& out) {
+    std::string name = "ClassDeclarationNode\\nName: " + std::string{ node->className };
+    if (node->heritageName != nullptr) {
+        name += "\\nHeritage: " + std::string{ node->heritageName };
+    }
+    out << MakeNode(node->id, name);
+
+    ToDot(node->body, out);
+    out << MakeConnection(node->id, node->body->id, "body");
+}
+
 
 void ToDot(TSElementNode* node, std::ostream& out) {
     out << MakeNode(node->id, "TSElementNode");
@@ -324,6 +401,10 @@ void ToDot(TSElementNode* node, std::ostream& out) {
     case TSElementType::_FUNCTION:
         ToDot(node->funcDecl, out);
         out << MakeConnection(node->id, node->funcDecl->id);
+        break;
+    case TSElementType::_CLASS:
+        ToDot(node->classDecl, out);
+        out << MakeConnection(node->id, node->classDecl->id);
         break;
     default:
         break;

@@ -236,16 +236,10 @@ struct FunctionDeclarationNode
 	int id;
 
 	char* funcName;
-	struct CallSignatureNode* callSignature;
-	struct StatementListNode* body;
-};
-
-struct CallSignatureNode
-{
-	int id;
-
 	struct RequiredParameterListNode* params;
 	struct TypeNode* returnType;
+
+	struct StatementListNode* body;
 };
 
 struct RequiredParameterNode
@@ -267,6 +261,53 @@ struct RequiredParameterListNode
 };
 
 
+	// ====== Class declaration ====== //
+
+enum class ClassElementType
+{
+	_CONSTRUCTOR,
+	_PROPERTY,
+	_METHOD,
+	_GETTER,
+	_SETTER,
+};
+
+struct ClassElementNode
+{
+	int id;
+
+	enum ClassElementType type;
+
+	char* name;
+	struct TypeNode* propertyAndReturnType;
+
+	struct ExpressionNode* expression;
+
+	struct RequiredParameterListNode* params;
+	struct StatementListNode* methodBody;
+
+	struct ClassElementNode* next;
+};
+
+struct ClassElementListNode
+{
+	int id;
+
+	struct ClassElementNode* first;
+	struct ClassElementNode* last;
+};
+
+struct ClassDeclarationNode
+{
+	int id;
+
+	char* className;
+	char* heritageName;
+
+	struct ClassElementListNode* body;
+};
+
+
 	// ====== TS Script ====== //
 
 enum class TSElementType
@@ -284,6 +325,7 @@ struct TSElementNode
 
 	struct StatementNode* stmt;
 	struct FunctionDeclarationNode* funcDecl;
+	struct ClassDeclarationNode* classDecl;
 
 	struct TSElementNode* next;
 };

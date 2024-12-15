@@ -43,8 +43,12 @@ int syntaxErrorCounter = 0;
     struct TSElementListNode* tsscriptElementListNode;
     struct TSElementNode* tsscriptElementNode;
 
-    struct RequiredParameterNode* requiredParameterNode;
+    struct ClassDeclarationNode* classDeclNode;
+    struct ClassElementListNode* classElementListNode;
+    struct ClassElementNode* classElementNode;
+
     struct RequiredParameterListNode* requiredParameterListNode;
+    struct RequiredParameterNode* requiredParameterNode;
     struct CallSignatureNode* callSignatureNode;
     struct FunctionDeclarationNode* funcDeclarationNode;
 
@@ -113,11 +117,15 @@ int syntaxErrorCounter = 0;
 %type <tsscriptElementListNode>scriptElementList
 %type <tsscriptElementNode>scriptElement
 
-%type <requiredParameterNode>requiredParameter
+%type <classDeclNode>classDeclaration
+%type <classElementListNode>classTail
+%type <classElementListNode>classElementList
+%type <classElementNode>classElement
+
 %type <requiredParameterListNode>requiredParameterList
+%type <requiredParameterNode>requiredParameter
 %type <requiredParameterListNode>parameterList
 
-%type <callSignatureNode>callSignature
 %type <funcDeclarationNode>functionDeclaration
 
 %type <stmtListNode>functionBody
@@ -152,6 +160,8 @@ int syntaxErrorCounter = 0;
 %type <varDeclListNode>varDeclarationList
 
 %type <identName>identifier
+%type <identName>propertyName
+%type <identName>classHeritage
 
 %%
 
@@ -176,7 +186,7 @@ scriptElementList
 scriptElement
     : statementListItem     { Print("- R: statementListItem -> scriptElement"); $$ = createElementFromStatement($1); }
     | functionDeclaration   { Print("- R: functionDeclaration -> scriptElement"); $$ = createElementFromFuncDeclaration($1); }
-    | classDeclaration      { Print("- R: classDeclaration -> scriptElement"); }
+    | classDeclaration      { Print("- R: classDeclaration -> scriptElement"); $$ = createElementFromClassDeclaration($1); }
     | error
     ;
 
@@ -536,10 +546,10 @@ returnStatement
     ;
 
 functionDeclaration
-    : FUNCTION identifier callSignature functionBody 
+    : FUNCTION identifier '(' parameterList ')' typeAnnotationOpt functionBody 
         {
-            Print("- R: FUNCTION ID callSignature functionBody -> functionDeclaration");
-            $$ = createFunctionDeclarationNode($2, $3, $4);
+            Print("- R: FUNCTION ID '(' parameterList ')' typeAnnotation functionBody -> functionDeclaration");
+            $$ = createFunctionDeclarationNode($2, $4, $6, $7);
         }
     ;
 
@@ -550,14 +560,6 @@ functionBody
             isInFunctionBody = 0; 
             Print("- R: '{' statementList '}' -> functionBody");
             $$ = $3;
-        }
-    ;
-
-callSignature
-    : '(' parameterList ')' typeAnnotationOpt  
-        {
-            Print("- R : '(' parameterList ')' typeAnnotation -> callSignature");
-            $$ = createCallSignatureNode($2, $4);
         }
     ;
 
@@ -591,41 +593,69 @@ requiredParameter
     // === Classes ===
 
 classDeclaration
-    : CLASS identifier classTail                { Print("- R: CLASS identifier classTail -> classDeclaration"); }
-    | CLASS identifier classHeritage classTail  { Print("- R: CLASS identifier classHeritage classTail -> classDeclaration"); }
+    : CLASS identifier classTail                
+        {
+            Print("- R: CLASS identifier classTail -> classDeclaration");
+            $$ = createClassDeclarationNode($2, nullptr, $3);
+        }
+    | CLASS identifier classHeritage classTail  
+        {
+            Print("- R: CLASS identifier classHeritage classTail -> classDeclaration");
+            $$ = createClassDeclarationNode($2, $3, $4);
+        }
     ;
 
 classHeritage
-    : EXTENDS identifier { Print("- R: EXTENDS identifier -> classHeritage"); }
+    : EXTENDS identifier { Print("- R: EXTENDS identifier -> classHeritage"); $$ = $2; }
     ; 
 
 classTail
-    : '{' '}'                   { Print("- R: '{' '}' -> classTail"); }
-    | '{' classElementList '}'  { Print("- R: '{' classElementList '}' -> classTail"); }
+    : '{' '}'                   { Print("- R: '{' '}' -> classTail"); $$ = createClassElementListNode(nullptr); }
+    | '{' classElementList '}'  { Print("- R: '{' classElementList '}' -> classTail"); $$ = $2; }
     ;
 
 classElementList
-    : classElement { Print("- R: classElement -> classElementList"); }
-    | classElementList classElement { Print("- R: classElementList classElement -> classElementList"); }
+    : classElement                  { Print("- R: classElement -> classElementList"); $$ = createClassElementListNode($1); }
+    | classElementList classElement { Print("- R: classElementList classElement -> classElementList"); $$ = addClassElementToClassElementList($1, $2); }
     ;
 
 classElement
-    : CONSTRUCTOR constructorCallSignature functionBody { Print("- R: CONSTRUCTOR callSignature functionBody -> classElement"); }
+    : CONSTRUCTOR '(' parameterList ')' functionBody 
+        {
+            Print("- R: CONSTRUCTOR '(' parameterList ')' functionBody -> classElement");
+            $$ = createClassConstructor($3, $5);
+        }
 
     // PropertyDeclarationExpression 
-    | propertyName typeAnnotationOpt ';'               { Print("- R: propertyName typeAnnotationOpt ';' -> classElement"); }
-    | propertyName typeAnnotationOpt '=' singleExpression ';'   { Print("- R: propertyName typeAnnotationOpt '=' singleExpression ';' -> classElement"); }
+    | propertyName typeAnnotationOpt ';'
+        {
+            Print("- R: propertyName typeAnnotationOpt ';' -> classElement");
+            $$ = createClassProperty($1, $2, nullptr);
+        }
+    | propertyName typeAnnotationOpt '=' singleExpression ';' 
+        {
+            Print("- R: propertyName typeAnnotationOpt '=' singleExpression ';' -> classElement");
+            $$ = createClassProperty($1, $2, $4);
+        }
 
     // MethodDeclarationExpression 
-    | propertyName callSignature functionBody { Print("- R: propertyName callSignature functionBody -> classElement"); }
+    | propertyName '(' parameterList ')' typeAnnotationOpt functionBody
+        {
+            Print("- R: propertyName '(' parameterList ')' typeAnnotationOpt functionBody -> classElement");
+            $$ = createClassMethod($1, $3, $5, $6);
+        }
 
     // GetterSetterDeclarationExpression 
-    | GET propertyName '(' ')' typeAnnotationOpt functionBody  { Print("- R: GET propertyName '(' ')' typeAnnotationOpt functionBody -> classElement"); }
-    | SET propertyName callSignature functionBody           { Print("- R: SET propertyName callSignature functionBody -> classElement"); }
-    ;
-
-constructorCallSignature
-    : '(' parameterList ')' { Print("- R: '(' parameterList ')' -> constructorCallSignature"); }
+    | GET propertyName '(' ')' typeAnnotationOpt functionBody
+        {
+            Print("- R: GET propertyName '(' ')' typeAnnotationOpt functionBody -> classElement");
+            $$ = createClassGetter($2, $5, $6);
+        }
+    | SET propertyName '(' parameterList ')' functionBody
+        {
+            Print("- R: SET propertyName callSignature functionBody -> classElement");
+            $$ = createClassSetter($2, $4, $6);
+        }
     ;
 
 propertyName

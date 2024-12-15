@@ -448,19 +448,12 @@ StatementListNode* addStatementToStatementList(StatementListNode* list, Statemen
 
 	// ====== Function declaration ====== //
 
-FunctionDeclarationNode* createFunctionDeclarationNode(char* funcName, CallSignatureNode* callSignature, StatementListNode* body) {
+FunctionDeclarationNode* createFunctionDeclarationNode(char* funcName, RequiredParameterListNode* params, TypeNode* returnType, StatementListNode* body) {
     auto* node = new FunctionDeclarationNode{};
     node->funcName = funcName;
-    node->callSignature = callSignature;
-    node->body = body;
-    node->id = ID++;
-    return node;
-}
-
-CallSignatureNode* createCallSignatureNode(RequiredParameterListNode* params, TypeNode* returnType) {
-    auto* node = new CallSignatureNode{};
     node->params = params;
     node->returnType = returnType;
+    node->body = body;
     node->id = ID++;
     return node;
 }
@@ -487,6 +480,77 @@ RequiredParameterNode* createRequiredParameterNode(char* paramName, TypeNode* pa
 }
 
 
+	// ====== Class declaration ====== //
+
+ClassDeclarationNode* createClassDeclarationNode(char* className, char* heritageName, ClassElementListNode* body) {
+    auto* node = new ClassDeclarationNode{};
+    node->className = className;
+    node->heritageName = heritageName;
+    node->body = body;
+    node->id = ID++;
+    return node;
+}
+
+ClassElementListNode* createClassElementListNode(ClassElementNode* firstChild) {
+    auto* node = new ClassElementListNode{};
+    node->first = firstChild;
+    node->last = firstChild;
+    node->id = ID++;
+    return node;
+}
+ClassElementListNode* addClassElementToClassElementList(ClassElementListNode* list, ClassElementNode* child) {
+    list->last->next = child;
+    list->last = child;
+    return list;
+}
+
+ClassElementNode* createClassConstructor(RequiredParameterListNode* params, StatementListNode* body) {
+    auto* node = new ClassElementNode{};
+    node->type = ClassElementType::_CONSTRUCTOR;
+    node->params = params;
+    node->methodBody = body;
+    node->id = ID++;
+    return node;
+}
+ClassElementNode* createClassProperty(char* name, TypeNode* propertyType, ExpressionNode* expression) {
+    auto* node = new ClassElementNode{};
+    node->type = ClassElementType::_PROPERTY;
+    node->name = name;
+    node->propertyAndReturnType = propertyType;
+    node->expression = expression;
+    node->id = ID++;
+    return node;
+}
+ClassElementNode* createClassMethod(char* name, RequiredParameterListNode* params, TypeNode* returnType, StatementListNode* body) {
+    auto* node = new ClassElementNode{};
+    node->type = ClassElementType::_METHOD;
+    node->name = name;
+    node->params = params;
+    node->propertyAndReturnType = returnType;
+    node->methodBody = body;
+    node->id = ID++;
+    return node;
+}
+ClassElementNode* createClassGetter(char* name, TypeNode* returnType, StatementListNode* body) {
+    auto* node = new ClassElementNode{};
+    node->type = ClassElementType::_GETTER;
+    node->name = name;
+    node->propertyAndReturnType = returnType;
+    node->methodBody = body;
+    node->id = ID++;
+    return node;
+}
+ClassElementNode* createClassSetter(char* name, RequiredParameterListNode* params, StatementListNode* body) {
+    auto* node = new ClassElementNode{};
+    node->type = ClassElementType::_SETTER;
+    node->name = name;
+    node->params = params;
+    node->methodBody = body;
+    node->id = ID++;
+    return node;
+}
+
+
     // ====== TSElementNode ====== //
 
 TSElementNode* createElementFromStatement(StatementNode* stmt) {
@@ -500,6 +564,13 @@ TSElementNode* createElementFromFuncDeclaration(FunctionDeclarationNode* funcDec
     auto* node = new TSElementNode{};
     node->type = TSElementType::_FUNCTION;
     node->funcDecl = funcDecl;
+    node->id = ID++;
+    return node;
+}
+TSElementNode* createElementFromClassDeclaration(ClassDeclarationNode* classDecl) {
+    auto* node = new TSElementNode{};
+    node->type = TSElementType::_CLASS;
+    node->classDecl = classDecl;
     node->id = ID++;
     return node;
 }
