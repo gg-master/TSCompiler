@@ -273,7 +273,6 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
     // Сделано не до конца: требуется ArrayAccess
 
 
-
     case ExpressionType::_PREF_INCREMENT:
         out << MakeNode(node->id, "PrefIncrement");
         ToDot(node->firstOperand, out);
@@ -297,9 +296,6 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
-
-
-
     default:
         break;
     }
@@ -340,17 +336,17 @@ void ToDot(StatementNode* node, std::ostream& out) {
             out << MakeConnection(node->id, node->stmtList->id);
         }
         break;
-    case StatementType::_CONDITION:
-        out << MakeNode(node->id, "ConditionStmtNode");
+    case StatementType::_IFELSE:
+        out << MakeNode(node->id, "IfElseStmtNode");
         ToDot(node->expression, out);
-        out << MakeConnection(node->id, node->expression->id);
+        out << MakeConnection(node->id, node->expression->id, "condition");
 
         ToDot(node->ifBody, out);
-        out << MakeConnection(node->id, node->ifBody->id);
+        out << MakeConnection(node->id, node->ifBody->id, "ifBody");
 
         if (node->elseBody != nullptr) {
             ToDot(node->elseBody, out);
-            out << MakeConnection(node->id, node->elseBody->id);
+            out << MakeConnection(node->id, node->elseBody->id, "elseBody");
         }
         break;
     case StatementType::_DOWHILE:

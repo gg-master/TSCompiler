@@ -276,7 +276,6 @@ ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, E
 }
 
 
-
     // ====== ExpressionList ====== //
 
 ExpressionListNode* createExpressionListFromExpression(ExpressionNode* expr) {
@@ -457,7 +456,7 @@ StatementNode* createBlockStatementNode(StatementListNode* stmtList) {
 }
 StatementNode* createIfElseStatementNode(ExpressionNode* condition, StatementNode* ifBody, StatementNode* elseBody) {
     auto* stmt = new StatementNode{};
-    stmt->type = StatementType::_CONDITION;
+    stmt->type = StatementType::_IFELSE;
     stmt->expression = condition;
     stmt->ifBody = ifBody;
     stmt->elseBody = elseBody;

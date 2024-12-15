@@ -241,7 +241,7 @@ emptyStatement
     ;
 
 blockStatement
-    : '{' '}' { Print("- R: '{' '}' -> blockStatement"); $$ = createBlockStatementNode(nullptr); }
+    : '{' '}'               { Print("- R: '{' '}' -> blockStatement"); $$ = createBlockStatementNode(nullptr); }
     | '{' statementList '}' { Print("- R: '{' statementList '}' -> blockStatement"); $$ = createBlockStatementNode($2); }
     ;
 

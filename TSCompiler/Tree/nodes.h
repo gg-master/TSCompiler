@@ -183,7 +183,7 @@ enum class StatementType
 	_EMPTY,
 	_EXPRESSION,
 	_VAR,
-	_CONDITION,
+	_IFELSE,
 	_WHILE,
 	_DOWHILE,
 	_FOR,
