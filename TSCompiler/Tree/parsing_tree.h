@@ -3,7 +3,6 @@
 
 	// ====== Expression ====== //
 
-// Сделано
 ExpressionNode* createIDExpressionNode(char* idStr);
 ExpressionNode* createIntLiteralExpressionNode(int value);
 ExpressionNode* createFloatLiteralExpressionNode(double value);
@@ -12,7 +11,6 @@ ExpressionNode* createTrueLiteralExpressionNode();
 ExpressionNode* createFalseLiteralExpressionNode();
 ExpressionNode* createNullLiteralExpressionNode();
 
-// Сделано
 ExpressionNode* createPlusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createMinusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createMulExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
@@ -20,36 +18,29 @@ ExpressionNode* createDivExpressionNode(ExpressionNode* firstOperand, Expression
 ExpressionNode* createLessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createGreatExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 
-// Сделано
 ExpressionNode* createUPlusExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createUMinusExpressionNode(ExpressionNode* firstOperand);
 
-// Сделано
 ExpressionNode* createLogNotExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createLogOrExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createLogAndExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 
-// Сделано
 ExpressionNode* createCommaExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createBracketsExpressionNode(ExpressionNode* expr);
 
-// Сделано
 ExpressionNode* createThisExpressionNode();
 ExpressionNode* createSuperExpressionNode(); 
 ExpressionNode* createFuncCallExpressionNode(char* idStr, ExpressionListNode* params);
 
-// Сделано не до конца: требуется ArrayAccess
 ExpressionNode* createEmptyArrayElementExpressionNode();
 ExpressionNode* createExpressionFromExpressionList(ExpressionListNode* params);
-ExpressionNode* createArrayAccessElementExpressionNode();
+ExpressionNode* createArrayAccessElementExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 
-// Сделано
 ExpressionNode* createPrefIncrementExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createPrefDecrementExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createPostIncrementExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createPostDecrementExpressionNode(ExpressionNode* firstOperand);
 
-// Сделано
 ExpressionNode* createAssignExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createAssignMulExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createAssignDivExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
@@ -58,7 +49,6 @@ ExpressionNode* createAssignMinusExpressionNode(ExpressionNode* firstOperand, Ex
 ExpressionNode* createAssignAndExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createAssignOrExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 
-// Сделано
 ExpressionNode* createEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createNotEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createStrictEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
@@ -66,10 +56,7 @@ ExpressionNode* createStrictNotEqualExpressionNode(ExpressionNode* firstOperand,
 ExpressionNode* createLessEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createGreaterEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 
-// Сделано
-ExpressionNode* createNewExpressionNode(ExpressionNode* firstOperand);
-
-
+ExpressionNode* createNewExpressionNode(ExpressionNode* constructor, ExpressionListNode* params)
 ExpressionNode* createFieldAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand, ExpressionListNode* params);
 

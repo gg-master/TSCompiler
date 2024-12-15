@@ -406,18 +406,22 @@ singleExpression
         { Print("- R: singleExpression OPTIONAL_CHAINING_OPERATOR singleExpression -> singleExpression"); }
 
     // XXX: dissallow syntax expr.exrp with '(' optParams ')' cause this grammar dont have func types
-    | singleExpression '.' identifier { Print("- R: singleExpression '.' identifier -> singleExpression"); }
-    | singleExpression '.' identifier '(' ')' { Print("- R: singleExpression '.' identifier '(' ')' -> singleExpression"); }
-    | singleExpression '.' identifier '(' singleExpression ')' { Print("- R: singleExpression '.' identifier '(' singleExpression ')' -> singleExpression"); }
-    | singleExpression '.' identifier '(' singleExpression ',' ')' { Print("- R: singleExpression '.' identifier '(' singleExpression ',' ')' -> singleExpression"); }
+    | singleExpression '.' identifier 
+        { Print("- R: singleExpression '.' identifier -> singleExpression"); $$ = createFieldAccessExpressionNode($1, $3); }
+    | singleExpression '.' identifier '(' ')' 
+        { Print("- R: singleExpression '.' identifier '(' ')' -> singleExpression"); $$ = createMethodAccessExpressionNode($1, $3, createExpressionListNode()); }
+    | singleExpression '.' identifier '(' singleExpression ')' 
+        { Print("- R: singleExpression '.' identifier '(' singleExpression ')' -> singleExpression"); $$ = createMethodAccessExpressionNode($1, $3, createExpressionListFromExpression($5)); }
+    | singleExpression '.' identifier '(' singleExpression ',' ')' 
+        { Print("- R: singleExpression '.' identifier '(' singleExpression ',' ')' -> singleExpression"); $$ = createMethodAccessExpressionNode($1, $3, createExpressionListFromExpression($5)); }
 
     | arrayLiteral                                            { Print("- R: arrayLiteral -> singleExpression"); $$ = $1; }
-    | singleExpression '[' singleExpression ']'               { Print("- R: singleExpression '[' expressionList ']' -> singleExpression"); }
-    | singleExpression ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN expressionList ']' -> singleExpression"); }
+    | singleExpression '[' singleExpression ']'               { Print("- R: singleExpression '[' expressionList ']' -> singleExpression"); $$ = createArrayAccessElementExpressionNode($1, $3); }
+    | singleExpression ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN expressionList ']' -> singleExpression"); $$ = createArrayAccessElementExpressionNode($1, $3); }
 
-    | NEW singleExpression { Print("- R: NEW singleExpression -> singleExpression"); $$ = createNewExpressionNode($2); }
-    | NEW singleExpression '(' ')' { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); }
-    | NEW singleExpression '(' singleExpression ')'  { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); }
+    | NEW singleExpression { Print("- R: NEW singleExpression -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListNode()); }
+    | NEW singleExpression '(' ')' { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListNode()); }
+    | NEW singleExpression '(' singleExpression ')'  { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListFromExpression($4)); }
     ;
 
     // ====== Variables ======

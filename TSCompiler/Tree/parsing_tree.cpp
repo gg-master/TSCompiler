@@ -224,7 +224,14 @@ ExpressionNode* createExpressionFromExpressionList(ExpressionListNode* params) {
     node->id = ID++;
     return node;
 }
-// Сделано не до конца: требуется ArrayAccess
+ExpressionNode* createArrayAccessElementExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_ARRAY_ACCESS;
+    node->firstOperand = firstOperand;
+    node->secondOperand = secondOperand;
+    node->id = ID++;
+    return node;
+}
 
 
 
@@ -369,16 +376,22 @@ ExpressionNode* createGreaterEqualExpressionNode(ExpressionNode* firstOperand, E
 
 
 
-ExpressionNode* createNewExpressionNode(ExpressionNode* firstOperand) {
+ExpressionNode* createNewExpressionNode(ExpressionNode* constructor, ExpressionListNode* params) {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_NEW;
-    node->firstOperand = firstOperand;
+    node->constructor = constructor;
+    node->params = params;
     node->id = ID++;
     return node;
 }
-
-
-
+ExpressionNode* createFieldAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_FIELD_ACCESS;
+    node->firstOperand = firstOperand;
+    node->secondOperand = secondOperand;
+    node->id = ID++;
+    return node;
+}
 ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand, ExpressionListNode* params) {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_METHOD_ACCESS;

@@ -5,62 +5,61 @@
 
 enum class ExpressionType 
 {
-	_IDENTIFIER, // Сделано
-	_INT_LIT, // Сделано
-	_FLOAT_LIT, // Сделано
-	_STRING_LIT, // Сделано
-	_BOOLEAN_LIT, // Сделано
-	_NULL_LIT, // Сделано
+	_IDENTIFIER,
+	_INT_LIT,
+	_FLOAT_LIT,
+	_STRING_LIT,
+	_BOOLEAN_LIT,
+	_NULL_LIT,
 
-	_PLUS, // Сделано
-	_MINUS, // Сделано
-	_MUL, // Сделано
-	_DIV, // Сделано
-	_LESS, // Сделано
-	_GREAT, // Сделано
+	_PLUS,
+	_MINUS,
+	_MUL,
+	_DIV,
+	_LESS,
+	_GREAT,
 
-	_UPLUS, // Сделано
-	_UMINUS, // Сделано
+	_UPLUS,
+	_UMINUS,
 
-	_NOT, // Сделано
-	_LOGICAL_OR, // Сделано
-	_LOGICAL_AND, // Сделано
+	_NOT,
+	_LOGICAL_OR,
+	_LOGICAL_AND,
 
-	_COMMA, // Сделано
-	_BRACKETS, // Сделано
+	_COMMA,
+	_BRACKETS,
 
-	_THIS, // Сделано
-	_SUPER, // Сделано
-	_FUNC_CALL, // Сделано
+	_THIS,
+	_SUPER,
+	_FUNC_CALL,
 
-	_ARRAY_EMPTY_ELEMENT, // Сделано
-	_ARRAY_CREATION, // Сделано
+	_ARRAY_EMPTY_ELEMENT,
+	_ARRAY_CREATION,
 	_ARRAY_ACCESS,
 
-	_PREF_INCREMENT, // Сделано
-	_PREF_DECREMENT, // Сделано
-	_POST_INCREMENT, // Сделано
-	_POST_DECREMENT, // Сделано
+	_PREF_INCREMENT,
+	_PREF_DECREMENT,
+	_POST_INCREMENT,
+	_POST_DECREMENT,
 
-	_ASSIGN, // Сделано
-	_ASSIGN_PLUS, // Сделано
-	_ASSIGN_MINUS, // Сделано
-	_ASSIGN_MUL, // Сделано
-	_ASSIGN_DIV, // Сделано
-	_ASSIGN_LOGICAL_OR, // Сделано
-	_ASSIGN_LOGICAL_AND, // Сделано
+	_ASSIGN,
+	_ASSIGN_PLUS,
+	_ASSIGN_MINUS,
+	_ASSIGN_MUL,
+	_ASSIGN_DIV,
+	_ASSIGN_LOGICAL_OR,
+	_ASSIGN_LOGICAL_AND,
 
-	_EQUAL, // Сделано
-	_NOT_EQUAL, // Сделано
-	_STRICT_EQUAL, // Сделано
-	_STRICT_NOT_EQUAL, // Сделано
-	_LESS_EQUAL, // Сделано
-	_GREAT_EQUAL, // Сделано
+	_EQUAL,
+	_NOT_EQUAL,
+	_STRICT_EQUAL,
+	_STRICT_NOT_EQUAL,
+	_LESS_EQUAL,
+	_GREAT_EQUAL,
 
+	_NEW,
 	_FIELD_ACCESS,
 	_METHOD_ACCESS,
-
-	_NEW, // ?
 };
 
 struct ExpressionNode
