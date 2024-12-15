@@ -6,6 +6,11 @@
 enum class ExpressionType 
 {
 	_IDENTIFIER, // Сделано
+	_INT_LIT, // Сделано
+	_FLOAT_LIT, // Сделано
+	_STRING_LIT, // Сделано
+	_BOOLEAN_LIT, // Сделано
+	_NULL_LIT, // Сделано
 
 	_PLUS, // Сделано
 	_MINUS, // Сделано
@@ -37,31 +42,25 @@ enum class ExpressionType
 	_POST_INCREMENT, // Сделано
 	_POST_DECREMENT, // Сделано
 
-	_BOOLEAN_LIT,
-	_INT_LIT,
-	_FLOAT_LIT,
-	_STRING_LIT,
-	_NULL_LIT,
+	_ASSIGN, // Сделано
+	_ASSIGN_PLUS, // Сделано
+	_ASSIGN_MINUS, // Сделано
+	_ASSIGN_MUL, // Сделано
+	_ASSIGN_DIV, // Сделано
+	_ASSIGN_LOGICAL_OR, // Сделано
+	_ASSIGN_LOGICAL_AND, // Сделано
 
-	_ASSIGN,
-	_ASSIGN_PLUS,
-	_ASSIGN_MINUS,
-	_ASSIGN_MUL,
-	_ASSIGN_DIV,
-	_ASSIGN_LOGICAL_OR,
-	_ASSIGN_LOGICAL_AND,
-
-	_EQUAL,
-	_NOT_EQUAL,
-	_STRICT_EQUAL,
-	_STRICT_NOT_EQUAL,
-	_LESS_EQUAL,
-	_GREAT_EQUAL,
+	_EQUAL, // Сделано
+	_NOT_EQUAL, // Сделано
+	_STRICT_EQUAL, // Сделано
+	_STRICT_NOT_EQUAL, // Сделано
+	_LESS_EQUAL, // Сделано
+	_GREAT_EQUAL, // Сделано
 
 	_FIELD_ACCESS,
 	_METHOD_ACCESS,
 
-	_NEW,
+	_NEW, // ?
 };
 
 struct ExpressionNode

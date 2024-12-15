@@ -5,6 +5,12 @@
 
 // Сделано
 ExpressionNode* createIDExpressionNode(char* idStr);
+ExpressionNode* createIntLiteralExpressionNode(int value);
+ExpressionNode* createFloatLiteralExpressionNode(double value);
+ExpressionNode* createStringLiteralExpressionNode(char* value);
+ExpressionNode* createTrueLiteralExpressionNode();
+ExpressionNode* createFalseLiteralExpressionNode();
+ExpressionNode* createNullLiteralExpressionNode();
 
 // Сделано
 ExpressionNode* createPlusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
@@ -43,12 +49,25 @@ ExpressionNode* createPrefDecrementExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createPostIncrementExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createPostDecrementExpressionNode(ExpressionNode* firstOperand);
 
-ExpressionNode* createTrueLiteralExpressionNode();
-ExpressionNode* createFalseLiteralExpressionNode();
-ExpressionNode* createIntLiteralExpressionNode(int value);
-ExpressionNode* createFloatLiteralExpressionNode(double value);
-ExpressionNode* createStringLiteralExpressionNode(char* value);
-ExpressionNode* createNullLiteralExpressionNode();
+// Сделано
+ExpressionNode* createAssignExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createAssignMulExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createAssignDivExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createAssignPlusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createAssignMinusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createAssignAndExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createAssignOrExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+
+// Сделано
+ExpressionNode* createEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createNotEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createStrictEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createStrictNotEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createLessEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createGreaterEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+
+// Сделано
+ExpressionNode* createNewExpressionNode(ExpressionNode* firstOperand);
 
 
 ExpressionNode* createFieldAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
@@ -58,7 +77,6 @@ ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, E
     // ====== ExpressionList ====== //
 
 ExpressionListNode* createExpressionListFromExpression(ExpressionNode* expr);
-
 ExpressionListNode* createExpressionListNode(ExpressionNode* firstChild);
 ExpressionListNode* addExpressionToExpressionList(ExpressionListNode* list, ExpressionNode* child);
 ExpressionListNode* addExpressionListToExpressionList(ExpressionListNode* fisrtList, ExpressionListNode* secondList);
@@ -82,7 +100,6 @@ TupleTypeNode* addTypeToTupleType(TupleTypeNode* list, TypeNode* typeNode);
 	// ====== VarDeclaration ====== //
 
 VarDeclarationNode* createVarDeclarationNode(char* idStr, TypeNode* varType, ExpressionNode* initExpr);
-
 VarDeclarationListNode* createVarDeclarationListNode(VarDeclarationNode* firstChild);
 VarDeclarationListNode* addVarDeclarationToVarDeclarationList(VarDeclarationListNode* list, VarDeclarationNode* child);
 

@@ -350,43 +350,32 @@ singleExpression
     | singleExpression '>' singleExpression { Print("- R: singleExpression '>' singleExpression -> singleExpression"); $$ = createGreatExpressionNode($1, $3); }
 
     | singleExpression OPERATOR_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_EQUAL singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_EQUAL singleExpression -> singleExpression"); $$ = createEqualExpressionNode($1, $3); }
     | singleExpression OPERATOR_NOT_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_NOT_EQUAL singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_NOT_EQUAL singleExpression -> singleExpression"); $$ = createNotEqualExpressionNode($1, $3); }
     | singleExpression OPERATOR_STRICT_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_STRICT_EQUAL singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_STRICT_EQUAL singleExpression -> singleExpression"); $$ = createStrictEqualExpressionNode($1, $3); }
     | singleExpression OPERATOR_STRICT_NOT_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_STRICT_NOT_EQUAL singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_STRICT_NOT_EQUAL singleExpression -> singleExpression"); $$ = createStrictNotEqualExpressionNode($1, $3); }
     | singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression -> singleExpression"); $$ = createLessEqualExpressionNode($1, $3); }
     | singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression -> singleExpression"); }
+        { Print("- R: singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression -> singleExpression"); $$ = createGreaterEqualExpressionNode($1, $3); }
 
     | singleExpression '=' singleExpression
-        { Print("- R: singleExpression '=' singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression '=' singleExpression -> singleExpression"); $$ = createAssignExpressionNode($1, $3); }
     | singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression -> singleExpression"); $$ = createAssignMulExpressionNode($1, $3); }
     | singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression -> singleExpression"); $$ = createAssignDivExpressionNode($1, $3); }
     | singleExpression OPERATOR_ASSIGN_PLUS singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_PLUS singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_ASSIGN_PLUS singleExpression -> singleExpression"); $$ = createAssignPlusExpressionNode($1, $3); }
     | singleExpression OPERATOR_ASSIGN_MINUS singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_MINUS singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_ASSIGN_MINUS singleExpression -> singleExpression"); $$ = createAssignMinusExpressionNode($1, $3); }
     | singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression -> singleExpression"); }
-
+        { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression -> singleExpression"); $$ = createAssignAndExpressionNode($1, $3); }
     | singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression -> singleExpression"); }
+        { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression -> singleExpression"); $$ = createAssignOrExpressionNode($1, $3); }
 
     | singleExpression OPERATOR_LOGICAL_OR singleExpression
         { Print("- R: singleExpression OPERATOR_LOGICAL_OR singleExpression -> singleExpression"); $$ = createLogOrExpressionNode($1, $3); }
@@ -426,7 +415,7 @@ singleExpression
     | singleExpression '[' singleExpression ']'               { Print("- R: singleExpression '[' expressionList ']' -> singleExpression"); }
     | singleExpression ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN expressionList ']' -> singleExpression"); }
 
-    | NEW singleExpression { Print("- R: NEW singleExpression -> singleExpression"); }
+    | NEW singleExpression { Print("- R: NEW singleExpression -> singleExpression"); $$ = createNewExpressionNode($2); }
     | NEW singleExpression '(' ')' { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); }
     | NEW singleExpression '(' singleExpression ')'  { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); }
     ;
