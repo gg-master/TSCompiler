@@ -37,11 +37,11 @@ enum class ExpressionType
 	_POST_INCREMENT, // Сделано
 	_POST_DECREMENT, // Сделано
 
-	_BOOLEAN_LIT, // ?
-	_INT_LIT, // ?
-	_FLOAT_LIT, // ?
-	_STRING_LIT, // ?
-	_NULL_LIT, // ?
+	_BOOLEAN_LIT,
+	_INT_LIT,
+	_FLOAT_LIT,
+	_STRING_LIT,
+	_NULL_LIT,
 
 	_ASSIGN,
 	_ASSIGN_PLUS,

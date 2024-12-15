@@ -43,7 +43,6 @@ ExpressionNode* createPrefDecrementExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createPostIncrementExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createPostDecrementExpressionNode(ExpressionNode* firstOperand);
 
-// ?
 ExpressionNode* createTrueLiteralExpressionNode();
 ExpressionNode* createFalseLiteralExpressionNode();
 ExpressionNode* createIntLiteralExpressionNode(int value);
@@ -51,8 +50,6 @@ ExpressionNode* createFloatLiteralExpressionNode(double value);
 ExpressionNode* createStringLiteralExpressionNode(char* value);
 ExpressionNode* createNullLiteralExpressionNode();
 
-
-/* add other binary and unary operations */
 
 ExpressionNode* createFieldAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand, ExpressionListNode* params);

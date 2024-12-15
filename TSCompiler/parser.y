@@ -311,45 +311,28 @@ singleExpressionOpt
     ;
 
 singleExpression
-// Сделано
     : identifier    { Print("- R: identifier -> singleExpression"); $$ = createIDExpressionNode($1); }
+    | THIS          { Print("- R: THIS -> singleExpression"); $$ = createThisExpressionNode(); }
+    | SUPER         { Print("- R: SUPER -> singleExpression"); $$ = createSuperExpressionNode(); }
+    | TRUE_KW       { Print("- R: TRUE_LITERAL -> singleExpression"); $$ = createTrueLiteralExpressionNode(); }
+    | FALSE_KW      { Print("- R: FALSE_LITERAL -> singleExpression"); $$ = createFalseLiteralExpressionNode(); }
+    | NULL_KW       { Print("- R: NULL_LITERAL -> singleExpression"); $$ = createNullLiteralExpressionNode(); }
 
-// Сделано
-    | singleExpression '+' singleExpression { Print("- R: singleExpression '+' singleExpression -> singleExpression"); $$ = createPlusExpressionNode($1, $3); }
-    | singleExpression '-' singleExpression { Print("- R: singleExpression '-' singleExpression -> singleExpression"); $$ = createMinusExpressionNode($1, $3); }
-    | singleExpression '*' singleExpression { Print("- R: singleExpression '*' singleExpression -> singleExpression"); $$ = createMulExpressionNode($1, $3); }
-    | singleExpression '/' singleExpression { Print("- R: singleExpression '/' singleExpression -> singleExpression"); $$ = createDivExpressionNode($1, $3); }
-    | singleExpression '<' singleExpression { Print("- R: singleExpression '<' singleExpression -> singleExpression"); $$ = createLessExpressionNode($1, $3); }
-    | singleExpression '>' singleExpression { Print("- R: singleExpression '>' singleExpression -> singleExpression"); $$ = createGreatExpressionNode($1, $3); }
+    | STRING_LIT    { Print("- R: STRING_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
+    | TEMPLATE_LIT  { Print("- R: TEMPLATE_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
+    | INT_LIT       { Print("- R: INT_LIT -> singleExpression"); $$ = createIntLiteralExpressionNode($1); }
+    | FLOAT_LIT     { Print("- R: FLOAT_LIT -> singleExpression"); $$ = createFloatLiteralExpressionNode($1); }
 
-// Сделано
     | '-' singleExpression %prec UMINUS { Print("- R: '-' singleExpression -> singleExpression"); $$ = createUPlusExpressionNode($2); }
     | '+' singleExpression %prec UPLUS  { Print("- R: '+' singleExpression -> singleExpression"); $$ = createUMinusExpressionNode($2); }
 
-// Сделано
-    | '!' singleExpression 
-        { Print("- R: '!' singleExpression -> singleExpression"); $$ = createLogNotExpressionNode($2); }
-    | singleExpression OPERATOR_LOGICAL_OR singleExpression
-        { Print("- R: singleExpression OPERATOR_LOGICAL_OR singleExpression -> singleExpression"); $$ = createLogOrExpressionNode($1, $3); }
-    | singleExpression OPERATOR_LOGICAL_AND singleExpression
-        { Print("- R: singleExpression OPERATOR_LOGICAL_AND singleExpression -> singleExpression"); $$ = createLogAndExpressionNode($1, $3); }
+    | '!' singleExpression { Print("- R: '!' singleExpression -> singleExpression"); $$ = createLogNotExpressionNode($2); }
 
-// Сделано
-    | singleExpression ',' singleExpression %prec COMMA_OPERATOR
-        { Print("- R: singleExpression ',' singleExpressionn -> singleExpression"); $$ = createCommaExpressionNode($1, $3); }
-    | '(' singleExpression ')' 
-        { Print("- R: '(' singleExpression ')' -> singleExpression"); $$ = createBracketsExpressionNode($2); }
+    | singleExpression OPERATOR_INCREMENT %prec POST_INCREMENT 
+        { Print("- R: singleExpression OPERATOR_INCREMENT -> singleExpression"); $$ = createPostIncrementExpressionNode($1); }
+    | singleExpression OPERATOR_DECREMENT %prec POST_DECREMENT 
+        { Print("- R: singleExpression OPERATOR_DECREMENT -> singleExpression"); $$ = createPostDecrementExpressionNode($1); }
 
-// Сделано
-    | THIS          { Print("- R: THIS -> singleExpression"); $$ = createThisExpressionNode(); }
-    | SUPER         { Print("- R: SUPER -> singleExpression"); $$ = createSuperExpressionNode(); }
-    // XXX: dissallow syntax exrp '(' optParams ')' cause this grammar dont have func types
-    | identifier '(' ')' 
-        { Print("- R: identifier '(' ')' -> singleExpression"); $$ = createEmptyFuncCallExpressionNode($1); }
-    | identifier '(' singleExpression ')' 
-        { Print("- R: identifier '(' singleExpression ')' -> singleExpression"); $$ = createFuncCallExpressionNode($1, createExpressionListFromExpression($3)); }
-
-// Сделано
     | ENDL_OPERATOR_INCREMENT singleExpression %prec PREF_INCREMENT 
         { Print("- R: ENDL_OPERATOR_INCREMENT singleExpression -> singleExpression"); $$ = createPrefIncrementExpressionNode($2); }
     | ENDL_OPERATOR_DECREMENT singleExpression %prec PREF_DECREMENT 
@@ -358,21 +341,13 @@ singleExpression
         { Print("- R: OPERATOR_INCREMENT singleExpression -> singleExpression"); $$ = createPrefIncrementExpressionNode($2); }
     | OPERATOR_DECREMENT singleExpression %prec PREF_DECREMENT 
         { Print("- R: OPERATOR_DECREMENT singleExpression -> singleExpression"); $$ = createPrefDecrementExpressionNode($2); }
-    | singleExpression OPERATOR_INCREMENT %prec POST_INCREMENT 
-        { Print("- R: singleExpression OPERATOR_INCREMENT -> singleExpression"); $$ = createPostIncrementExpressionNode($1); }
-    | singleExpression OPERATOR_DECREMENT %prec POST_DECREMENT 
-        { Print("- R: singleExpression OPERATOR_DECREMENT -> singleExpression"); $$ = createPostDecrementExpressionNode($1); }
 
-// ?
-    | TRUE_KW       { Print("- R: TRUE_LITERAL -> singleExpression"); }
-    | FALSE_KW      { Print("- R: FALSE_LITERAL -> singleExpression"); }
-    | NULL_KW       { Print("- R: NULL_LITERAL -> singleExpression"); }
-
-    | STRING_LIT    { Print("- R: STRING_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
-    | TEMPLATE_LIT  { Print("- R: TEMPLATE_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
-    | INT_LIT       { Print("- R: INT_LIT -> singleExpression"); $$ = createIntLiteralExpressionNode($1); }
-    | FLOAT_LIT     { Print("- R: FLOAT_LIT -> singleExpression"); $$ = createFloatLiteralExpressionNode($1); }
-
+    | singleExpression '+' singleExpression { Print("- R: singleExpression '+' singleExpression -> singleExpression"); $$ = createPlusExpressionNode($1, $3); }
+    | singleExpression '-' singleExpression { Print("- R: singleExpression '-' singleExpression -> singleExpression"); $$ = createMinusExpressionNode($1, $3); }
+    | singleExpression '*' singleExpression { Print("- R: singleExpression '*' singleExpression -> singleExpression"); $$ = createMulExpressionNode($1, $3); }
+    | singleExpression '/' singleExpression { Print("- R: singleExpression '/' singleExpression -> singleExpression"); $$ = createDivExpressionNode($1, $3); }
+    | singleExpression '<' singleExpression { Print("- R: singleExpression '<' singleExpression -> singleExpression"); $$ = createLessExpressionNode($1, $3); }
+    | singleExpression '>' singleExpression { Print("- R: singleExpression '>' singleExpression -> singleExpression"); $$ = createGreatExpressionNode($1, $3); }
 
     | singleExpression OPERATOR_EQUAL singleExpression
         { Print("- R: singleExpression OPERATOR_EQUAL singleExpression -> singleExpression"); }
@@ -413,7 +388,10 @@ singleExpression
     | singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression
         { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression -> singleExpression"); }
 
-
+    | singleExpression OPERATOR_LOGICAL_OR singleExpression
+        { Print("- R: singleExpression OPERATOR_LOGICAL_OR singleExpression -> singleExpression"); $$ = createLogOrExpressionNode($1, $3); }
+    | singleExpression OPERATOR_LOGICAL_AND singleExpression
+        { Print("- R: singleExpression OPERATOR_LOGICAL_AND singleExpression -> singleExpression"); $$ = createLogAndExpressionNode($1, $3); }
 
     | singleExpression INSTANCEOF singleExpression  { Print("- R: singleExpression INSTANCEOF singleExpression -> singleExpression"); }
     | singleExpression IN singleExpression          { Print("- R: singleExpression IN singleExpression -> singleExpression"); }
@@ -421,10 +399,17 @@ singleExpression
     | singleExpression '?' singleExpression ':' singleExpression 
         { Print("- R: singleExpression '?' singleExpression ':' singleExpression -> singleExpression"); }
 
+    | singleExpression ',' singleExpression %prec COMMA_OPERATOR
+        { Print("- R: singleExpression ',' singleExpressionn -> singleExpression"); $$ = createCommaExpressionNode($1, $3); }
 
+    | '(' singleExpression ')' 
+        { Print("- R: '(' singleExpression ')' -> singleExpression"); $$ = createBracketsExpressionNode($2); }
 
-
-
+    // XXX: dissallow syntax exrp '(' optParams ')' cause this grammar dont have func types
+    | identifier '(' ')' 
+        { Print("- R: identifier '(' ')' -> singleExpression"); $$ = createFuncCallExpressionNode($1, createExpressionListNode(nullptr)); }
+    | identifier '(' singleExpression ')' 
+        { Print("- R: identifier '(' singleExpression ')' -> singleExpression"); $$ = createFuncCallExpressionNode($1, createExpressionListFromExpression($3)); }
 
     | identifier '(' singleExpression ',' ')' { Print("- R: identifier '(' singleExpression ',' ')' -> singleExpression"); }
 

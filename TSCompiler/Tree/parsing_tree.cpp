@@ -219,42 +219,42 @@ ExpressionNode* createPostDecrementExpressionNode(ExpressionNode* firstOperand) 
 
 ExpressionNode* createTrueLiteralExpressionNode() {
     auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_BOOLEAN_LIT; // ?
+    node->type = ExpressionType::_BOOLEAN_LIT;
     node->boolValue = 1;
     node->id = ID++;
     return node;
 }
 ExpressionNode* createFalseLiteralExpressionNode() {
     auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_BOOLEAN_LIT; // ?
+    node->type = ExpressionType::_BOOLEAN_LIT;
     node->boolValue = 0;
     node->id = ID++;
     return node;
 }
 ExpressionNode* createIntLiteralExpressionNode(int value) {
     auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_INT_LIT; // ?
+    node->type = ExpressionType::_INT_LIT;
     node->intValue = value;
     node->id = ID++;
     return node;
 }
 ExpressionNode* createFloatLiteralExpressionNode(double value) {
     auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_FLOAT_LIT; // ?
+    node->type = ExpressionType::_FLOAT_LIT;
     node->floatValue = value;
     node->id = ID++;
     return node;
 }
 ExpressionNode* createStringLiteralExpressionNode(char* value) {
     auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_STRING_LIT; // ?
+    node->type = ExpressionType::_STRING_LIT;
     node->stringValue = value;
     node->id = ID++;
     return node;
 }
 ExpressionNode* createNullLiteralExpressionNode() {
     auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_NULL_LIT; // ?
+    node->type = ExpressionType::_NULL_LIT;
     node->id = ID++;
     return node;
 }
