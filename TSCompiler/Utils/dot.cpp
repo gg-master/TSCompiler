@@ -70,6 +70,9 @@ void ToDot(TypeNode* node, std::ostream& out) {
         ToDot(node->tupleNode, out);
         out << MakeConnection(node->id, node->tupleNode->id);
         break;
+    case TypeType::_USER_TYPE:
+        out << MakeNode(node->id, "UserType:\n" + std::string{ node->userTypeName });
+        break;
     default:
         break;
     }
@@ -130,7 +133,7 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
         out << MakeNode(node->id, "StringLiteral:\n\\\"" + std::string{ node->stringValue } + "\\\"");
         break;
     case ExpressionType::_BOOLEAN_LIT:
-        if (node->boolValue) { name = "true"; } else { "false"; }
+        if (node->boolValue) { name = "true"; } else { name = "false"; }
         out << MakeNode(node->id, "BooleanLiteral:\n" + name);
         break;
     case ExpressionType::_NULL_LIT:
@@ -138,9 +141,6 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
         break;
     case ExpressionType::_THIS:
         out << MakeNode(node->id, "This");
-        break;
-    case ExpressionType::_SUPER:
-        out << MakeNode(node->id, "Super");
         break;
 
     case ExpressionType::_PREF_INCREMENT:
@@ -362,12 +362,6 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
         out << MakeConnection(node->id, node->thirdOperand->id, "ifFalse");
         break;
 
-    case ExpressionType::_BRACKETS:
-        out << MakeNode(node->id, "Brackets");
-        ToDot(node->firstOperand, out);
-        out << MakeConnection(node->id, node->firstOperand->id);
-        break;
-
     case ExpressionType::_ARRAY_CREATION:
         out << MakeNode(node->id, "ArrayCreation");
         ToDot(node->params, out);
@@ -386,6 +380,12 @@ void ToDot(ExpressionNode* node, std::ostream& out) {
 
     case ExpressionType::_FUNC_CALL:
         out << MakeNode(node->id, "FuncCall:\nFuncName: " + std::string{node->identifierString} );
+        ToDot(node->params, out);
+        out << MakeConnection(node->id, node->params->id, "params");
+        break;
+
+    case ExpressionType::_SUPER_CALL:
+        out << MakeNode(node->id, "SuperCall");
         ToDot(node->params, out);
         out << MakeConnection(node->id, node->params->id, "params");
         break;

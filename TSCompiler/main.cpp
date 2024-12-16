@@ -29,7 +29,7 @@ void MakeTreeImage(std::string dotExecPath, std::string filename)
 
 int main(const int argc, char** argv)
 {
-    std::string dotExecPath = "../ThirdParty/dot/dot.exe";
+    std::string dotExecPath = (std::filesystem::current_path() / "dot\\dot.exe").string();
 
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--dot") == 0 && i + 1 < argc) {
@@ -52,5 +52,9 @@ int main(const int argc, char** argv)
     std::cout << "Building syntax tree" << std::endl;
     yyparse();
 
+    if (!std::filesystem::exists(dotExecPath)) {
+        std::cerr << "Error: dot executable not found at " << dotExecPath << std::endl;
+        return 1;
+    }
     MakeTreeImage(dotExecPath, "TreeBeforeSemantic.dot");
 }

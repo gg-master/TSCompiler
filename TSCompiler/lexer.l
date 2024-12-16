@@ -782,11 +782,10 @@ new         {
     return '>';
 }
 ">="    {
-    PrintError("Unsupported OPERATOR_GREATER_THAN_EQUAL in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_GREATER_THAN_EQUAL: " + std::string{yytext});
     }
-    return -1;
+    return OPERATOR_GREATER_THAN_EQUAL;
 }
 ">>"    {
     PrintError("Unsupported OPERATOR_SHIFT_RIGHT in this version: " + std::string{yytext});
@@ -824,11 +823,10 @@ new         {
     return '<';
 }
 "<="    {
-    PrintError("Unsupported OPERATOR_LESS_THAN_EQUAL in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_LESS_THAN_EQUAL: " + std::string{yytext});
     }
-    return -1;
+    return OPERATOR_LESS_THAN_EQUAL;
 }
 "<<"    {
     PrintError("Unsupported OPERATOR_SHIFT_LEFT in this version: " + std::string{yytext});
@@ -859,10 +857,11 @@ new         {
 }
 
 "^"     {
+    PrintError("Unsupported OPERATOR_BITWISE_XOR in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_BITWISE_XOR: " + std::string{yytext});
     }
-    return '^';
+    return -1;
 }
 "^="    {
     PrintError("Unsupported OPERATOR_ASSIGN_BITWISE_XOR in this version: " + std::string{yytext});
@@ -873,17 +872,19 @@ new         {
 }
 
 "~"     {
+    PrintError("Unsupported OPERATOR_BITWISE_NOT in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_BITWISE_NOT: " + std::string{yytext});
     }
-    return '~';
+    return -1;
 }
 
 "&"     {
+    PrintError("Unsupported OPERATOR_BITWISE_AND in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_BITWISE_AND: " + std::string{yytext});
     }
-    return '&';
+    return -1;
 }
 "&="    {
     PrintError("Unsupported OPERATOR_ASSIGN_BITWISE_AND in this version: " + std::string{yytext});
@@ -906,10 +907,11 @@ new         {
 }
 
 "|"     {
+    PrintError("Unsupported OPERATOR_BITWISE_OR in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_BITWISE_OR: " + std::string{yytext});
     }
-    return '|';
+    return -1;
 }
 "|="    {
     PrintError("Unsupported OPERATOR_ASSIGN_BITWISE_OR in this version: " + std::string{yytext});

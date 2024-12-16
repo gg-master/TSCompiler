@@ -7,7 +7,6 @@ enum class ExpressionType
 {
 	_IDENTIFIER,
 	_THIS,
-	_SUPER,
 
 	_INT_LIT,
 	_FLOAT_LIT,
@@ -62,6 +61,8 @@ enum class ExpressionType
 
 	_FUNC_CALL,
 
+	_SUPER_CALL,
+
 	_FIELD_ACCESS,
 	_METHOD_ACCESS,
 	_NEW,
@@ -113,6 +114,8 @@ enum class TypeType
 
 	_ARRAY,
 	_TUPLE,
+
+	_USER_TYPE,
 };
 
 struct TupleTypeNode;
@@ -125,6 +128,8 @@ struct TypeNode
 
 	struct TypeNode* arrayType;
 	struct TupleTypeNode* tupleNode;
+
+	char* userTypeName;
 
 	// using for TupleType
 	struct TypeNode* next;

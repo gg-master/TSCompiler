@@ -19,12 +19,6 @@ ExpressionNode* createThisExpressionNode() {
     node->id = ID++;
     return node;
 }
-ExpressionNode* createSuperExpressionNode() {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_SUPER;
-    node->id = ID++;
-    return node;
-}
 
 
 ExpressionNode* createIntLiteralExpressionNode(int value) {
@@ -332,15 +326,6 @@ ExpressionNode* createTernaryExpressionNode(ExpressionNode* firstOperand, Expres
 }
 
 
-ExpressionNode* createBracketsExpressionNode(ExpressionNode* expr) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_BRACKETS;
-    node->firstOperand = expr;
-    node->id = ID++;
-    return node;
-}
-
-
 ExpressionNode* createEmptyArrayElementExpressionNode() {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_ARRAY_EMPTY_ELEMENT;
@@ -386,6 +371,15 @@ ExpressionNode* createFuncCallExpressionNode(char* funcName, ExpressionListNode*
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_FUNC_CALL;
     node->identifierString = funcName;
+    node->params = params;
+    node->id = ID++;
+    return node;
+}
+
+
+ExpressionNode* createSuperCallExpressionNode(ExpressionListNode* params) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_SUPER_CALL;
     node->params = params;
     node->id = ID++;
     return node;
@@ -505,6 +499,13 @@ TypeNode* createVoidTypeNode() {
 TypeNode* createNullTypeNode() {
     auto* node = new TypeNode{};
     node->type = TypeType::_NULL;
+    node->id = ID++;
+    return node;
+}
+TypeNode* createUserTypeNode(char* typeName) {
+    auto* node = new TypeNode{};
+    node->type = TypeType::_USER_TYPE;
+    node->userTypeName = typeName;
     node->id = ID++;
     return node;
 }

@@ -6,7 +6,6 @@
 
 ExpressionNode* createIDExpressionNode(char* idStr);
 ExpressionNode* createThisExpressionNode();
-ExpressionNode* createSuperExpressionNode(); 
 
 ExpressionNode* createIntLiteralExpressionNode(int value);
 ExpressionNode* createFloatLiteralExpressionNode(double value);
@@ -54,13 +53,13 @@ ExpressionNode* createInstanceOfExpressionNode(ExpressionNode* firstOperand, Exp
 ExpressionNode* createInExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createTernaryExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand, ExpressionNode* thirdOperand);
 
-ExpressionNode* createBracketsExpressionNode(ExpressionNode* expr);
-
 ExpressionNode* createArrayAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createEmptyArrayElementExpressionNode();
 ExpressionNode* createArrayLiteralFromExpressionList(ExpressionListNode* params);
 
 ExpressionNode* createFuncCallExpressionNode(char* funcName, ExpressionListNode* params);
+
+ExpressionNode* createSuperCallExpressionNode(ExpressionListNode* params);
 
 ExpressionNode* createFieldAccessExpressionNode(ExpressionNode* firstOperand, char* fieldName);
 ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, char* methodName, ExpressionListNode* params);
@@ -84,6 +83,7 @@ TypeNode* createBooleanTypeNode();
 TypeNode* createUndefinedTypeNode();
 TypeNode* createVoidTypeNode();
 TypeNode* createNullTypeNode();
+TypeNode* createUserTypeNode(char* typeName);
 
 TypeNode* createArrayTypeNode(TypeNode* arrayType);
 TypeNode* createTypeFromTupleType(TupleTypeNode* tupleNode);

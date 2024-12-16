@@ -110,7 +110,7 @@ int syntaxErrorCounter = 0;
 %left '.' '[' ']' ENDL_BRACKET_OPEN
 
 %nonassoc '(' ')'
-
+  
 %start script
 
 %type <tsscriptNode>script
@@ -268,6 +268,7 @@ predefinedType
     | UNDEFINED     { Print("- R: UNDEFINED -> predefinedType"); $$ = createUndefinedTypeNode(); }
     | VOID          { Print("- R: VOID -> predefinedType"); $$ = createVoidTypeNode(); }
     | NULL_KW       { Print("- R: NULL_KW -> predefinedType"); $$ = createNullTypeNode(); }
+    | ID            { Print("- R: ID -> predefinedType"); $$ = createUserTypeNode($1); }
     ;
 
 typeAnnotationOpt
@@ -307,13 +308,12 @@ expressionStatement
 
 singleExpressionOpt
     : /* empty */       { Print("- R: #empty# -> singleExpressionOpt"); $$ = nullptr; }
-    | singleExpression    { Print("- R: singleExpression -> singleExpressionOpt"); $$ = $1; }
+    | singleExpression  { Print("- R: singleExpression -> singleExpressionOpt"); $$ = $1; }
     ;
 
 singleExpression
     : identifier    { Print("- R: identifier -> singleExpression"); $$ = createIDExpressionNode($1); }
     | THIS          { Print("- R: THIS -> singleExpression"); $$ = createThisExpressionNode(); }
-    | SUPER         { Print("- R: SUPER -> singleExpression"); $$ = createSuperExpressionNode(); }
     | TRUE_KW       { Print("- R: TRUE_LITERAL -> singleExpression"); $$ = createTrueLiteralExpressionNode(); }
     | FALSE_KW      { Print("- R: FALSE_LITERAL -> singleExpression"); $$ = createFalseLiteralExpressionNode(); }
     | NULL_KW       { Print("- R: NULL_LITERAL -> singleExpression"); $$ = createNullLiteralExpressionNode(); }
@@ -392,7 +392,11 @@ singleExpression
         { Print("- R: singleExpression ',' singleExpressionn -> singleExpression"); $$ = createCommaExpressionNode($1, $3); }
 
     | '(' singleExpression ')' 
-        { Print("- R: '(' singleExpression ')' -> singleExpression"); $$ = createBracketsExpressionNode($2); }
+        { Print("- R: '(' singleExpression ')' -> singleExpression"); $$ = $2; }
+
+    | SUPER '(' ')'                         { Print("- R: SUPER '(' ')' -> singleExpression"); $$ = createSuperCallExpressionNode(createExpressionListFromExpression(nullptr)); }
+    | SUPER '(' singleExpression ')'        { Print("- R: SUPER '(' singleExpression ')' -> singleExpression"); $$ = createSuperCallExpressionNode(createExpressionListFromExpression($3)); }
+    | SUPER '(' singleExpression ',' ')'    { Print("- R: SUPER '(' singleExpression ',' ')' -> singleExpression"); $$ = createSuperCallExpressionNode(createExpressionListFromExpression($3)); } 
 
     // XXX: dissallow syntax exrp '(' optParams ')' cause this grammar dont have func types
     | identifier '(' ')' 
