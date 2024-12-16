@@ -1,15 +1,24 @@
 #pragma once
 #include "nodes.h"
 
+
 	// ====== Expression ====== //
 
 ExpressionNode* createIDExpressionNode(char* idStr);
+ExpressionNode* createThisExpressionNode();
+ExpressionNode* createSuperExpressionNode(); 
+
 ExpressionNode* createIntLiteralExpressionNode(int value);
 ExpressionNode* createFloatLiteralExpressionNode(double value);
 ExpressionNode* createStringLiteralExpressionNode(char* value);
 ExpressionNode* createTrueLiteralExpressionNode();
 ExpressionNode* createFalseLiteralExpressionNode();
 ExpressionNode* createNullLiteralExpressionNode();
+
+ExpressionNode* createPrefIncrementExpressionNode(ExpressionNode* firstOperand);
+ExpressionNode* createPrefDecrementExpressionNode(ExpressionNode* firstOperand);
+ExpressionNode* createPostIncrementExpressionNode(ExpressionNode* firstOperand);
+ExpressionNode* createPostDecrementExpressionNode(ExpressionNode* firstOperand);
 
 ExpressionNode* createPlusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createMinusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
@@ -25,29 +34,13 @@ ExpressionNode* createLogNotExpressionNode(ExpressionNode* firstOperand);
 ExpressionNode* createLogOrExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createLogAndExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 
-ExpressionNode* createCommaExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
-ExpressionNode* createBracketsExpressionNode(ExpressionNode* expr);
-
-ExpressionNode* createThisExpressionNode();
-ExpressionNode* createSuperExpressionNode(); 
-ExpressionNode* createFuncCallExpressionNode(char* idStr, ExpressionListNode* params);
-
-ExpressionNode* createEmptyArrayElementExpressionNode();
-ExpressionNode* createExpressionFromExpressionList(ExpressionListNode* params);
-ExpressionNode* createArrayAccessElementExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
-
-ExpressionNode* createPrefIncrementExpressionNode(ExpressionNode* firstOperand);
-ExpressionNode* createPrefDecrementExpressionNode(ExpressionNode* firstOperand);
-ExpressionNode* createPostIncrementExpressionNode(ExpressionNode* firstOperand);
-ExpressionNode* createPostDecrementExpressionNode(ExpressionNode* firstOperand);
-
 ExpressionNode* createAssignExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createAssignMulExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createAssignDivExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createAssignPlusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createAssignMinusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
-ExpressionNode* createAssignAndExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
-ExpressionNode* createAssignOrExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createAssignLogAndExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createAssignLogOrExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 
 ExpressionNode* createEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createNotEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
@@ -56,9 +49,23 @@ ExpressionNode* createStrictNotEqualExpressionNode(ExpressionNode* firstOperand,
 ExpressionNode* createLessEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 ExpressionNode* createGreaterEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
 
-ExpressionNode* createNewExpressionNode(ExpressionNode* constructor, ExpressionListNode* params)
-ExpressionNode* createFieldAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
-ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand, ExpressionListNode* params);
+ExpressionNode* createCommaExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createInstanceOfExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createInExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createTernaryExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand, ExpressionNode* thirdOperand);
+
+ExpressionNode* createBracketsExpressionNode(ExpressionNode* expr);
+
+ExpressionNode* createArrayAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand);
+ExpressionNode* createEmptyArrayElementExpressionNode();
+ExpressionNode* createArrayLiteralFromExpressionList(ExpressionListNode* params);
+
+ExpressionNode* createFuncCallExpressionNode(char* funcName, ExpressionListNode* params);
+
+ExpressionNode* createFieldAccessExpressionNode(ExpressionNode* firstOperand, char* fieldName);
+ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, char* methodName, ExpressionListNode* params);
+
+ExpressionNode* createNewExpressionNode(ExpressionNode* constructor, ExpressionListNode* params);
 
 
     // ====== ExpressionList ====== //
@@ -67,6 +74,7 @@ ExpressionListNode* createExpressionListFromExpression(ExpressionNode* expr);
 ExpressionListNode* createExpressionListNode(ExpressionNode* firstChild);
 ExpressionListNode* addExpressionToExpressionList(ExpressionListNode* list, ExpressionNode* child);
 ExpressionListNode* addExpressionListToExpressionList(ExpressionListNode* fisrtList, ExpressionListNode* secondList);
+
 
 	// ====== Types ====== //
 

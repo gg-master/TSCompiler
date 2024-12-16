@@ -13,6 +13,20 @@ ExpressionNode* createIDExpressionNode(char* idStr) {
     node->id = ID++;
     return node;
 }
+ExpressionNode* createThisExpressionNode() {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_THIS;
+    node->id = ID++;
+    return node;
+}
+ExpressionNode* createSuperExpressionNode() {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_SUPER;
+    node->id = ID++;
+    return node;
+}
+
+
 ExpressionNode* createIntLiteralExpressionNode(int value) {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_INT_LIT;
@@ -51,11 +65,39 @@ ExpressionNode* createFalseLiteralExpressionNode() {
 ExpressionNode* createNullLiteralExpressionNode() {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_NULL_LIT;
-    node->nullValue = nullptr;
     node->id = ID++;
     return node;
 }
 
+
+ExpressionNode* createPrefIncrementExpressionNode(ExpressionNode* firstOperand) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_PREF_INCREMENT;
+    node->firstOperand = firstOperand;
+    node->id = ID++;
+    return node;
+}
+ExpressionNode* createPrefDecrementExpressionNode(ExpressionNode* firstOperand) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_PREF_DECREMENT;
+    node->firstOperand = firstOperand;
+    node->id = ID++;
+    return node;
+}
+ExpressionNode* createPostIncrementExpressionNode(ExpressionNode* firstOperand) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_POST_INCREMENT;
+    node->firstOperand = firstOperand;
+    node->id = ID++;
+    return node;
+}
+ExpressionNode* createPostDecrementExpressionNode(ExpressionNode* firstOperand) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_POST_DECREMENT;
+    node->firstOperand = firstOperand;
+    node->id = ID++;
+    return node;
+}
 
 
 ExpressionNode* createPlusExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
@@ -107,8 +149,6 @@ ExpressionNode* createGreatExpressionNode(ExpressionNode* firstOperand, Expressi
     return node;
 }
 
-
-
 ExpressionNode* createUPlusExpressionNode(ExpressionNode* firstOperand) {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_UPLUS;
@@ -123,8 +163,6 @@ ExpressionNode* createUMinusExpressionNode(ExpressionNode* firstOperand) {
     node->id = ID++;
     return node;
 }
-
-
 
 ExpressionNode* createLogNotExpressionNode(ExpressionNode* firstOperand) {
     auto* node = new ExpressionNode{};
@@ -149,121 +187,6 @@ ExpressionNode* createLogAndExpressionNode(ExpressionNode* firstOperand, Express
     node->id = ID++;
     return node;
 }
-
-
-
-ExpressionNode* createCommaExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_COMMA;
-    node->firstOperand = firstOperand;
-    node->secondOperand = secondOperand;
-    node->id = ID++;
-    return node;
-}
-ExpressionNode* createBracketsExpressionNode(ExpressionNode* expr) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_BRACKETS;
-    node->firstOperand = expr;
-    node->id = ID++;
-    return node;
-}
-
-
-
-ExpressionNode* createThisExpressionNode() {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_THIS;
-    node->id = ID++;
-    return node;
-}
-ExpressionNode* createSuperExpressionNode() {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_SUPER;
-    node->id = ID++;
-    return node;
-}
-ExpressionNode* createFuncCallExpressionNode(char* idStr, ExpressionListNode* params) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_FUNC_CALL;
-    node->identifierString = idStr;
-    node->params = params;
-    node->id = ID++;
-    return node;
-}
-
-
-
-ExpressionNode* createEmptyArrayElementExpressionNode() {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_ARRAY_EMPTY_ELEMENT;
-    node->id = ID++;
-    return node;
-}
-ExpressionNode* createExpressionFromExpressionList(ExpressionListNode* params) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_ARRAY_CREATION;
-
-    // removing last empty array element
-    if (params->first != nullptr && params->last != nullptr 
-        && params->last->type == ExpressionType::_ARRAY_EMPTY_ELEMENT) {
-        auto* child = params->first;
-        while (child->next != nullptr && child->next != params->last) {
-            child = child->next;
-        }
-
-        child->next = nullptr;
-        
-        if (params->first == params->last) {
-            params->first = nullptr;
-            child = nullptr;
-        }
-        free(params->last);
-        params->last = child;
-    }
-    node->params = params;
-    node->id = ID++;
-    return node;
-}
-ExpressionNode* createArrayAccessElementExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_ARRAY_ACCESS;
-    node->firstOperand = firstOperand;
-    node->secondOperand = secondOperand;
-    node->id = ID++;
-    return node;
-}
-
-
-
-ExpressionNode* createPrefIncrementExpressionNode(ExpressionNode* firstOperand) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_PREF_INCREMENT;
-    node->firstOperand = firstOperand;
-    node->id = ID++;
-    return node;
-}
-ExpressionNode* createPrefDecrementExpressionNode(ExpressionNode* firstOperand) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_PREF_DECREMENT;
-    node->firstOperand = firstOperand;
-    node->id = ID++;
-    return node;
-}
-ExpressionNode* createPostIncrementExpressionNode(ExpressionNode* firstOperand) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_POST_INCREMENT;
-    node->firstOperand = firstOperand;
-    node->id = ID++;
-    return node;
-}
-ExpressionNode* createPostDecrementExpressionNode(ExpressionNode* firstOperand) {
-    auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_POST_DECREMENT;
-    node->firstOperand = firstOperand;
-    node->id = ID++;
-    return node;
-}
-
 
 
 ExpressionNode* createAssignExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
@@ -306,7 +229,7 @@ ExpressionNode* createAssignMinusExpressionNode(ExpressionNode* firstOperand, Ex
     node->id = ID++;
     return node;
 }
-ExpressionNode* createAssignAndExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
+ExpressionNode* createAssignLogAndExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_ASSIGN_LOGICAL_AND;
     node->firstOperand = firstOperand;
@@ -314,7 +237,7 @@ ExpressionNode* createAssignAndExpressionNode(ExpressionNode* firstOperand, Expr
     node->id = ID++;
     return node;
 }
-ExpressionNode* createAssignOrExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
+ExpressionNode* createAssignLogOrExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_ASSIGN_LOGICAL_OR;
     node->firstOperand = firstOperand;
@@ -322,7 +245,6 @@ ExpressionNode* createAssignOrExpressionNode(ExpressionNode* firstOperand, Expre
     node->id = ID++;
     return node;
 }
-
 
 
 ExpressionNode* createEqualExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
@@ -375,28 +297,123 @@ ExpressionNode* createGreaterEqualExpressionNode(ExpressionNode* firstOperand, E
 }
 
 
-
-ExpressionNode* createNewExpressionNode(ExpressionNode* constructor, ExpressionListNode* params) {
+ExpressionNode* createCommaExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
     auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_NEW;
-    node->constructor = constructor;
+    node->type = ExpressionType::_COMMA;
+    node->firstOperand = firstOperand;
+    node->secondOperand = secondOperand;
+    node->id = ID++;
+    return node;
+}
+ExpressionNode* createInstanceOfExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_INSTANCEOF;
+    node->firstOperand = firstOperand;
+    node->secondOperand = secondOperand;
+    node->id = ID++;
+    return node;
+}
+ExpressionNode* createInExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_IN;
+    node->firstOperand = firstOperand;
+    node->secondOperand = secondOperand;
+    node->id = ID++;
+    return node;
+}
+ExpressionNode* createTernaryExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand, ExpressionNode* thirdOperand) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_TERNARY;
+    node->firstOperand = firstOperand;
+    node->secondOperand = secondOperand;
+    node->thirdOperand = thirdOperand;
+    node->id = ID++;
+    return node;
+}
+
+
+ExpressionNode* createBracketsExpressionNode(ExpressionNode* expr) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_BRACKETS;
+    node->firstOperand = expr;
+    node->id = ID++;
+    return node;
+}
+
+
+ExpressionNode* createEmptyArrayElementExpressionNode() {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_ARRAY_EMPTY_ELEMENT;
+    node->id = ID++;
+    return node;
+}
+ExpressionNode* createArrayLiteralFromExpressionList(ExpressionListNode* params) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_ARRAY_CREATION;
+
+    // removing last empty array element
+    if (params->first != nullptr && params->last != nullptr 
+        && params->last->type == ExpressionType::_ARRAY_EMPTY_ELEMENT) {
+        auto* child = params->first;
+        while (child->next != nullptr && child->next != params->last) {
+            child = child->next;
+        }
+
+        child->next = nullptr;
+        
+        if (params->first == params->last) {
+            params->first = nullptr;
+            child = nullptr;
+        }
+        free(params->last);
+        params->last = child;
+    }
     node->params = params;
     node->id = ID++;
     return node;
 }
-ExpressionNode* createFieldAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
+ExpressionNode* createArrayAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand) {
     auto* node = new ExpressionNode{};
-    node->type = ExpressionType::_FIELD_ACCESS;
+    node->type = ExpressionType::_ARRAY_ACCESS;
     node->firstOperand = firstOperand;
     node->secondOperand = secondOperand;
     node->id = ID++;
     return node;
 }
-ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, ExpressionNode* secondOperand, ExpressionListNode* params) {
+
+
+ExpressionNode* createFuncCallExpressionNode(char* funcName, ExpressionListNode* params) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_FUNC_CALL;
+    node->identifierString = funcName;
+    node->params = params;
+    node->id = ID++;
+    return node;
+}
+
+ExpressionNode* createFieldAccessExpressionNode(ExpressionNode* firstOperand, char* fieldName) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_FIELD_ACCESS;
+    node->firstOperand = firstOperand;
+    node->identifierString = fieldName;
+    node->id = ID++;
+    return node;
+}
+ExpressionNode* createMethodAccessExpressionNode(ExpressionNode* firstOperand, char* methodName, ExpressionListNode* params) {
     auto* node = new ExpressionNode{};
     node->type = ExpressionType::_METHOD_ACCESS;
     node->firstOperand = firstOperand;
-    node->secondOperand = secondOperand;
+    node->identifierString = methodName;
+    node->params = params;
+    node->id = ID++;
+    return node;
+}
+
+
+ExpressionNode* createNewExpressionNode(ExpressionNode* constructor, ExpressionListNode* params) {
+    auto* node = new ExpressionNode{};
+    node->type = ExpressionType::_NEW;
+    node->firstOperand = constructor;
     node->params = params;
     node->id = ID++;
     return node;

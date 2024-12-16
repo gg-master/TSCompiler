@@ -6,11 +6,19 @@
 enum class ExpressionType 
 {
 	_IDENTIFIER,
+	_THIS,
+	_SUPER,
+
 	_INT_LIT,
 	_FLOAT_LIT,
 	_STRING_LIT,
 	_BOOLEAN_LIT,
 	_NULL_LIT,
+
+	_PREF_INCREMENT,
+	_PREF_DECREMENT,
+	_POST_INCREMENT,
+	_POST_DECREMENT,
 
 	_PLUS,
 	_MINUS,
@@ -25,22 +33,6 @@ enum class ExpressionType
 	_NOT,
 	_LOGICAL_OR,
 	_LOGICAL_AND,
-
-	_COMMA,
-	_BRACKETS,
-
-	_THIS,
-	_SUPER,
-	_FUNC_CALL,
-
-	_ARRAY_EMPTY_ELEMENT,
-	_ARRAY_CREATION,
-	_ARRAY_ACCESS,
-
-	_PREF_INCREMENT,
-	_PREF_DECREMENT,
-	_POST_INCREMENT,
-	_POST_DECREMENT,
 
 	_ASSIGN,
 	_ASSIGN_PLUS,
@@ -57,9 +49,22 @@ enum class ExpressionType
 	_LESS_EQUAL,
 	_GREAT_EQUAL,
 
-	_NEW,
+	_COMMA,
+	_TERNARY,
+	_INSTANCEOF,
+	_IN,
+
+	_BRACKETS,
+
+	_ARRAY_EMPTY_ELEMENT,
+	_ARRAY_CREATION,
+	_ARRAY_ACCESS,
+
+	_FUNC_CALL,
+
 	_FIELD_ACCESS,
 	_METHOD_ACCESS,
+	_NEW,
 };
 
 struct ExpressionNode
@@ -80,10 +85,10 @@ struct ExpressionNode
 	struct ExpressionNode* secondOperand;
 	struct ExpressionNode* thirdOperand;
 
+	struct ExpressionListNode* params;
+
 	// using for ExpressionListNode
 	struct ExpressionNode* next;
-
-	struct ExpressionListNode* params;
 };
 
 struct ExpressionListNode

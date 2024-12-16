@@ -128,8 +128,7 @@ extern int yydebug;
     PREF_DECREMENT = 329,          /* PREF_DECREMENT  */
     POST_INCREMENT = 330,          /* POST_INCREMENT  */
     POST_DECREMENT = 331,          /* POST_DECREMENT  */
-    ENDL_BRACKET_OPEN = 332,       /* ENDL_BRACKET_OPEN  */
-    OPTIONAL_CHAINING_OPERATOR = 333 /* OPTIONAL_CHAINING_OPERATOR  */
+    ENDL_BRACKET_OPEN = 332        /* ENDL_BRACKET_OPEN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -172,7 +171,7 @@ union YYSTYPE
     struct VarDeclarationNode* varDeclNode;
     struct VarDeclarationListNode* varDeclListNode;
 
-#line 176 "parser.tab.h"
+#line 175 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

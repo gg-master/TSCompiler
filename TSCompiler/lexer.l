@@ -604,10 +604,11 @@ new         {
     return '?';
 }
 "?."    {
+    PrintError("Unsupported OPTIONAL_CHAINING_OPERATOR in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPTIONAL_CHAINING_OPERATOR: " + std::string{yytext});
     }
-    return OPTIONAL_CHAINING_OPERATOR;
+    return -1;
 }
 "??"    {
     PrintError("Unsupported OPERATOR_NULLISH_COALESCING in this version: " + std::string{yytext});
