@@ -23,8 +23,6 @@ enum class ExpressionType
 	_MINUS,
 	_MUL,
 	_DIV,
-	_LESS,
-	_GREAT,
 
 	_UPLUS,
 	_UMINUS,
@@ -41,6 +39,8 @@ enum class ExpressionType
 	_ASSIGN_LOGICAL_OR,
 	_ASSIGN_LOGICAL_AND,
 
+	_LESS,
+	_GREAT,
 	_EQUAL,
 	_NOT_EQUAL,
 	_STRICT_EQUAL,

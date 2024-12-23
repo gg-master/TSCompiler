@@ -1,0 +1,80 @@
+package JavaRTL;
+
+public class Number {
+    public double _value;
+
+    public Number(int value) {
+        this._value = value;
+    }
+
+    public Number(double value) {
+        this._value = value;
+    }
+
+    public Number(java.lang.String value) {
+        try {
+            int i = Integer.parseInt(value.trim());
+            this._value = i;
+        } catch (NumberFormatException nfe) {
+            try {
+                double d = Double.parseDouble(value.trim());
+                this._value = d;
+            } catch (NumberFormatException nfe2) {
+                throw new NumberFormatException("Unable to parse value as int or double: " + value);
+            }
+        }
+    }
+
+    public Number plus(Number other) {
+        return new Number(this._value + other.value);
+    }
+
+    public Number minus(Number other) {
+        return new Number(this._value - other.value);
+    }
+
+    public Number mul(Number other) {
+        return new Number(this._value * other.value);
+    }
+
+    public Number div(Number other) {
+        return new Number(this._value / other.value);
+    }
+
+    public Number uPlus() {
+        return new Number(+this._value);
+    }
+
+    public Number uMinus() {
+        return new Number(-this._value);
+    }
+
+    public Boolean less(Number other) {
+        return new Boolean(this._value < other.value);
+    }
+
+    public Boolean great(Number other) {
+        return new Boolean(this._value > other.value);
+    }
+
+    public Boolean equal(Number other) {
+        return new Boolean(this._value != other.value);
+    }
+
+    public Boolean notEqual(Number other) {
+        return new Boolean(this._value != other.value);
+    }
+
+    public Boolean lessEqual(Number other) {
+        return new Boolean(this._value <= other.value);
+    }
+
+    public Boolean greatEqual(Number other) {
+        return new Boolean(this._value >= other.value);
+    }
+
+    @Override
+    public java.lang.String toString() {
+        return this._value;
+    }
+}
