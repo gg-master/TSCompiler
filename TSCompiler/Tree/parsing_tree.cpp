@@ -5,90 +5,103 @@ int ID = 0;
 
 // ====== Expression ====== //
 
-ExpressionNode *createIDExpressionNode(char *idStr) {
+ExpressionNode *createIDExpressionNode(char *idStr)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_IDENTIFIER;
     node->identifierString = idStr;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createThisExpressionNode() {
+ExpressionNode *createThisExpressionNode()
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_THIS;
     node->id = ID++;
     return node;
 }
 
-ExpressionNode *createIntLiteralExpressionNode(int value) {
+ExpressionNode *createIntLiteralExpressionNode(int value)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_INT_LIT;
     node->intValue = value;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createFloatLiteralExpressionNode(double value) {
+ExpressionNode *createFloatLiteralExpressionNode(double value)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_FLOAT_LIT;
     node->floatValue = value;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createStringLiteralExpressionNode(char *value) {
+ExpressionNode *createStringLiteralExpressionNode(char *value)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_STRING_LIT;
     node->stringValue = value;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createTrueLiteralExpressionNode() {
+ExpressionNode *createTrueLiteralExpressionNode()
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_BOOLEAN_LIT;
     node->boolValue = 1;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createFalseLiteralExpressionNode() {
+ExpressionNode *createFalseLiteralExpressionNode()
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_BOOLEAN_LIT;
     node->boolValue = 0;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createNullLiteralExpressionNode() {
+ExpressionNode *createNullLiteralExpressionNode()
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_NULL_LIT;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createUndefinedLiteralExpressionNode() {
+ExpressionNode *createUndefinedLiteralExpressionNode()
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_UNDEFINED_LIT;
     node->id = ID++;
     return node;
 }
 
-ExpressionNode *createPrefIncrementExpressionNode(ExpressionNode *firstOperand) {
+ExpressionNode *createPrefIncrementExpressionNode(ExpressionNode *firstOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_PREF_INCREMENT;
     node->firstOperand = firstOperand;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createPrefDecrementExpressionNode(ExpressionNode *firstOperand) {
+ExpressionNode *createPrefDecrementExpressionNode(ExpressionNode *firstOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_PREF_DECREMENT;
     node->firstOperand = firstOperand;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createPostIncrementExpressionNode(ExpressionNode *firstOperand) {
+ExpressionNode *createPostIncrementExpressionNode(ExpressionNode *firstOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_POST_INCREMENT;
     node->firstOperand = firstOperand;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createPostDecrementExpressionNode(ExpressionNode *firstOperand) {
+ExpressionNode *createPostDecrementExpressionNode(ExpressionNode *firstOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_POST_DECREMENT;
     node->firstOperand = firstOperand;
@@ -97,7 +110,8 @@ ExpressionNode *createPostDecrementExpressionNode(ExpressionNode *firstOperand) 
 }
 
 ExpressionNode *createPlusExpressionNode(ExpressionNode *firstOperand,
-                                         ExpressionNode *secondOperand) {
+                                         ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_PLUS;
     node->firstOperand = firstOperand;
@@ -106,7 +120,8 @@ ExpressionNode *createPlusExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createMinusExpressionNode(ExpressionNode *firstOperand,
-                                          ExpressionNode *secondOperand) {
+                                          ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_MINUS;
     node->firstOperand = firstOperand;
@@ -114,8 +129,8 @@ ExpressionNode *createMinusExpressionNode(ExpressionNode *firstOperand,
     node->id = ID++;
     return node;
 }
-ExpressionNode *createMulExpressionNode(ExpressionNode *firstOperand,
-                                        ExpressionNode *secondOperand) {
+ExpressionNode *createMulExpressionNode(ExpressionNode *firstOperand, ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_MUL;
     node->firstOperand = firstOperand;
@@ -123,8 +138,8 @@ ExpressionNode *createMulExpressionNode(ExpressionNode *firstOperand,
     node->id = ID++;
     return node;
 }
-ExpressionNode *createDivExpressionNode(ExpressionNode *firstOperand,
-                                        ExpressionNode *secondOperand) {
+ExpressionNode *createDivExpressionNode(ExpressionNode *firstOperand, ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_DIV;
     node->firstOperand = firstOperand;
@@ -133,7 +148,8 @@ ExpressionNode *createDivExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createLessExpressionNode(ExpressionNode *firstOperand,
-                                         ExpressionNode *secondOperand) {
+                                         ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_LESS;
     node->firstOperand = firstOperand;
@@ -142,7 +158,8 @@ ExpressionNode *createLessExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createGreatExpressionNode(ExpressionNode *firstOperand,
-                                          ExpressionNode *secondOperand) {
+                                          ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_GREAT;
     node->firstOperand = firstOperand;
@@ -151,14 +168,16 @@ ExpressionNode *createGreatExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 
-ExpressionNode *createUPlusExpressionNode(ExpressionNode *firstOperand) {
+ExpressionNode *createUPlusExpressionNode(ExpressionNode *firstOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_UPLUS;
     node->firstOperand = firstOperand;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createUMinusExpressionNode(ExpressionNode *firstOperand) {
+ExpressionNode *createUMinusExpressionNode(ExpressionNode *firstOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_UMINUS;
     node->firstOperand = firstOperand;
@@ -166,7 +185,8 @@ ExpressionNode *createUMinusExpressionNode(ExpressionNode *firstOperand) {
     return node;
 }
 
-ExpressionNode *createLogNotExpressionNode(ExpressionNode *firstOperand) {
+ExpressionNode *createLogNotExpressionNode(ExpressionNode *firstOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_NOT;
     node->firstOperand = firstOperand;
@@ -174,7 +194,8 @@ ExpressionNode *createLogNotExpressionNode(ExpressionNode *firstOperand) {
     return node;
 }
 ExpressionNode *createLogOrExpressionNode(ExpressionNode *firstOperand,
-                                          ExpressionNode *secondOperand) {
+                                          ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_LOGICAL_OR;
     node->firstOperand = firstOperand;
@@ -183,7 +204,8 @@ ExpressionNode *createLogOrExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createLogAndExpressionNode(ExpressionNode *firstOperand,
-                                           ExpressionNode *secondOperand) {
+                                           ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_LOGICAL_AND;
     node->firstOperand = firstOperand;
@@ -193,7 +215,8 @@ ExpressionNode *createLogAndExpressionNode(ExpressionNode *firstOperand,
 }
 
 ExpressionNode *createAssignExpressionNode(ExpressionNode *firstOperand,
-                                           ExpressionNode *secondOperand) {
+                                           ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ASSIGN;
     node->firstOperand = firstOperand;
@@ -202,7 +225,8 @@ ExpressionNode *createAssignExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createAssignMulExpressionNode(ExpressionNode *firstOperand,
-                                              ExpressionNode *secondOperand) {
+                                              ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ASSIGN_MUL;
     node->firstOperand = firstOperand;
@@ -211,7 +235,8 @@ ExpressionNode *createAssignMulExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createAssignDivExpressionNode(ExpressionNode *firstOperand,
-                                              ExpressionNode *secondOperand) {
+                                              ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ASSIGN_DIV;
     node->firstOperand = firstOperand;
@@ -220,7 +245,8 @@ ExpressionNode *createAssignDivExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createAssignPlusExpressionNode(ExpressionNode *firstOperand,
-                                               ExpressionNode *secondOperand) {
+                                               ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ASSIGN_PLUS;
     node->firstOperand = firstOperand;
@@ -229,7 +255,8 @@ ExpressionNode *createAssignPlusExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createAssignMinusExpressionNode(ExpressionNode *firstOperand,
-                                                ExpressionNode *secondOperand) {
+                                                ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ASSIGN_MINUS;
     node->firstOperand = firstOperand;
@@ -238,7 +265,8 @@ ExpressionNode *createAssignMinusExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createAssignLogAndExpressionNode(ExpressionNode *firstOperand,
-                                                 ExpressionNode *secondOperand) {
+                                                 ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ASSIGN_LOGICAL_AND;
     node->firstOperand = firstOperand;
@@ -247,7 +275,8 @@ ExpressionNode *createAssignLogAndExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createAssignLogOrExpressionNode(ExpressionNode *firstOperand,
-                                                ExpressionNode *secondOperand) {
+                                                ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ASSIGN_LOGICAL_OR;
     node->firstOperand = firstOperand;
@@ -257,7 +286,8 @@ ExpressionNode *createAssignLogOrExpressionNode(ExpressionNode *firstOperand,
 }
 
 ExpressionNode *createEqualExpressionNode(ExpressionNode *firstOperand,
-                                          ExpressionNode *secondOperand) {
+                                          ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_EQUAL;
     node->firstOperand = firstOperand;
@@ -266,7 +296,8 @@ ExpressionNode *createEqualExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createNotEqualExpressionNode(ExpressionNode *firstOperand,
-                                             ExpressionNode *secondOperand) {
+                                             ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_NOT_EQUAL;
     node->firstOperand = firstOperand;
@@ -275,7 +306,8 @@ ExpressionNode *createNotEqualExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createStrictEqualExpressionNode(ExpressionNode *firstOperand,
-                                                ExpressionNode *secondOperand) {
+                                                ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_STRICT_EQUAL;
     node->firstOperand = firstOperand;
@@ -284,7 +316,8 @@ ExpressionNode *createStrictEqualExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createStrictNotEqualExpressionNode(ExpressionNode *firstOperand,
-                                                   ExpressionNode *secondOperand) {
+                                                   ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_STRICT_NOT_EQUAL;
     node->firstOperand = firstOperand;
@@ -293,7 +326,8 @@ ExpressionNode *createStrictNotEqualExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createLessEqualExpressionNode(ExpressionNode *firstOperand,
-                                              ExpressionNode *secondOperand) {
+                                              ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_LESS_EQUAL;
     node->firstOperand = firstOperand;
@@ -302,7 +336,8 @@ ExpressionNode *createLessEqualExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createGreaterEqualExpressionNode(ExpressionNode *firstOperand,
-                                                 ExpressionNode *secondOperand) {
+                                                 ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_GREAT_EQUAL;
     node->firstOperand = firstOperand;
@@ -312,7 +347,8 @@ ExpressionNode *createGreaterEqualExpressionNode(ExpressionNode *firstOperand,
 }
 
 ExpressionNode *createCommaExpressionNode(ExpressionNode *firstOperand,
-                                          ExpressionNode *secondOperand) {
+                                          ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_COMMA;
     node->firstOperand = firstOperand;
@@ -321,7 +357,8 @@ ExpressionNode *createCommaExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 ExpressionNode *createInstanceOfExpressionNode(ExpressionNode *firstOperand,
-                                               ExpressionNode *secondOperand) {
+                                               ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_INSTANCEOF;
     node->firstOperand = firstOperand;
@@ -329,8 +366,8 @@ ExpressionNode *createInstanceOfExpressionNode(ExpressionNode *firstOperand,
     node->id = ID++;
     return node;
 }
-ExpressionNode *createInExpressionNode(ExpressionNode *firstOperand,
-                                       ExpressionNode *secondOperand) {
+ExpressionNode *createInExpressionNode(ExpressionNode *firstOperand, ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_IN;
     node->firstOperand = firstOperand;
@@ -340,7 +377,8 @@ ExpressionNode *createInExpressionNode(ExpressionNode *firstOperand,
 }
 ExpressionNode *createTernaryExpressionNode(ExpressionNode *firstOperand,
                                             ExpressionNode *secondOperand,
-                                            ExpressionNode *thirdOperand) {
+                                            ExpressionNode *thirdOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_TERNARY;
     node->firstOperand = firstOperand;
@@ -350,27 +388,32 @@ ExpressionNode *createTernaryExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 
-ExpressionNode *createEmptyArrayElementExpressionNode() {
+ExpressionNode *createEmptyArrayElementExpressionNode()
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ARRAY_EMPTY_ELEMENT;
     node->id = ID++;
     return node;
 }
-ExpressionNode *createArrayLiteralFromExpressionList(ExpressionListNode *params) {
+ExpressionNode *createArrayLiteralFromExpressionList(ExpressionListNode *params)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ARRAY_CREATION;
 
     // removing last empty array element
     if (params->first != nullptr && params->last != nullptr &&
-        params->last->type == ExpressionType::_ARRAY_EMPTY_ELEMENT) {
+        params->last->type == ExpressionType::_ARRAY_EMPTY_ELEMENT)
+    {
         auto *child = params->first;
-        while (child->next != nullptr && child->next != params->last) {
+        while (child->next != nullptr && child->next != params->last)
+        {
             child = child->next;
         }
 
         child->next = nullptr;
 
-        if (params->first == params->last) {
+        if (params->first == params->last)
+        {
             params->first = nullptr;
             child = nullptr;
         }
@@ -382,7 +425,8 @@ ExpressionNode *createArrayLiteralFromExpressionList(ExpressionListNode *params)
     return node;
 }
 ExpressionNode *createArrayAccessExpressionNode(ExpressionNode *firstOperand,
-                                                ExpressionNode *secondOperand) {
+                                                ExpressionNode *secondOperand)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_ARRAY_ACCESS;
     node->firstOperand = firstOperand;
@@ -391,7 +435,8 @@ ExpressionNode *createArrayAccessExpressionNode(ExpressionNode *firstOperand,
     return node;
 }
 
-ExpressionNode *createFuncCallExpressionNode(char *funcName, ExpressionListNode *params) {
+ExpressionNode *createFuncCallExpressionNode(char *funcName, ExpressionListNode *params)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_FUNC_CALL;
     node->identifierString = funcName;
@@ -400,7 +445,8 @@ ExpressionNode *createFuncCallExpressionNode(char *funcName, ExpressionListNode 
     return node;
 }
 
-ExpressionNode *createSuperCallExpressionNode(ExpressionListNode *params) {
+ExpressionNode *createSuperCallExpressionNode(ExpressionListNode *params)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_SUPER_CALL;
     node->params = params;
@@ -408,7 +454,8 @@ ExpressionNode *createSuperCallExpressionNode(ExpressionListNode *params) {
     return node;
 }
 
-ExpressionNode *createFieldAccessExpressionNode(ExpressionNode *firstOperand, char *fieldName) {
+ExpressionNode *createFieldAccessExpressionNode(ExpressionNode *firstOperand, char *fieldName)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_FIELD_ACCESS;
     node->firstOperand = firstOperand;
@@ -417,7 +464,8 @@ ExpressionNode *createFieldAccessExpressionNode(ExpressionNode *firstOperand, ch
     return node;
 }
 ExpressionNode *createMethodAccessExpressionNode(ExpressionNode *firstOperand, char *methodName,
-                                                 ExpressionListNode *params) {
+                                                 ExpressionListNode *params)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_METHOD_ACCESS;
     node->firstOperand = firstOperand;
@@ -427,7 +475,8 @@ ExpressionNode *createMethodAccessExpressionNode(ExpressionNode *firstOperand, c
     return node;
 }
 
-ExpressionNode *createNewExpressionNode(ExpressionNode *constructor, ExpressionListNode *params) {
+ExpressionNode *createNewExpressionNode(ExpressionNode *constructor, ExpressionListNode *params)
+{
     auto *node = new ExpressionNode{};
     node->type = ExpressionType::_NEW;
     node->firstOperand = constructor;
@@ -438,14 +487,17 @@ ExpressionNode *createNewExpressionNode(ExpressionNode *constructor, ExpressionL
 
 // ====== ExpressionList ====== //
 
-ExpressionListNode *createExpressionListFromExpression(ExpressionNode *expr) {
+ExpressionListNode *createExpressionListFromExpression(ExpressionNode *expr)
+{
     ExpressionListNode *leftExprList = nullptr;
     ExpressionListNode *rightExprList = nullptr;
 
-    if (expr == nullptr) {
+    if (expr == nullptr)
+    {
         return new ExpressionListNode{};
     }
-    switch (expr->type) {
+    switch (expr->type)
+    {
     case ExpressionType::_COMMA:
         leftExprList = createExpressionListFromExpression(expr->firstOperand);
         rightExprList = createExpressionListFromExpression(expr->secondOperand);
@@ -464,20 +516,23 @@ ExpressionListNode *createExpressionListFromExpression(ExpressionNode *expr) {
     }
 }
 
-ExpressionListNode *createExpressionListNode(ExpressionNode *firstChild) {
+ExpressionListNode *createExpressionListNode(ExpressionNode *firstChild)
+{
     auto *node = new ExpressionListNode{};
     node->first = firstChild;
     node->last = firstChild;
     node->id = ID++;
     return node;
 }
-ExpressionListNode *addExpressionToExpressionList(ExpressionListNode *list, ExpressionNode *child) {
+ExpressionListNode *addExpressionToExpressionList(ExpressionListNode *list, ExpressionNode *child)
+{
     list->last->next = child;
     list->last = child;
     return list;
 }
 ExpressionListNode *addExpressionListToExpressionList(ExpressionListNode *fisrtList,
-                                                      ExpressionListNode *secondList) {
+                                                      ExpressionListNode *secondList)
+{
     fisrtList->last->next = secondList->first;
     fisrtList->last = secondList->last;
 
@@ -487,57 +542,66 @@ ExpressionListNode *addExpressionListToExpressionList(ExpressionListNode *fisrtL
 
 // ====== Types ====== //
 
-TypeNode *createNumberTypeNode() {
+TypeNode *createNumberTypeNode()
+{
     auto *node = new TypeNode{};
     node->type = TypeType::_NUMBER;
     node->id = ID++;
     return node;
 }
-TypeNode *createStringTypeNode() {
+TypeNode *createStringTypeNode()
+{
     auto *node = new TypeNode{};
     node->type = TypeType::_STRING;
     node->id = ID++;
     return node;
 }
-TypeNode *createBooleanTypeNode() {
+TypeNode *createBooleanTypeNode()
+{
     auto *node = new TypeNode{};
     node->type = TypeType::_BOOLEAN;
     node->id = ID++;
     return node;
 }
-TypeNode *createUndefinedTypeNode() {
+TypeNode *createUndefinedTypeNode()
+{
     auto *node = new TypeNode{};
     node->type = TypeType::_UNDEFINED;
     node->id = ID++;
     return node;
 }
-TypeNode *createVoidTypeNode() {
+TypeNode *createVoidTypeNode()
+{
     auto *node = new TypeNode{};
     node->type = TypeType::_VOID;
     node->id = ID++;
     return node;
 }
-TypeNode *createNullTypeNode() {
+TypeNode *createNullTypeNode()
+{
     auto *node = new TypeNode{};
     node->type = TypeType::_NULL;
     node->id = ID++;
     return node;
 }
-TypeNode *createUserTypeNode(char *typeName) {
+TypeNode *createUserTypeNode(char *typeName)
+{
     auto *node = new TypeNode{};
     node->type = TypeType::_USER_TYPE;
     node->userTypeName = typeName;
     node->id = ID++;
     return node;
 }
-TypeNode *createArrayTypeNode(TypeNode *arrayType) {
+TypeNode *createArrayTypeNode(TypeNode *arrayType)
+{
     auto *node = new TypeNode{};
     node->type = TypeType::_ARRAY;
     node->arrayType = arrayType;
     node->id = ID++;
     return node;
 }
-TypeNode *createTypeFromTupleType(TupleTypeNode *tupleNode) {
+TypeNode *createTypeFromTupleType(TupleTypeNode *tupleNode)
+{
     auto *node = new TypeNode{};
     node->type = TypeType::_TUPLE;
     node->tupleNode = tupleNode;
@@ -545,14 +609,16 @@ TypeNode *createTypeFromTupleType(TupleTypeNode *tupleNode) {
     return node;
 }
 
-TupleTypeNode *createTupleTypeNode(TypeNode *firstChild) {
+TupleTypeNode *createTupleTypeNode(TypeNode *firstChild)
+{
     auto *node = new TupleTypeNode{};
     node->first = firstChild;
     node->last = firstChild;
     node->id = ID++;
     return node;
 }
-TupleTypeNode *addTypeToTupleType(TupleTypeNode *list, TypeNode *typeNode) {
+TupleTypeNode *addTypeToTupleType(TupleTypeNode *list, TypeNode *typeNode)
+{
     list->last->next = typeNode;
     list->last = typeNode;
     return list;
@@ -561,7 +627,8 @@ TupleTypeNode *addTypeToTupleType(TupleTypeNode *list, TypeNode *typeNode) {
 // ====== Variables ====== //
 
 VarDeclarationNode *createVarDeclarationNode(char *idStr, TypeNode *varType,
-                                             ExpressionNode *initExpr) {
+                                             ExpressionNode *initExpr)
+{
     auto *node = new VarDeclarationNode{};
     node->identifierStr = idStr;
     node->varType = varType;
@@ -570,7 +637,8 @@ VarDeclarationNode *createVarDeclarationNode(char *idStr, TypeNode *varType,
     return node;
 }
 
-VarDeclarationListNode *createVarDeclarationListNode(VarDeclarationNode *firstChild) {
+VarDeclarationListNode *createVarDeclarationListNode(VarDeclarationNode *firstChild)
+{
     auto *node = new VarDeclarationListNode{};
     node->first = firstChild;
     node->last = firstChild;
@@ -578,7 +646,8 @@ VarDeclarationListNode *createVarDeclarationListNode(VarDeclarationNode *firstCh
     return node;
 }
 VarDeclarationListNode *addVarDeclarationToVarDeclarationList(VarDeclarationListNode *list,
-                                                              VarDeclarationNode *child) {
+                                                              VarDeclarationNode *child)
+{
     list->last->next = child;
     list->last = child;
     return list;
@@ -586,13 +655,15 @@ VarDeclarationListNode *addVarDeclarationToVarDeclarationList(VarDeclarationList
 
 // ====== Statement ====== //
 
-StatementNode *createEmptyStatementNode() {
+StatementNode *createEmptyStatementNode()
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_EMPTY;
     stmt->id = ID++;
     return stmt;
 }
-StatementNode *createExpressionStatementNode(ExpressionNode *expr) {
+StatementNode *createExpressionStatementNode(ExpressionNode *expr)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_EXPRESSION;
     stmt->expression = expr;
@@ -600,7 +671,8 @@ StatementNode *createExpressionStatementNode(ExpressionNode *expr) {
     return stmt;
 }
 StatementNode *createVarStatementNode(enum VarModifierType modifierType,
-                                      VarDeclarationListNode *declList) {
+                                      VarDeclarationListNode *declList)
+{
     auto *node = new StatementNode{};
     node->type = StatementType::_VAR;
     node->modifierType = modifierType;
@@ -608,14 +680,16 @@ StatementNode *createVarStatementNode(enum VarModifierType modifierType,
     node->id = ID++;
     return node;
 }
-StatementNode *createReturnStatementNode(ExpressionNode *expr) {
+StatementNode *createReturnStatementNode(ExpressionNode *expr)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_RETURN;
     stmt->expression = expr;
     stmt->id = ID++;
     return stmt;
 }
-StatementNode *createBlockStatementNode(StatementListNode *stmtList) {
+StatementNode *createBlockStatementNode(StatementListNode *stmtList)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_BLOCK;
     stmt->stmtList = stmtList;
@@ -623,7 +697,8 @@ StatementNode *createBlockStatementNode(StatementListNode *stmtList) {
     return stmt;
 }
 StatementNode *createIfElseStatementNode(ExpressionNode *condition, StatementNode *ifBody,
-                                         StatementNode *elseBody) {
+                                         StatementNode *elseBody)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_IFELSE;
     stmt->expression = condition;
@@ -633,7 +708,8 @@ StatementNode *createIfElseStatementNode(ExpressionNode *condition, StatementNod
     return stmt;
 }
 
-StatementNode *createDoWhileStatementNode(StatementNode *body, ExpressionNode *condition) {
+StatementNode *createDoWhileStatementNode(StatementNode *body, ExpressionNode *condition)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_DOWHILE;
     stmt->iterationBody = body;
@@ -641,7 +717,8 @@ StatementNode *createDoWhileStatementNode(StatementNode *body, ExpressionNode *c
     stmt->id = ID++;
     return stmt;
 }
-StatementNode *createWhileStatementNode(ExpressionNode *condition, StatementNode *body) {
+StatementNode *createWhileStatementNode(ExpressionNode *condition, StatementNode *body)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_WHILE;
     stmt->iterationBody = body;
@@ -650,7 +727,8 @@ StatementNode *createWhileStatementNode(ExpressionNode *condition, StatementNode
     return stmt;
 }
 StatementNode *createClassicForStatementNode(ExpressionNode *expr1, ExpressionNode *expr2,
-                                             ExpressionNode *expr3, StatementNode *body) {
+                                             ExpressionNode *expr3, StatementNode *body)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_FOR;
     stmt->iterationBody = body;
@@ -663,8 +741,8 @@ StatementNode *createClassicForStatementNode(ExpressionNode *expr1, ExpressionNo
 StatementNode *createClassicForWithVarDeclStatementNode(VarModifierType modifierType,
                                                         VarDeclarationListNode *declList,
                                                         ExpressionNode *expr2,
-                                                        ExpressionNode *expr3,
-                                                        StatementNode *body) {
+                                                        ExpressionNode *expr3, StatementNode *body)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_FOR;
     stmt->iterationBody = body;
@@ -676,7 +754,8 @@ StatementNode *createClassicForWithVarDeclStatementNode(VarModifierType modifier
     return stmt;
 }
 StatementNode *createForExprInExprStatementNode(ExpressionNode *expr1, ExpressionNode *expr2,
-                                                StatementNode *body) {
+                                                StatementNode *body)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_FOR;
     stmt->iterationBody = body;
@@ -687,7 +766,8 @@ StatementNode *createForExprInExprStatementNode(ExpressionNode *expr1, Expressio
 }
 StatementNode *createForVarDeclInExprStatementNode(VarModifierType modifierType,
                                                    VarDeclarationNode *decl, ExpressionNode *expr,
-                                                   StatementNode *body) {
+                                                   StatementNode *body)
+{
     auto *stmt = new StatementNode{};
     stmt->type = StatementType::_FOR;
     stmt->iterationBody = body;
@@ -700,7 +780,8 @@ StatementNode *createForVarDeclInExprStatementNode(VarModifierType modifierType,
 
 // ====== StatementList ====== //
 
-StatementListNode *createStatementListNode(StatementNode *firstChild) {
+StatementListNode *createStatementListNode(StatementNode *firstChild)
+{
     auto *node = new StatementListNode{};
     node->first = firstChild;
     node->last = firstChild;
@@ -708,7 +789,8 @@ StatementListNode *createStatementListNode(StatementNode *firstChild) {
     return node;
 }
 
-StatementListNode *addStatementToStatementList(StatementListNode *list, StatementNode *statement) {
+StatementListNode *addStatementToStatementList(StatementListNode *list, StatementNode *statement)
+{
     list->last->next = statement;
     list->last = statement;
     return list;
@@ -719,7 +801,8 @@ StatementListNode *addStatementToStatementList(StatementListNode *list, Statemen
 FunctionDeclarationNode *createFunctionDeclarationNode(char *funcName,
                                                        RequiredParameterListNode *params,
                                                        TypeNode *returnType,
-                                                       StatementListNode *body) {
+                                                       StatementListNode *body)
+{
     auto *node = new FunctionDeclarationNode{};
     node->funcName = funcName;
     node->params = params;
@@ -729,7 +812,8 @@ FunctionDeclarationNode *createFunctionDeclarationNode(char *funcName,
     return node;
 }
 
-RequiredParameterListNode *createRequiredParameterListNode(RequiredParameterNode *firstChild) {
+RequiredParameterListNode *createRequiredParameterListNode(RequiredParameterNode *firstChild)
+{
     auto *node = new RequiredParameterListNode{};
     node->first = firstChild;
     node->last = firstChild;
@@ -738,13 +822,15 @@ RequiredParameterListNode *createRequiredParameterListNode(RequiredParameterNode
 }
 RequiredParameterListNode *
 addRequiredParameterToRequiredParameterList(RequiredParameterListNode *list,
-                                            RequiredParameterNode *child) {
+                                            RequiredParameterNode *child)
+{
     list->last->next = child;
     list->last = child;
     return list;
 }
 
-RequiredParameterNode *createRequiredParameterNode(char *paramName, TypeNode *paramType) {
+RequiredParameterNode *createRequiredParameterNode(char *paramName, TypeNode *paramType)
+{
     auto *node = new RequiredParameterNode{};
     node->paramName = paramName;
     node->paramType = paramType;
@@ -755,7 +841,8 @@ RequiredParameterNode *createRequiredParameterNode(char *paramName, TypeNode *pa
 // ====== Class declaration ====== //
 
 ClassDeclarationNode *createClassDeclarationNode(char *className, char *heritageName,
-                                                 ClassElementListNode *body) {
+                                                 ClassElementListNode *body)
+{
     auto *node = new ClassDeclarationNode{};
     node->className = className;
     node->heritageName = heritageName;
@@ -764,7 +851,8 @@ ClassDeclarationNode *createClassDeclarationNode(char *className, char *heritage
     return node;
 }
 
-ClassElementListNode *createClassElementListNode(ClassElementNode *firstChild) {
+ClassElementListNode *createClassElementListNode(ClassElementNode *firstChild)
+{
     auto *node = new ClassElementListNode{};
     node->first = firstChild;
     node->last = firstChild;
@@ -772,14 +860,15 @@ ClassElementListNode *createClassElementListNode(ClassElementNode *firstChild) {
     return node;
 }
 ClassElementListNode *addClassElementToClassElementList(ClassElementListNode *list,
-                                                        ClassElementNode *child) {
+                                                        ClassElementNode *child)
+{
     list->last->next = child;
     list->last = child;
     return list;
 }
 
-ClassElementNode *createClassConstructor(RequiredParameterListNode *params,
-                                         StatementListNode *body) {
+ClassElementNode *createClassConstructor(RequiredParameterListNode *params, StatementListNode *body)
+{
     auto *node = new ClassElementNode{};
     node->type = ClassElementType::_CONSTRUCTOR;
     node->params = params;
@@ -788,7 +877,8 @@ ClassElementNode *createClassConstructor(RequiredParameterListNode *params,
     return node;
 }
 ClassElementNode *createClassProperty(char *name, TypeNode *propertyType,
-                                      ExpressionNode *expression) {
+                                      ExpressionNode *expression)
+{
     auto *node = new ClassElementNode{};
     node->type = ClassElementType::_PROPERTY;
     node->name = name;
@@ -798,7 +888,8 @@ ClassElementNode *createClassProperty(char *name, TypeNode *propertyType,
     return node;
 }
 ClassElementNode *createClassMethod(char *name, RequiredParameterListNode *params,
-                                    TypeNode *returnType, StatementListNode *body) {
+                                    TypeNode *returnType, StatementListNode *body)
+{
     auto *node = new ClassElementNode{};
     node->type = ClassElementType::_METHOD;
     node->name = name;
@@ -811,21 +902,24 @@ ClassElementNode *createClassMethod(char *name, RequiredParameterListNode *param
 
 // ====== TSElementNode ====== //
 
-TSElementNode *createElementFromStatement(StatementNode *stmt) {
+TSElementNode *createElementFromStatement(StatementNode *stmt)
+{
     auto *node = new TSElementNode{};
     node->type = TSElementType::_STATEMENT;
     node->stmt = stmt;
     node->id = ID++;
     return node;
 }
-TSElementNode *createElementFromFuncDeclaration(FunctionDeclarationNode *funcDecl) {
+TSElementNode *createElementFromFuncDeclaration(FunctionDeclarationNode *funcDecl)
+{
     auto *node = new TSElementNode{};
     node->type = TSElementType::_FUNCTION;
     node->funcDecl = funcDecl;
     node->id = ID++;
     return node;
 }
-TSElementNode *createElementFromClassDeclaration(ClassDeclarationNode *classDecl) {
+TSElementNode *createElementFromClassDeclaration(ClassDeclarationNode *classDecl)
+{
     auto *node = new TSElementNode{};
     node->type = TSElementType::_CLASS;
     node->classDecl = classDecl;
@@ -835,7 +929,8 @@ TSElementNode *createElementFromClassDeclaration(ClassDeclarationNode *classDecl
 
 // ====== TSElementListNode ====== //
 
-TSElementListNode *createTSElementListNode(TSElementNode *elem) {
+TSElementListNode *createTSElementListNode(TSElementNode *elem)
+{
     auto *node = new TSElementListNode{};
     node->id = ID++;
     node->first = elem;
@@ -843,13 +938,15 @@ TSElementListNode *createTSElementListNode(TSElementNode *elem) {
     return node;
 }
 
-TSElementListNode *addTSElementNodeToList(TSElementListNode *elemList, TSElementNode *elem) {
+TSElementListNode *addTSElementNodeToList(TSElementListNode *elemList, TSElementNode *elem)
+{
     elemList->last->next = elem;
     elemList->last = elem;
     return elemList;
 }
 
-TSScriptNode *createTSScriptNode(TSElementListNode *elemList) {
+TSScriptNode *createTSScriptNode(TSElementListNode *elemList)
+{
     auto *node = new TSScriptNode{};
     node->id = ID++;
     node->elemList = elemList;

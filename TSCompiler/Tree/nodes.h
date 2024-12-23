@@ -3,7 +3,8 @@
 
 // ====== Expression ====== //
 
-enum class ExpressionType {
+enum class ExpressionType
+{
     _IDENTIFIER,
     _THIS,
 
@@ -12,7 +13,7 @@ enum class ExpressionType {
     _STRING_LIT,
     _BOOLEAN_LIT,
     _NULL_LIT,
-	_UNDEFINED_LIT,
+    _UNDEFINED_LIT,
 
     _PREF_INCREMENT,
     _PREF_DECREMENT,
@@ -68,7 +69,8 @@ enum class ExpressionType {
     _NEW,
 };
 
-enum class BaseLiteral {
+enum class BaseLiteral
+{
     _FROM_INT,
     _FROM_FLOAT,
     _FROM_BOOLEAN,
@@ -77,7 +79,8 @@ enum class BaseLiteral {
     _FROM_UNDEFINED
 };
 
-struct ExpressionNode {
+struct ExpressionNode
+{
     int id;
 
     int intValue;
@@ -101,7 +104,8 @@ struct ExpressionNode {
     struct ExpressionNode *next;
 };
 
-struct ExpressionListNode {
+struct ExpressionListNode
+{
     int id;
 
     struct ExpressionNode *first;
@@ -110,7 +114,8 @@ struct ExpressionListNode {
 
 // ====== Types ====== //
 
-enum class TypeType {
+enum class TypeType
+{
     _NUMBER,
     _STRING,
     _BOOLEAN,
@@ -126,7 +131,8 @@ enum class TypeType {
 
 struct TupleTypeNode;
 
-struct TypeNode {
+struct TypeNode
+{
     int id;
 
     enum TypeType type;
@@ -140,7 +146,8 @@ struct TypeNode {
     struct TypeNode *next;
 };
 
-struct TupleTypeNode {
+struct TupleTypeNode
+{
     int id;
 
     struct TypeNode *first;
@@ -149,14 +156,17 @@ struct TupleTypeNode {
 
 // ====== VarDeclaration ====== //
 
-enum class VarModifierType {
+enum class VarModifierType
+{
     _LET,
     _VAR,
     _CONST,
 };
 
-inline std::string ToString(VarModifierType type) {
-    switch (type) {
+inline std::string ToString(VarModifierType type)
+{
+    switch (type)
+    {
     case VarModifierType::_LET:
         return "let";
     case VarModifierType::_VAR:
@@ -168,7 +178,8 @@ inline std::string ToString(VarModifierType type) {
     }
 }
 
-struct VarDeclarationNode {
+struct VarDeclarationNode
+{
     int id;
 
     char *identifierStr;
@@ -178,7 +189,8 @@ struct VarDeclarationNode {
     struct VarDeclarationNode *next;
 };
 
-struct VarDeclarationListNode {
+struct VarDeclarationListNode
+{
     int id;
 
     struct VarDeclarationNode *first;
@@ -187,7 +199,8 @@ struct VarDeclarationListNode {
 
 // ====== Statement ====== //
 
-enum class StatementType {
+enum class StatementType
+{
     _EMPTY,
     _EXPRESSION,
     _VAR,
@@ -201,7 +214,8 @@ enum class StatementType {
 
 struct StatementListNode;
 
-struct StatementNode {
+struct StatementNode
+{
     int id;
 
     enum StatementType type;
@@ -229,7 +243,8 @@ struct StatementNode {
     struct StatementNode *next;
 };
 
-struct StatementListNode {
+struct StatementListNode
+{
     int id;
 
     struct StatementNode *first;
@@ -238,7 +253,8 @@ struct StatementListNode {
 
 // ====== Function declaration ====== //
 
-struct FunctionDeclarationNode {
+struct FunctionDeclarationNode
+{
     int id;
 
     char *funcName;
@@ -248,7 +264,8 @@ struct FunctionDeclarationNode {
     struct StatementListNode *body;
 };
 
-struct RequiredParameterNode {
+struct RequiredParameterNode
+{
     int id;
 
     char *paramName;
@@ -257,7 +274,8 @@ struct RequiredParameterNode {
     struct RequiredParameterNode *next;
 };
 
-struct RequiredParameterListNode {
+struct RequiredParameterListNode
+{
     int id;
 
     struct RequiredParameterNode *first;
@@ -266,13 +284,15 @@ struct RequiredParameterListNode {
 
 // ====== Class declaration ====== //
 
-enum class ClassElementType {
+enum class ClassElementType
+{
     _CONSTRUCTOR,
     _PROPERTY,
     _METHOD
 };
 
-struct ClassElementNode {
+struct ClassElementNode
+{
     int id;
 
     enum ClassElementType type;
@@ -288,14 +308,16 @@ struct ClassElementNode {
     struct ClassElementNode *next;
 };
 
-struct ClassElementListNode {
+struct ClassElementListNode
+{
     int id;
 
     struct ClassElementNode *first;
     struct ClassElementNode *last;
 };
 
-struct ClassDeclarationNode {
+struct ClassDeclarationNode
+{
     int id;
 
     char *className;
@@ -306,13 +328,15 @@ struct ClassDeclarationNode {
 
 // ====== TS Script ====== //
 
-enum class TSElementType {
+enum class TSElementType
+{
     _CLASS,
     _FUNCTION,
     _STATEMENT,
 };
 
-struct TSElementNode {
+struct TSElementNode
+{
     int id;
 
     enum TSElementType type;
@@ -324,14 +348,16 @@ struct TSElementNode {
     struct TSElementNode *next;
 };
 
-struct TSElementListNode {
+struct TSElementListNode
+{
     int id;
 
     struct TSElementNode *first;
     struct TSElementNode *last;
 };
 
-struct TSScriptNode {
+struct TSScriptNode
+{
     int id;
 
     struct TSElementListNode *elemList;
