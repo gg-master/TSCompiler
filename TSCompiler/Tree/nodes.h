@@ -269,9 +269,7 @@ struct RequiredParameterListNode {
 enum class ClassElementType {
     _CONSTRUCTOR,
     _PROPERTY,
-    _METHOD,
-    _GETTER,
-    _SETTER,
+    _METHOD
 };
 
 struct ClassElementNode {
