@@ -9,7 +9,7 @@ extern FILE* yyin;
 extern int yyparse();
 extern int yylex();
 
-struct TSScriptNode* root;
+TSScriptNode* root;
 
 
 void MakeTreeImage(std::string dotExecPath, std::string filename)

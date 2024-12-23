@@ -317,6 +317,7 @@ singleExpression
     | TRUE_KW       { Print("- R: TRUE_LITERAL -> singleExpression"); $$ = createTrueLiteralExpressionNode(); }
     | FALSE_KW      { Print("- R: FALSE_LITERAL -> singleExpression"); $$ = createFalseLiteralExpressionNode(); }
     | NULL_KW       { Print("- R: NULL_LITERAL -> singleExpression"); $$ = createNullLiteralExpressionNode(); }
+    | UNDEFINED     { Print("- R: NULL_LITERAL -> singleExpression"); $$ = createUndefinedLiteralExpressionNode(); }
 
     | STRING_LIT    { Print("- R: STRING_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
     | TEMPLATE_LIT  { Print("- R: TEMPLATE_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
@@ -624,12 +625,12 @@ classElement
     | GET propertyName '(' ')' typeAnnotationOpt functionBody
         {
             Print("- R: GET propertyName '(' ')' typeAnnotationOpt functionBody -> classElement");
-            $$ = createClassGetter($2, $5, $6);
+            $$ = createClassMethod($2, NULL, $5, $6);
         }
     | SET propertyName '(' parameterList ')' functionBody
         {
             Print("- R: SET propertyName callSignature functionBody -> classElement");
-            $$ = createClassSetter($2, $4, $6);
+            $$ = createClassMethod($2, $4, NULL, $6);
         }
     ;
 
