@@ -422,9 +422,9 @@ singleExpression
     | singleExpression '[' singleExpression ']'               { Print("- R: singleExpression '[' singleExpression ']' -> singleExpression"); $$ = createArrayAccessExpressionNode($1, $3); }
     | singleExpression ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN singleExpression ']' -> singleExpression"); $$ = createArrayAccessExpressionNode($1, $3); }
 
-    | NEW singleExpression { Print("- R: NEW singleExpression -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListNode(nullptr)); }
-    | NEW singleExpression '(' ')' { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListNode(nullptr)); }
-    | NEW singleExpression '(' singleExpression ')'  { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListFromExpression($4)); }
+    | NEW identifier { Print("- R: NEW singleExpression -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListNode(nullptr)); }
+    | NEW identifier '(' ')' { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListNode(nullptr)); }
+    | NEW identifier '(' singleExpression ')'  { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListFromExpression($4)); }
     ;
 
     // ====== Variables ======
@@ -651,7 +651,6 @@ identifier
     | UNIQUE    { Print("- R: UNIQUE -> identifier"); $$ = strdup("unique"); }
     | SYMBOL    { Print("- R: SYMBOL -> identifier"); $$ = strdup("symbol"); }
     | NEVER     { Print("- R: NEVER -> identifier"); $$ = strdup("never"); }
-    | UNDEFINED { Print("- R: UNDEFINED -> identifier"); $$ = strdup("undefined"); }
     | OBJECT    { Print("- R: OBJECT -> identifier"); $$ = strdup("object"); }
     | KEYOF     { Print("- R: KEYOF -> identifier"); $$ = strdup("keyof"); }
     | NAMESPACE { Print("- R: NAMESPACE -> identifier"); $$ = strdup("namespace"); }
