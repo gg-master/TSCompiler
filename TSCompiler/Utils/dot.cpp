@@ -31,18 +31,6 @@ std::string MakeConnection(const size_t id1, const size_t id2, std::string note 
     return res;
 }
 
-void ToDot(TupleTypeNode *node, std::ostream &out)
-{
-    out << MakeNode(node->id, "TupleTypeNode");
-    TypeNode *child = node->first;
-    while (child != NULL)
-    {
-        ToDot(child, out);
-        out << MakeConnection(node->id, child->id);
-        child = child->next;
-    }
-}
-
 void ToDot(TypeNode *node, std::ostream &out)
 {
     out << MakeNode(node->id, "TypeNode");
@@ -70,10 +58,6 @@ void ToDot(TypeNode *node, std::ostream &out)
         out << MakeNode(node->id, "ArrayType");
         ToDot(node->arrayType, out);
         out << MakeConnection(node->id, node->arrayType->id, "Of");
-        break;
-    case TypeType::_TUPLE:
-        ToDot(node->tupleNode, out);
-        out << MakeConnection(node->id, node->tupleNode->id);
         break;
     case TypeType::_USER_TYPE:
         out << MakeNode(node->id, "UserType:\n" + std::string{node->userTypeName});

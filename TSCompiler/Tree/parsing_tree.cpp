@@ -600,29 +600,6 @@ TypeNode *createArrayTypeNode(TypeNode *arrayType)
     node->id = ID++;
     return node;
 }
-TypeNode *createTypeFromTupleType(TupleTypeNode *tupleNode)
-{
-    auto *node = new TypeNode{};
-    node->type = TypeType::_TUPLE;
-    node->tupleNode = tupleNode;
-    node->id = ID++;
-    return node;
-}
-
-TupleTypeNode *createTupleTypeNode(TypeNode *firstChild)
-{
-    auto *node = new TupleTypeNode{};
-    node->first = firstChild;
-    node->last = firstChild;
-    node->id = ID++;
-    return node;
-}
-TupleTypeNode *addTypeToTupleType(TupleTypeNode *list, TypeNode *typeNode)
-{
-    list->last->next = typeNode;
-    list->last = typeNode;
-    return list;
-}
 
 // ====== Variables ====== //
 

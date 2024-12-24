@@ -59,7 +59,6 @@ int syntaxErrorCounter = 0;
     struct ExpressionNode* exprNode;
 
     struct TypeNode* typeNode;
-    struct TupleTypeNode* tupleTypeNode;
 
     enum class VarModifierType varModifierType;
 
@@ -153,7 +152,6 @@ int syntaxErrorCounter = 0;
 %type <typeNode>predefinedType
 %type <typeNode>typeAnnotation
 %type <typeNode>typeAnnotationOpt
-%type <tupleTypeNode>tupleTypeElements
 
 %type <varModifierType>varModifier
 %type <varDeclNode>varDeclaration
@@ -248,17 +246,8 @@ blockStatement
     // ====== TYPES ======
 
 type
-    : '(' type ')'                              { Print("- R: '(' type ')' -> type"); $$ = $2; }
-    | predefinedType                            { Print("- R: predefinedType -> type"); $$ = $1; }
+    : predefinedType                            { Print("- R: predefinedType -> type"); $$ = $1; }
     | type '[' ']'                              { Print("- R: type '[' ']' -> type"); $$ = createArrayTypeNode($1); }
-    | '[' tupleTypeElements ']'                 { Print("- R: '[' tupleTypeElements ']' -> type"); $$ = createTypeFromTupleType($2); }
-    | ENDL_BRACKET_OPEN tupleTypeElements ']'   { Print("- R: '[' tupleTypeElements ']' -> type"); $$ = createTypeFromTupleType($2); }
-    ;
-
-tupleTypeElements
-    : /* empty */                   { Print("- R: #empty# -> tupleTypeElements"); $$ = createTupleTypeNode(nullptr); }
-    | type                          { Print("- R: type -> tupleTypeElements"); $$ = createTupleTypeNode($1); }
-    | tupleTypeElements ',' type    { Print("- R: tupleTypeElements ',' type -> tupleTypeElements"); $$ = addTypeToTupleType($1, $3); }
     ;
 
 predefinedType

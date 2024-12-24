@@ -23,7 +23,6 @@ void ToDot(StatementNode *node, std::ostream &out);
 void ToDot(ExpressionListNode *node, std::ostream &out);
 void ToDot(ExpressionNode *node, std::ostream &out);
 
-void ToDot(TupleTypeNode *node, std::ostream &out);
 void ToDot(TypeNode *node, std::ostream &out);
 
 void ToDot(VarDeclarationListNode *node, std::ostream &out);

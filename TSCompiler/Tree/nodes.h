@@ -124,12 +124,9 @@ enum class TypeType
     _NULL,
 
     _ARRAY,
-    _TUPLE,
 
     _USER_TYPE,
 };
-
-struct TupleTypeNode;
 
 struct TypeNode
 {
@@ -138,20 +135,11 @@ struct TypeNode
     enum TypeType type;
 
     struct TypeNode *arrayType;
-    struct TupleTypeNode *tupleNode;
 
     char *userTypeName;
 
     // using for TupleType
     struct TypeNode *next;
-};
-
-struct TupleTypeNode
-{
-    int id;
-
-    struct TypeNode *first;
-    struct TypeNode *last;
 };
 
 // ====== VarDeclaration ====== //

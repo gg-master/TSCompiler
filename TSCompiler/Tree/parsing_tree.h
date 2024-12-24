@@ -112,10 +112,6 @@ TypeNode *createNullTypeNode();
 TypeNode *createUserTypeNode(char *typeName);
 
 TypeNode *createArrayTypeNode(TypeNode *arrayType);
-TypeNode *createTypeFromTupleType(TupleTypeNode *tupleNode);
-
-TupleTypeNode *createTupleTypeNode(TypeNode *firstChild);
-TupleTypeNode *addTypeToTupleType(TupleTypeNode *list, TypeNode *typeNode);
 
 // ====== VarDeclaration ====== //
 
