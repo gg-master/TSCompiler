@@ -3,7 +3,7 @@
 
 struct TypeNode final : Node
 {
-    std::string_view name() const noexcept override { return "TypeNode"; }
+    std::string_view Name() const noexcept override { return "TypeNode"; }
 
     enum class Type
     {
@@ -20,5 +20,6 @@ struct TypeNode final : Node
 
     std::string_view userTypeName;
 
-    TypeNode(const std::string_view name) : userTypeName{name} {}
+    TypeNode(Type type) : type{type} {}
+    TypeNode(const std::string_view name) : type{Type::_USER_TYPE}, userTypeName{name} {}
 };

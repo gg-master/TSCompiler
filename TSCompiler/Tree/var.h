@@ -11,7 +11,7 @@ enum class VarModifierType
     _CONST,
 };
 
-inline std::string_view ToString(VarModifierType type)
+inline std::string_view toString(VarModifierType type)
 {
     switch (type)
     {
@@ -36,9 +36,13 @@ struct VarDeclarationNode final : Node
         : identifierStr{varName}, varType{varType}, initExpression{initExpr}
     {
     }
+
+    std::string_view Name() const noexcept override { return "VarDeclarationNode"; }
 };
 
 struct VarDeclarationListNode final : NodeList<VarDeclarationListNode, VarDeclarationNode>
 {
     using NodeList<VarDeclarationListNode, VarDeclarationNode>::NodeList;
+
+    std::string_view Name() const noexcept override { return "VarDeclarationListNode"; }
 };

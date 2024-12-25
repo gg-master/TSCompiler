@@ -153,7 +153,9 @@
     <ClCompile Include="lexer.flex.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.tab.cpp" />
+    <ClCompile Include="Tree\expr.cpp" />
     <ClCompile Include="Tree\parsing_tree.cpp" />
+    <ClCompile Include="Tree\stmt.cpp" />
     <ClCompile Include="Utils\dot.cpp" />
     <ClCompile Include="Utils\utils.cpp" />
   </ItemGroup>
@@ -164,8 +166,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="parser.tab.h" />
+    <ClInclude Include="Tree\class.h" />
+    <ClInclude Include="Tree\expr.h" />
+    <ClInclude Include="Tree\func.h" />
+    <ClInclude Include="Tree\node.h" />
     <ClInclude Include="Tree\nodes.h" />
     <ClInclude Include="Tree\parsing_tree.h" />
+    <ClInclude Include="Tree\stmt.h" />
+    <ClInclude Include="Tree\ts_script.h" />
+    <ClInclude Include="Tree\type.h" />
+    <ClInclude Include="Tree\var.h" />
     <ClInclude Include="Utils\dot.h" />
     <ClInclude Include="Utils\utils.h" />
   </ItemGroup>

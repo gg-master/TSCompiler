@@ -137,7 +137,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 36 "parser.y"
+#line 35 "parser.y"
 
     int integerValue;
     char* stringValue;
@@ -164,14 +164,13 @@ union YYSTYPE
     struct ExpressionNode* exprNode;
 
     struct TypeNode* typeNode;
-    struct TupleTypeNode* tupleTypeNode;
 
     enum class VarModifierType varModifierType;
 
     struct VarDeclarationNode* varDeclNode;
     struct VarDeclarationListNode* varDeclListNode;
 
-#line 175 "parser.tab.h"
+#line 174 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

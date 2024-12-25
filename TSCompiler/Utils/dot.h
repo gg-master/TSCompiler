@@ -1,5 +1,5 @@
 #pragma once
-#include "../Tree/nodes.h"
+#include "../Tree/ts_script.h"
 #include <ostream>
 
 void RunDot(std::string dotPath, std::string dotFilePath);

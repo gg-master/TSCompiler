@@ -4,7 +4,7 @@
 
 struct Node
 {
-    const int id;
+    const size_t id;
 
     Node() : id{ nextId() }
     {
@@ -20,12 +20,12 @@ struct Node
 
     virtual ~Node() = default;
 
-    virtual std::string_view name() const noexcept = 0;
+    virtual std::string_view Name() const noexcept = 0;
 
 protected:
-    static int nextId()
+    static size_t nextId()
     {
-        static int id = 0;
+        static size_t id = 0;
         return id++;
     }
 };
