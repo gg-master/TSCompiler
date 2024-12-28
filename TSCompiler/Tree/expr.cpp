@@ -1,6 +1,6 @@
 #include "expr.h"
 
-ExpressionNode *ExpressionNode::fromId(const std::string_view value)
+ExpressionNode *ExpressionNode::fromId(const std::string value)
 {
     auto *node = new ExpressionNode{};
     node->type = ExpressionNode::Type::_IDENTIFIER;
@@ -28,7 +28,7 @@ ExpressionNode *ExpressionNode::fromFloatLit(double value)
     node->floatValue = value;
     return node;
 }
-ExpressionNode *ExpressionNode::fromStringLit(const std::string_view value)
+ExpressionNode *ExpressionNode::fromStringLit(const std::string value)
 {
     auto *node = new ExpressionNode{};
     node->type = ExpressionNode::Type::_STRING_LIT;
@@ -120,7 +120,7 @@ ExpressionNode *ExpressionNode::fromArrayLiteral(ExpressionListNode *params)
     return node;
 }
 
-ExpressionNode *ExpressionNode::fromFuncCall(const std::string_view name,
+ExpressionNode *ExpressionNode::fromFuncCall(const std::string name,
                                              ExpressionListNode *params)
 {
     auto *node = new ExpressionNode{};
@@ -137,7 +137,7 @@ ExpressionNode *ExpressionNode::fromSuperCall(ExpressionListNode *params)
     node->params = params;
     return node;
 }
-ExpressionNode *ExpressionNode::fromFieldAccess(ExpressionNode *obj, const std::string_view name)
+ExpressionNode *ExpressionNode::fromFieldAccess(ExpressionNode *obj, const std::string name)
 {
     auto *node = new ExpressionNode{};
     node->type = ExpressionNode::Type::_FIELD_ACCESS;
@@ -145,7 +145,7 @@ ExpressionNode *ExpressionNode::fromFieldAccess(ExpressionNode *obj, const std::
     node->identifierString = name;
     return node;
 }
-ExpressionNode *ExpressionNode::fromMethodCall(ExpressionNode *obj, const std::string_view name,
+ExpressionNode *ExpressionNode::fromMethodCall(ExpressionNode *obj, const std::string name,
                                                ExpressionListNode *params)
 {
     auto *node = new ExpressionNode{};
@@ -156,7 +156,7 @@ ExpressionNode *ExpressionNode::fromMethodCall(ExpressionNode *obj, const std::s
     return node;
 }
 
-ExpressionNode *ExpressionNode::fromNew(const std::string_view name, ExpressionListNode *params)
+ExpressionNode *ExpressionNode::fromNew(const std::string name, ExpressionListNode *params)
 {
     auto *node = new ExpressionNode{};
     node->type = ExpressionNode::Type::_NEW;

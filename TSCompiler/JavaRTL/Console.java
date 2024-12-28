@@ -11,27 +11,27 @@ public class Console {
         return new Undefined();
     }
 
-    public static JavaRTL.Undefined println(JavaRTL.String value) {
+    public static JavaRTL.Undefined log(JavaRTL.String value) {
         System.out.println(value.toString());
         return new Undefined();
     }
 
-    public static JavaRTL.Undefined println(JavaRTL.Boolean value) {
+    public static JavaRTL.Undefined log(JavaRTL.Boolean value) {
         System.out.println(value.toString());
         return new Undefined();
     }
 
-    public static JavaRTL.Undefined println(JavaRTL.Null value) {
+    public static JavaRTL.Undefined log(JavaRTL.Null value) {
         System.out.println(value.toString());
         return new Undefined();
     }
 
-    public static JavaRTL.Undefined println(JavaRTL.Undefined value) {
+    public static JavaRTL.Undefined log(JavaRTL.Undefined value) {
         System.out.println(value.toString());
         return new Undefined();
     }
 
-    public static JavaRTL.Undefined println(JavaRTL.Void value) {
+    public static JavaRTL.Undefined log(JavaRTL.Void value) {
         // NOTE in normal way Void must not be printable. If this code print void - smth broken
         System.out.println(value.toString());
         return new Undefined();

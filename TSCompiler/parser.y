@@ -111,10 +111,6 @@ int syntaxErrorCounter = 0;
   
 %start script
 
-%type <tsscriptNode>script
-%type <tsscriptElementListNode>scriptElementList
-%type <tsscriptElementNode>scriptElement
-
 %type <classDeclNode>classDeclaration
 %type <classElementListNode>classTail
 %type <classElementListNode>classElementList
@@ -170,22 +166,20 @@ script
                 exit(1);
             }
             Print("- R: scriptElementList -> script"); 
-        
-            $$ = root = new TSScriptNode($1);
         }
     ;
 
 scriptElementList
     : scriptElement
-        { Print("- R: scriptElement -> scriptElementList"); $$ = new TSElementListNode($1); }
+        { Print("- R: scriptElement -> scriptElementList"); }
     | scriptElementList scriptElement
-        { Print("- R: scriptElementList scriptElement -> scriptElementList"); $$ -> add($2); }
+        { Print("- R: scriptElementList scriptElement -> scriptElementList"); }
     ;
 
 scriptElement
-    : statementListItem     { Print("- R: statementListItem -> scriptElement"); $$ = new TSElementNode($1); }
-    | functionDeclaration   { Print("- R: functionDeclaration -> scriptElement"); $$ = new TSElementNode($1); }
-    | classDeclaration      { Print("- R: classDeclaration -> scriptElement"); $$ = new TSElementNode($1); }
+    : statementListItem     { Print("- R: statementListItem -> scriptElement"); root -> add($1); }
+    | functionDeclaration   { Print("- R: functionDeclaration -> scriptElement"); root -> add($1); }
+    | classDeclaration      { Print("- R: classDeclaration -> scriptElement"); root -> add($1); }
     | error
     ;
 

@@ -19,6 +19,15 @@
     <Filter Include="generated_files">
       <UniqueIdentifier>{97621fa3-5958-4595-81e1-4ad336c121e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Utils">
+      <UniqueIdentifier>{b0bbf238-a82d-421f-901c-531a824e8690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Tree">
+      <UniqueIdentifier>{427dd017-6ed9-4f13-b5c7-f0417ea37a8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Semantic">
+      <UniqueIdentifier>{659f771c-fa7b-47ea-a51d-efa10ac76344}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Flex Include="lexer.l">
@@ -35,20 +44,23 @@
     <ClCompile Include="parser.tab.cpp">
       <Filter>generated_files</Filter>
     </ClCompile>
-    <ClCompile Include="Tree\parsing_tree.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Utils\dot.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Utils\utils.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Tree\expr.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Tree</Filter>
     </ClCompile>
     <ClCompile Include="Tree\stmt.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Tree\parsing_tree.cpp">
+      <Filter>Исходные файлы\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\semantic.cpp">
+      <Filter>Исходные файлы\Semantic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +106,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Tree\var.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Semantic\JvmClass.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Semantic\semantic.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

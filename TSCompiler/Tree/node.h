@@ -1,5 +1,5 @@
 #pragma once
-#include <string_view>
+#include <string>
 #include <vector>
 
 struct Node
@@ -20,7 +20,7 @@ struct Node
 
     virtual ~Node() = default;
 
-    virtual std::string_view Name() const noexcept = 0;
+    virtual std::string toString() const noexcept = 0;
 
 protected:
     static size_t nextId()

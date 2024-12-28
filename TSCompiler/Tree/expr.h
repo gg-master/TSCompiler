@@ -69,15 +69,13 @@ struct ExpressionNode final : Node
         _NEW,
     } type{};
 
-    std::string_view Name() const noexcept override { return "ExpressionNode"; }
-
     int intValue{};
     int boolValue{};
     double floatValue{};
-    std::string_view stringValue{};
+    std::string stringValue{};
 
     // using for function, methods and variables
-    std::string_view identifierString{};
+    std::string identifierString{};
 
     ExpressionNode *firstOperand{};
     ExpressionNode *secondOperand{};
@@ -85,12 +83,14 @@ struct ExpressionNode final : Node
 
     ExpressionListNode *params{};
 
-    static ExpressionNode *fromId(const std::string_view value);
+    std::string toString() const noexcept override { return "ExpressionNode"; }
+
+    static ExpressionNode *fromId(const std::string value);
     static ExpressionNode *fromThis();
 
     static ExpressionNode *fromIntLit(int value);
     static ExpressionNode *fromFloatLit(double value);
-    static ExpressionNode *fromStringLit(const std::string_view value);
+    static ExpressionNode *fromStringLit(const std::string value);
     static ExpressionNode *fromTrueLit();
     static ExpressionNode *fromFalseLit();
     static ExpressionNode *fromNullLit();
@@ -106,22 +106,22 @@ struct ExpressionNode final : Node
 
     static ExpressionNode *fromArrayLiteral(ExpressionListNode *params);
 
-    static ExpressionNode *fromFuncCall(const std::string_view name, ExpressionListNode *params);
+    static ExpressionNode *fromFuncCall(const std::string name, ExpressionListNode *params);
 
     static ExpressionNode *fromSuperCall(ExpressionListNode *params);
 
-    static ExpressionNode *fromFieldAccess(ExpressionNode *obj, const std::string_view name);
-    static ExpressionNode *fromMethodCall(ExpressionNode *obj, const std::string_view name,
+    static ExpressionNode *fromFieldAccess(ExpressionNode *obj, const std::string name);
+    static ExpressionNode *fromMethodCall(ExpressionNode *obj, const std::string name,
                                           ExpressionListNode *params);
 
-    static ExpressionNode *fromNew(const std::string_view name, ExpressionListNode *params);
+    static ExpressionNode *fromNew(const std::string name, ExpressionListNode *params);
 };
 
 struct ExpressionListNode final : NodeList<ExpressionListNode, ExpressionNode>
 {
     using NodeList<ExpressionListNode, ExpressionNode>::NodeList;
 
-    std::string_view Name() const noexcept override { return "ExpressionListNode"; }
+    std::string toString() const noexcept override { return "ExpressionListNode"; }
 
     static ExpressionListNode *fromExpression(ExpressionNode *node);
 

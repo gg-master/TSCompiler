@@ -40,7 +40,7 @@ struct StatementNode final : Node
     struct ExpressionNode *iterationExprAdd1{};
     struct ExpressionNode *iterationExprAdd2{};
 
-    std::string_view Name() const noexcept override { return "StatementNode"; }
+    std::string toString() const noexcept override { return "StatementNode"; }
 
     static StatementNode *fromEmptyStmt();
     static StatementNode *fromExprStmt(ExpressionNode *node);
@@ -70,5 +70,5 @@ struct StatementListNode final : NodeList<StatementListNode, StatementNode>
 {
     using NodeList<StatementListNode, StatementNode>::NodeList;
 
-    std::string_view Name() const noexcept override { return "StatementListNode"; }
+    std::string toString() const noexcept override { return "StatementListNode"; }
 };

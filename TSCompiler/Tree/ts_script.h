@@ -4,38 +4,17 @@
 #include "node.h"
 #include "stmt.h"
 
-struct TSElementNode final : Node
-{
-    enum class Type
-    {
-        _CLASS,
-        _FUNCTION,
-        _STATEMENT,
-    } type{};
-
-    StatementNode *stmt;
-    FunctionDeclarationNode *funcDecl;
-    ClassDeclarationNode *classDecl;
-
-    TSElementNode(StatementNode *stmt) : type{Type::_STATEMENT}, stmt{stmt} {}
-    TSElementNode(FunctionDeclarationNode *funcDecl) : type{Type::_FUNCTION}, funcDecl{funcDecl} {}
-    TSElementNode(ClassDeclarationNode *classDecl) : type{Type::_CLASS}, classDecl{classDecl} {}
-
-    std::string_view Name() const noexcept override { return "TSElementNode"; }
-};
-
-struct TSElementListNode final : NodeList<TSElementListNode, TSElementNode>
-{
-    using NodeList<TSElementListNode, TSElementNode>::NodeList;
-
-    std::string_view Name() const noexcept override { return "TSElementListNode"; }
-};
-
 struct TSScriptNode final : Node
 {
-    TSElementListNode *elemList;
+    std::vector<StatementNode *> statements{};
+    std::vector<FunctionDeclarationNode *> functions{};
+    std::vector<ClassDeclarationNode *> classes{};
 
-    TSScriptNode(TSElementListNode *const elemList) : elemList{elemList} {}
+    TSScriptNode() {}
 
-    std::string_view Name() const noexcept override { return "Script"; }
+    void add(StatementNode *node) { statements.push_back(node); }
+    void add(FunctionDeclarationNode *node) { functions.push_back(node); }
+    void add(ClassDeclarationNode *node) { classes.push_back(node); }
+
+    std::string toString() const noexcept override { return "Script"; }
 };

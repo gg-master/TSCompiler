@@ -2,14 +2,16 @@
 #include <fstream>
 #include <iostream>
 
+#include "Semantic/semantic.h"
 #include "Utils/dot.h"
+#include "Utils/utils.h"
 #include "parser.tab.h"
 
 extern FILE *yyin;
 extern int yyparse();
 extern int yylex();
 
-TSScriptNode *root;
+TSScriptNode *root = new TSScriptNode();
 
 void MakeTreeImage(std::string dotExecPath, std::string filename)
 {
@@ -28,8 +30,10 @@ void MakeTreeImage(std::string dotExecPath, std::string filename)
 
 int main(const int argc, char **argv)
 {
-    std::string dotExecPath = (std::filesystem::current_path() / "dot\\dot.exe").string();
+    std::string dotExecPath =
+        (std::filesystem::current_path() / "dot\\dot.exe").string();
 
+    std::string filePath;
     for (int i = 1; i < argc; ++i)
     {
         if (strcmp(argv[i], "--dot") == 0 && i + 1 < argc)
@@ -47,6 +51,7 @@ int main(const int argc, char **argv)
                 std::cerr << "Failed to open file: " << argv[i] << std::endl;
                 return 1;
             }
+            filePath = argv[i];
         }
     }
 
@@ -60,8 +65,26 @@ int main(const int argc, char **argv)
 
     if (!std::filesystem::exists(dotExecPath))
     {
-        std::cerr << "Error: dot executable not found at " << dotExecPath << std::endl;
+        std::cerr << "Error: dot executable not found at " << dotExecPath
+                  << std::endl;
         return 1;
     }
     MakeTreeImage(dotExecPath, "TreeBeforeSemantic.dot");
+
+    std::string fileName = GetFilename(filePath);
+
+    Semantic semantic(root);
+    semantic.analyze(fileName);
+
+    if (!semantic.errors.empty())
+    {
+        std::cout << std::endl << ">>> Semantic errors:" << std::endl;
+        for (auto const &error : semantic.errors)
+        {
+            std::cout << error << std::endl;
+        }
+        std::cout << "<<<" << std::endl;
+    }
+
+    MakeTreeImage(dotExecPath, "TreeAfterSemantic.dot");
 }

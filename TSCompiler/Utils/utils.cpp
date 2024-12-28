@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <string>
 
@@ -62,3 +63,19 @@ void RemoveCharacterFromString(std::string &str, char ch)
 void RemoveUnderline(std::string &str) { RemoveCharacterFromString(str, '_'); }
 
 void LastTokenMatched(const int token) {}
+
+std::string GetFilename(std::string filepath)
+{
+    if (filepath.empty())
+    {
+        return "DefaultTSMainFile";
+    }
+
+    using namespace std::filesystem;
+    path path = filepath;
+
+    std::string filename = path.filename().string();
+    filename[0] = std::toupper(filename[0]);
+
+    return filename;
+}

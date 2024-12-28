@@ -2,7 +2,7 @@
 #include "expr.h"
 #include "node.h"
 #include "type.h"
-#include <string_view>
+#include <string>
 
 enum class VarModifierType
 {
@@ -11,7 +11,7 @@ enum class VarModifierType
     _CONST,
 };
 
-inline std::string_view toString(VarModifierType type)
+inline std::string toString(VarModifierType type)
 {
     switch (type)
     {
@@ -28,21 +28,21 @@ inline std::string_view toString(VarModifierType type)
 
 struct VarDeclarationNode final : Node
 {
-    std::string_view identifierStr;
+    std::string identifierStr;
     TypeNode *varType;
     ExpressionNode *initExpression;
 
-    VarDeclarationNode(const std::string_view varName, TypeNode *varType, ExpressionNode *initExpr)
+    VarDeclarationNode(const std::string varName, TypeNode *varType, ExpressionNode *initExpr)
         : identifierStr{varName}, varType{varType}, initExpression{initExpr}
     {
     }
 
-    std::string_view Name() const noexcept override { return "VarDeclarationNode"; }
+    std::string toString() const noexcept override { return "VarDeclarationNode"; }
 };
 
 struct VarDeclarationListNode final : NodeList<VarDeclarationListNode, VarDeclarationNode>
 {
     using NodeList<VarDeclarationListNode, VarDeclarationNode>::NodeList;
 
-    std::string_view Name() const noexcept override { return "VarDeclarationListNode"; }
+    std::string toString() const noexcept override { return "VarDeclarationListNode"; }
 };

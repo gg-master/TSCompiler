@@ -12,3 +12,5 @@ void PrintStringLiteral(const std::string &literal);
 void RemoveCharacterFromString(std::string &str, char ch);
 void RemoveUnderline(std::string &str);
 void LastTokenMatched(const int token);
+
+std::string GetFilename(std::string filepath);

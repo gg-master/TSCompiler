@@ -6,9 +6,6 @@ void RunDot(std::string dotPath, std::string dotFilePath);
 
 void ToDot(TSScriptNode *node, std::ostream &out);
 
-void ToDot(TSElementListNode *node, std::ostream &out);
-void ToDot(TSElementNode *node, std::ostream &out);
-
 void ToDot(ClassDeclarationNode *node, std::ostream &out);
 void ToDot(ClassElementListNode *node, std::ostream &out);
 void ToDot(ClassElementNode *node, std::ostream &out);

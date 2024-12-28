@@ -5,37 +5,48 @@
 
 struct RequiredParameterNode final : Node
 {
-    std::string_view paramName{};
+    std::string paramName{};
     TypeNode *paramType{};
 
-    std::string_view Name() const noexcept override { return "RequiredParameterNode"; }
+    std::string toString() const noexcept override
+    {
+        return "RequiredParameterNode";
+    }
 
-    RequiredParameterNode(const std::string_view paramName, TypeNode *paramType)
+    RequiredParameterNode(const std::string paramName, TypeNode *paramType)
         : paramName{paramName}, paramType{paramType}
     {
     }
 };
 
-struct RequiredParameterListNode final : NodeList<RequiredParameterListNode, RequiredParameterNode>
+struct RequiredParameterListNode final
+    : NodeList<RequiredParameterListNode, RequiredParameterNode>
 {
     using NodeList<RequiredParameterListNode, RequiredParameterNode>::NodeList;
 
-    std::string_view Name() const noexcept override { return "RequiredParameterListNode"; }
+    std::string toString() const noexcept override
+    {
+        return "RequiredParameterListNode";
+    }
 };
 
 struct FunctionDeclarationNode final : Node
 {
-    std::string_view funcName{};
+    std::string funcName{};
 
-    RequiredParameterListNode* params{};
-    TypeNode* returnType{};
+    RequiredParameterListNode *params{};
+    TypeNode *returnType{};
 
-    StatementListNode* body{};
+    StatementListNode *body{};
 
-    FunctionDeclarationNode(const std::string_view funcName, RequiredParameterListNode* params,
-        TypeNode* returnType, StatementListNode* body)
-        : funcName{ funcName }, params{ params }, returnType{ returnType }, body{ body }
+    FunctionDeclarationNode(const std::string funcName,
+                            RequiredParameterListNode *params,
+                            TypeNode *returnType, StatementListNode *body)
+        : funcName{funcName}, params{params}, returnType{returnType}, body{body}
     {
     }
-    std::string_view Name() const noexcept override { return "FunctionDeclarationNode"; }
+    std::string toString() const noexcept override
+    {
+        return "FunctionDeclarationNode";
+    }
 };

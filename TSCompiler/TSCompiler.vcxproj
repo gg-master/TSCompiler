@@ -153,6 +153,7 @@
     <ClCompile Include="lexer.flex.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.tab.cpp" />
+    <ClCompile Include="Semantic\semantic.cpp" />
     <ClCompile Include="Tree\expr.cpp" />
     <ClCompile Include="Tree\parsing_tree.cpp" />
     <ClCompile Include="Tree\stmt.cpp" />
@@ -166,6 +167,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="parser.tab.h" />
+    <ClInclude Include="Semantic\JvmClass.h" />
+    <ClInclude Include="Semantic\semantic.h" />
     <ClInclude Include="Tree\class.h" />
     <ClInclude Include="Tree\expr.h" />
     <ClInclude Include="Tree\func.h" />
