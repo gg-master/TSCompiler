@@ -93,7 +93,7 @@ int syntaxErrorCounter = 0;
 %left '|'
 %left '^'
 %left '&'
-%left OPERATOR_EQUAL OPERATOR_NOT_EQUAL OPERATOR_STRICT_EQUAL OPERATOR_STRICT_NOT_EQUAL
+%left OPERATOR_EQUAL OPERATOR_NOT_EQUAL
 %left  '>' '<' OPERATOR_GREATER_THAN_EQUAL OPERATOR_LESS_THAN_EQUAL INSTANCEOF IN
 
 %left '+' '-'
@@ -256,7 +256,7 @@ predefinedType
     ;
 
 typeAnnotationOpt
-    : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); $$ = nullptr; }
+    : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); $$ = new TypeNode(TypeNode::Type::_ANY);; }
     | typeAnnotation    { Print("- R: typeAnnotation -> typeAnnotationOpt"); $$ = $1; }
     ;
 
@@ -353,10 +353,6 @@ singleExpression
         { Print("- R: singleExpression OPERATOR_EQUAL singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_EQUAL, $1, $3); }
     | singleExpression OPERATOR_NOT_EQUAL singleExpression
         { Print("- R: singleExpression OPERATOR_NOT_EQUAL singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_NOT_EQUAL, $1, $3); }
-    | singleExpression OPERATOR_STRICT_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_STRICT_EQUAL singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_STRICT_EQUAL, $1, $3); }
-    | singleExpression OPERATOR_STRICT_NOT_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_STRICT_NOT_EQUAL singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_STRICT_NOT_EQUAL, $1, $3); }
     | singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression
         { Print("- R: singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_LESS_EQUAL, $1, $3); }
     | singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression
@@ -397,7 +393,7 @@ singleExpression
         { Print("- R: '(' singleExpression ')' -> singleExpression"); $$ = $2; }
 
     | SUPER '(' ')'
-        { Print("- R: SUPER '(' ')' -> singleExpression"); $$ = ExpressionNode::fromSuperCall(nullptr); }
+        { Print("- R: SUPER '(' ')' -> singleExpression"); $$ = ExpressionNode::fromSuperCall(ExpressionListNode::makeEmpty()); }
     | SUPER '(' singleExpression ')'
         { Print("- R: SUPER '(' singleExpression ')' -> singleExpression"); $$ = ExpressionNode::fromSuperCall(ExpressionListNode::fromExpression($3)); }
     | SUPER '(' singleExpression ',' ')'
@@ -405,7 +401,7 @@ singleExpression
 
     // XXX: dissallow syntax exrp '(' optParams ')' cause this grammar dont have func types
     | identifier '(' ')' 
-        { Print("- R: identifier '(' ')' -> singleExpression"); $$ = ExpressionNode::fromFuncCall($1, nullptr); }
+        { Print("- R: identifier '(' ')' -> singleExpression"); $$ = ExpressionNode::fromFuncCall($1, ExpressionListNode::makeEmpty()); }
     | identifier '(' singleExpression ')' 
         { Print("- R: identifier '(' singleExpression ')' -> singleExpression"); $$ = ExpressionNode::fromFuncCall($1, ExpressionListNode::fromExpression($3)); }
 
@@ -416,7 +412,7 @@ singleExpression
     | singleExpression '.' identifier 
         { Print("- R: singleExpression '.' identifier -> singleExpression"); $$ = ExpressionNode::fromFieldAccess($1, $3); }
     | singleExpression '.' identifier '(' ')' 
-        { Print("- R: singleExpression '.' identifier '(' ')' -> singleExpression"); $$ = ExpressionNode::fromMethodCall($1, $3, nullptr); }
+        { Print("- R: singleExpression '.' identifier '(' ')' -> singleExpression"); $$ = ExpressionNode::fromMethodCall($1, $3, ExpressionListNode::makeEmpty()); }
     | singleExpression '.' identifier '(' singleExpression ')' 
         { Print("- R: singleExpression '.' identifier '(' singleExpression ')' -> singleExpression"); $$ = ExpressionNode::fromMethodCall($1, $3, ExpressionListNode::fromExpression($5)); }
     | singleExpression '.' identifier '(' singleExpression ',' ')' 
@@ -430,9 +426,9 @@ singleExpression
         { Print("- R: singleExpression ENDL_BRACKET_OPEN singleExpression ']' -> singleExpression"); $$ = ExpressionNode::fromArrayAccessExpr($1, $3); }
 
     | NEW identifier
-        { Print("- R: NEW singleExpression -> singleExpression"); $$ = ExpressionNode::fromNew($2, nullptr); }
+        { Print("- R: NEW singleExpression -> singleExpression"); $$ = ExpressionNode::fromNew($2, ExpressionListNode::makeEmpty()); }
     | NEW identifier '(' ')'
-        { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); $$ = ExpressionNode::fromNew($2, nullptr); }
+        { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); $$ = ExpressionNode::fromNew($2, ExpressionListNode::makeEmpty()); }
     | NEW identifier '(' singleExpression ')'
         { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); $$ = ExpressionNode::fromNew($2, ExpressionListNode::fromExpression($4)); }
     ;
@@ -650,22 +646,22 @@ propertyName
 
 identifier
     : ID        { Print("- R: ID -> identifier"); $$ = $1; }
-    | ASYNC     { Print("- R: ASYNC -> identifier"); $$ = strdup("async"); }
-    | AS        { Print("- R: AS -> identifier"); $$ = strdup("as"); }
-    | FROM      { Print("- R: FROM -> identifier"); $$ = strdup("from"); }
-    | YIELD     { Print("- R: YIELD -> identifier"); $$ = strdup("yield"); }
-    | ANY       { Print("- R: ANY -> identifier"); $$ = strdup("any"); }
-    | NUMBER    { Print("- R: NUMBER -> identifier"); $$ = strdup("number"); }
-    | BOOLEAN   { Print("- R: BOOLEAN -> identifier"); $$ = strdup("boolean"); }
-    | STRING    { Print("- R: STRING -> identifier"); $$ = strdup("string"); }
-    | UNIQUE    { Print("- R: UNIQUE -> identifier"); $$ = strdup("unique"); }
-    | SYMBOL    { Print("- R: SYMBOL -> identifier"); $$ = strdup("symbol"); }
-    | NEVER     { Print("- R: NEVER -> identifier"); $$ = strdup("never"); }
-    | OBJECT    { Print("- R: OBJECT -> identifier"); $$ = strdup("object"); }
-    | KEYOF     { Print("- R: KEYOF -> identifier"); $$ = strdup("keyof"); }
-    | NAMESPACE { Print("- R: NAMESPACE -> identifier"); $$ = strdup("namespace"); }
-    | ABSTRACT  { Print("- R: ABSTRACT -> identifier"); $$ = strdup("abstract"); }
-    | REQUIRE   { Print("- R: REQUIRE -> identifier"); $$ = strdup("require"); }
+    | ASYNC     { Print("- R: ASYNC -> identifier"); $$ = _strdup("async"); }
+    | AS        { Print("- R: AS -> identifier"); $$ = _strdup("as"); }
+    | FROM      { Print("- R: FROM -> identifier"); $$ = _strdup("from"); }
+    | YIELD     { Print("- R: YIELD -> identifier"); $$ = _strdup("yield"); }
+    | ANY       { Print("- R: ANY -> identifier"); $$ = _strdup("any"); }
+    | NUMBER    { Print("- R: NUMBER -> identifier"); $$ = _strdup("number"); }
+    | BOOLEAN   { Print("- R: BOOLEAN -> identifier"); $$ = _strdup("boolean"); }
+    | STRING    { Print("- R: STRING -> identifier"); $$ = _strdup("string"); }
+    | UNIQUE    { Print("- R: UNIQUE -> identifier"); $$ = _strdup("unique"); }
+    | SYMBOL    { Print("- R: SYMBOL -> identifier"); $$ = _strdup("symbol"); }
+    | NEVER     { Print("- R: NEVER -> identifier"); $$ = _strdup("never"); }
+    | OBJECT    { Print("- R: OBJECT -> identifier"); $$ = _strdup("object"); }
+    | KEYOF     { Print("- R: KEYOF -> identifier"); $$ = _strdup("keyof"); }
+    | NAMESPACE { Print("- R: NAMESPACE -> identifier"); $$ = _strdup("namespace"); }
+    | ABSTRACT  { Print("- R: ABSTRACT -> identifier"); $$ = _strdup("abstract"); }
+    | REQUIRE   { Print("- R: REQUIRE -> identifier"); $$ = _strdup("require"); }
     ;
 
 %%

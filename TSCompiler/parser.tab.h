@@ -116,19 +116,17 @@ extern int yydebug;
     OPERATOR_LOGICAL_AND = 317,    /* OPERATOR_LOGICAL_AND  */
     OPERATOR_EQUAL = 318,          /* OPERATOR_EQUAL  */
     OPERATOR_NOT_EQUAL = 319,      /* OPERATOR_NOT_EQUAL  */
-    OPERATOR_STRICT_EQUAL = 320,   /* OPERATOR_STRICT_EQUAL  */
-    OPERATOR_STRICT_NOT_EQUAL = 321, /* OPERATOR_STRICT_NOT_EQUAL  */
-    OPERATOR_GREATER_THAN_EQUAL = 322, /* OPERATOR_GREATER_THAN_EQUAL  */
-    OPERATOR_LESS_THAN_EQUAL = 323, /* OPERATOR_LESS_THAN_EQUAL  */
-    INSTANCEOF = 324,              /* INSTANCEOF  */
-    IN = 325,                      /* IN  */
-    UMINUS = 326,                  /* UMINUS  */
-    UPLUS = 327,                   /* UPLUS  */
-    PREF_INCREMENT = 328,          /* PREF_INCREMENT  */
-    PREF_DECREMENT = 329,          /* PREF_DECREMENT  */
-    POST_INCREMENT = 330,          /* POST_INCREMENT  */
-    POST_DECREMENT = 331,          /* POST_DECREMENT  */
-    ENDL_BRACKET_OPEN = 332        /* ENDL_BRACKET_OPEN  */
+    OPERATOR_GREATER_THAN_EQUAL = 320, /* OPERATOR_GREATER_THAN_EQUAL  */
+    OPERATOR_LESS_THAN_EQUAL = 321, /* OPERATOR_LESS_THAN_EQUAL  */
+    INSTANCEOF = 322,              /* INSTANCEOF  */
+    IN = 323,                      /* IN  */
+    UMINUS = 324,                  /* UMINUS  */
+    UPLUS = 325,                   /* UPLUS  */
+    PREF_INCREMENT = 326,          /* PREF_INCREMENT  */
+    PREF_DECREMENT = 327,          /* PREF_DECREMENT  */
+    POST_INCREMENT = 328,          /* POST_INCREMENT  */
+    POST_DECREMENT = 329,          /* POST_DECREMENT  */
+    ENDL_BRACKET_OPEN = 330        /* ENDL_BRACKET_OPEN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -170,7 +168,7 @@ union YYSTYPE
     struct VarDeclarationNode* varDeclNode;
     struct VarDeclarationListNode* varDeclListNode;
 
-#line 174 "parser.tab.h"
+#line 172 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
