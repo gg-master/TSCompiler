@@ -482,19 +482,6 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             }
         }
 
-        if (currentClass)
-        {
-            auto *var =
-                currentClass->body->findPropertyByName(node->identifierString);
-            if (var)
-            {
-                type = var->propertyAndReturnType;
-                node->exprType = type;
-                node->actualField = var;
-                return type;
-            }
-        }
-
         auto *var =
             root->mainClass->body->findPropertyByName(node->identifierString);
         if (var)

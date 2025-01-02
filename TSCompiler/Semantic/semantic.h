@@ -20,12 +20,13 @@ struct Semantic
         if (!isOk)
             return;
 
-        ClassAnalyzer analyzer(root);
         for (auto *class_ : root->classes)
         {
+            ClassAnalyzer analyzer(root);
             analyzer.attributeClass(class_);
         }
 
+        ClassAnalyzer analyzer(root);
         for (auto *class_ : root->classes)
         {
             analyzer.analyzeClass(class_);
