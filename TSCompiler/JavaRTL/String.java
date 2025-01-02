@@ -1,6 +1,6 @@
 package JavaRTL;
 
-public class String {
+public class String extends Any {
 
     public java.lang.String _value;
 

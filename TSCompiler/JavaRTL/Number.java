@@ -1,6 +1,6 @@
 package JavaRTL;
 
-public class Number {
+public class Number extends Any {
     public double _value;
 
     public Number(int value) {

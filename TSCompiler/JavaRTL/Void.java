@@ -1,6 +1,6 @@
 package JavaRTL;
 
-public class Void {
+public class Void extends Any {
     @Override
     public java.lang.String toString() {
         return "void";

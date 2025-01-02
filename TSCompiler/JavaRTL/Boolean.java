@@ -1,6 +1,6 @@
 package JavaRTL;
 
-public class Boolean {
+public class Boolean extends Any {
     public boolean _value;
 
     public int _ivalue;

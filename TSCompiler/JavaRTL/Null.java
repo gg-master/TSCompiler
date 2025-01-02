@@ -1,6 +1,6 @@
 package JavaRTL;
 
-public class Null {
+public class Null extends Any {
     @Override
     public java.lang.String toString() {
         return "null";
