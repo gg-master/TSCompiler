@@ -20,6 +20,7 @@ StatementNode *StatementNode::fromVarStmt(VarModifierType modifierType,
     node->type = StatementNode::Type::_VAR;
     node->modifierType = modifierType;
     node->declList = declList;
+    node->declList->setModifierType(modifierType);
     return node;
 }
 StatementNode *StatementNode::fromReturnStmt(ExpressionNode *node)
@@ -36,7 +37,8 @@ StatementNode *StatementNode::fromBlockStmt(StatementListNode *stmtList)
     stmt->stmtList = stmtList;
     return stmt;
 }
-StatementNode *StatementNode::fromIfElseStmt(ExpressionNode *condition, StatementNode *ifBody,
+StatementNode *StatementNode::fromIfElseStmt(ExpressionNode *condition,
+                                             StatementNode *ifBody,
                                              StatementNode *elseBody)
 {
     auto *stmt = new StatementNode{};
@@ -47,7 +49,8 @@ StatementNode *StatementNode::fromIfElseStmt(ExpressionNode *condition, Statemen
     return stmt;
 }
 
-StatementNode *StatementNode::fromDoWhileStmt(StatementNode *body, ExpressionNode *condition)
+StatementNode *StatementNode::fromDoWhileStmt(StatementNode *body,
+                                              ExpressionNode *condition)
 {
     auto *stmt = new StatementNode{};
     stmt->type = StatementNode::Type::_DOWHILE;
@@ -55,7 +58,8 @@ StatementNode *StatementNode::fromDoWhileStmt(StatementNode *body, ExpressionNod
     stmt->expression = condition;
     return stmt;
 }
-StatementNode *StatementNode::fromWhileStmt(ExpressionNode *condition, StatementNode *body)
+StatementNode *StatementNode::fromWhileStmt(ExpressionNode *condition,
+                                            StatementNode *body)
 {
     auto *stmt = new StatementNode{};
     stmt->type = StatementNode::Type::_WHILE;
@@ -63,8 +67,10 @@ StatementNode *StatementNode::fromWhileStmt(ExpressionNode *condition, Statement
     stmt->expression = condition;
     return stmt;
 }
-StatementNode *StatementNode::fromClassicForStmt(ExpressionNode *expr1, ExpressionNode *expr2,
-                                                 ExpressionNode *expr3, StatementNode *body)
+StatementNode *StatementNode::fromClassicForStmt(ExpressionNode *expr1,
+                                                 ExpressionNode *expr2,
+                                                 ExpressionNode *expr3,
+                                                 StatementNode *body)
 {
     auto *stmt = new StatementNode{};
     stmt->type = StatementNode::Type::_FOR;
@@ -74,11 +80,9 @@ StatementNode *StatementNode::fromClassicForStmt(ExpressionNode *expr1, Expressi
     stmt->iterationExprAdd2 = expr3;
     return stmt;
 }
-StatementNode *StatementNode::fromClassicForWithVarDeclStmt(VarModifierType modifierType,
-                                                            VarDeclarationListNode *declList,
-                                                            ExpressionNode *expr2,
-                                                            ExpressionNode *expr3,
-                                                            StatementNode *body)
+StatementNode *StatementNode::fromClassicForWithVarDeclStmt(
+    VarModifierType modifierType, VarDeclarationListNode *declList,
+    ExpressionNode *expr2, ExpressionNode *expr3, StatementNode *body)
 {
     auto *stmt = new StatementNode{};
     stmt->type = StatementNode::Type::_FOR;
@@ -89,7 +93,8 @@ StatementNode *StatementNode::fromClassicForWithVarDeclStmt(VarModifierType modi
     stmt->iterationExprAdd2 = expr3;
     return stmt;
 }
-StatementNode *StatementNode::fromForExprInExprStmt(ExpressionNode *expr1, ExpressionNode *expr2,
+StatementNode *StatementNode::fromForExprInExprStmt(ExpressionNode *expr1,
+                                                    ExpressionNode *expr2,
                                                     StatementNode *body)
 {
     auto *stmt = new StatementNode{};
@@ -99,15 +104,52 @@ StatementNode *StatementNode::fromForExprInExprStmt(ExpressionNode *expr1, Expre
     stmt->iterationExprAdd1 = expr2;
     return stmt;
 }
-StatementNode *StatementNode::fromForVarDeclInExprStmt(VarModifierType modifierType,
-                                                       VarDeclarationNode *decl,
-                                                       ExpressionNode *expr, StatementNode *body)
+StatementNode *StatementNode::fromForVarDeclInExprStmt(
+    VarModifierType modifierType, VarDeclarationNode *decl,
+    ExpressionNode *expr, StatementNode *body)
 {
     auto *stmt = new StatementNode{};
     stmt->type = StatementNode::Type::_FOR;
     stmt->iterationBody = body;
     stmt->modifierType = modifierType;
-    stmt->decl = decl;
+    stmt->declList->add(decl);
     stmt->expression = expr;
+
+    stmt->declList->setModifierType(modifierType);
     return stmt;
+}
+
+std::vector<VarDeclarationNode *> StatementNode::getAllFunctionScopedVars()
+{
+    std::vector<VarDeclarationNode *> variables;
+
+    if (type == StatementNode::Type::_VAR && isFunctionScopeVar(modifierType))
+    {
+        variables.insert(variables.end(), declList->GetSeq().begin(),
+                         declList->GetSeq().end());
+    }
+    if (stmtList)
+    {
+        for (auto *stmt : stmtList->GetSeq())
+        {
+            auto vars = stmt->getAllFunctionScopedVars();
+            variables.insert(variables.end(), vars.begin(), vars.end());
+        }
+    }
+    if (ifBody)
+    {
+        auto vars = ifBody->getAllFunctionScopedVars();
+        variables.insert(variables.end(), vars.begin(), vars.end());
+    }
+    if (elseBody)
+    {
+        auto vars = elseBody->getAllFunctionScopedVars();
+        variables.insert(variables.end(), vars.begin(), vars.end());
+    }
+    if (iterationBody)
+    {
+        auto vars = iterationBody->getAllFunctionScopedVars();
+        variables.insert(variables.end(), vars.begin(), vars.end());
+    }
+    return variables;
 }

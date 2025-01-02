@@ -6,8 +6,7 @@ ClassDeclarationNode *Semantic::createNumberClass()
 
     // Class constructors
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType(JvmDataType::Type::Int));
+        auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::Int));
         auto *param = new RequiredParameterNode("value", type);
         auto *clsConstructor =
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
@@ -15,8 +14,7 @@ ClassDeclarationNode *Semantic::createNumberClass()
         body->add(clsConstructor);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType(JvmDataType::Type::Float));
+        auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::Float));
         auto *param = new RequiredParameterNode("value", type);
         auto *clsConstructor =
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
@@ -24,8 +22,7 @@ ClassDeclarationNode *Semantic::createNumberClass()
         body->add(clsConstructor);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_STRING);
-        type->addJvmDataType(new JvmDataType(JvmDataType::Type::String));
+        auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::String));
         auto *param = new RequiredParameterNode("value", type);
         auto *clsConstructor =
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
@@ -35,115 +32,102 @@ ClassDeclarationNode *Semantic::createNumberClass()
 
     // Methods
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "plus", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Number");
+            "plus", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_NUMBER_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "minus", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Number");
+            "minus", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_NUMBER_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "mul", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Number");
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *method = new ClassElementNode(
-            "uPlus", RequiredParameterListNode::makeEmpty(), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Number");
-        body->add(method);
-    }
-    {
-        auto *method = new ClassElementNode(
-            "uMinus", RequiredParameterListNode::makeEmpty(), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Number");
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "less", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "great", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "equal", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "notEqual", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "lessEqual", new RequiredParameterListNode(param), nullptr,
-            nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "greatEqual", new RequiredParameterListNode(param), nullptr,
-            nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
+            "mul", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_NUMBER_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
         auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(), nullptr,
-            nullptr);
-        method->jvmPropertyAndReturnType =
-            new JvmDataType(JvmDataType::Type::String);
+            "uPlus", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(RTL_NUMBER_TYPE)), nullptr);
+        body->add(method);
+    }
+    {
+        auto *method = new ClassElementNode(
+            "uMinus", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(RTL_NUMBER_TYPE)), nullptr);
+        body->add(method);
+    }
+    {
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
+        auto *param = new RequiredParameterNode("other", type);
+        auto *method = new ClassElementNode(
+            "less", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
+        method->analyzeArguments();
+        body->add(method);
+    }
+    {
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
+        auto *param = new RequiredParameterNode("other", type);
+        auto *method = new ClassElementNode(
+            "great", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
+        method->analyzeArguments();
+        body->add(method);
+    }
+    {
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
+        auto *param = new RequiredParameterNode("other", type);
+        auto *method = new ClassElementNode(
+            "equal", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
+        method->analyzeArguments();
+        body->add(method);
+    }
+    {
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
+        auto *param = new RequiredParameterNode("other", type);
+        auto *method = new ClassElementNode(
+            "notEqual", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
+        method->analyzeArguments();
+        body->add(method);
+    }
+    {
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
+        auto *param = new RequiredParameterNode("other", type);
+        auto *method = new ClassElementNode(
+            "lessEqual", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
+        method->analyzeArguments();
+        body->add(method);
+    }
+    {
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
+        auto *param = new RequiredParameterNode("other", type);
+        auto *method = new ClassElementNode(
+            "greatEqual", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
+        method->analyzeArguments();
+        body->add(method);
+    }
+    {
+        auto *method = new ClassElementNode(
+            "toString", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
         body->add(method);
     }
 
@@ -157,8 +141,7 @@ ClassDeclarationNode *Semantic::createBooleanClass()
 
     // Class constructors
     {
-        auto *type = new TypeNode(TypeNode::Type::_BOOLEAN);
-        type->addJvmDataType(new JvmDataType(JvmDataType::Type::Bool));
+        auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::Bool));
         auto *param = new RequiredParameterNode("value", type);
         auto *clsConstructor =
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
@@ -166,8 +149,7 @@ ClassDeclarationNode *Semantic::createBooleanClass()
         body->add(clsConstructor);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType(JvmDataType::Type::Int));
+        auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::Int));
         auto *param = new RequiredParameterNode("value", type);
         auto *clsConstructor =
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
@@ -177,58 +159,52 @@ ClassDeclarationNode *Semantic::createBooleanClass()
 
     // Methods
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "equal", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
+            "equal", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "notEqual", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
+            "notEqual", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
         auto *method = new ClassElementNode(
-            "not", RequiredParameterListNode::makeEmpty(), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
+            "not", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Boolean"));
+        auto *type = new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "or", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
+            "or", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Boolean"));
+        auto *type = new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "and", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Boolean");
+            "and", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
         auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(), nullptr,
-            nullptr);
-        method->jvmPropertyAndReturnType =
-            new JvmDataType(JvmDataType::Type::String);
+            "toString", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
         body->add(method);
     }
 
@@ -242,8 +218,7 @@ ClassDeclarationNode *Semantic::createStringClass()
 
     // Class constructors
     {
-        auto *type = new TypeNode(TypeNode::Type::_STRING);
-        type->addJvmDataType(new JvmDataType(JvmDataType::Type::String));
+        auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::String));
         auto *param = new RequiredParameterNode("value", type);
         auto *clsConstructor =
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
@@ -254,10 +229,8 @@ ClassDeclarationNode *Semantic::createStringClass()
     // Methods
     {
         auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(), nullptr,
-            nullptr);
-        method->jvmPropertyAndReturnType =
-            new JvmDataType(JvmDataType::Type::String);
+            "toString", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
         body->add(method);
     }
 
@@ -272,10 +245,8 @@ ClassDeclarationNode *Semantic::createNullClass()
     // Methods
     {
         auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(), nullptr,
-            nullptr);
-        method->jvmPropertyAndReturnType =
-            new JvmDataType(JvmDataType::Type::String);
+            "toString", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
         body->add(method);
     }
 
@@ -290,10 +261,8 @@ ClassDeclarationNode *Semantic::createUndefinedClass()
     // Methods
     {
         auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(), nullptr,
-            nullptr);
-        method->jvmPropertyAndReturnType =
-            new JvmDataType(JvmDataType::Type::String);
+            "toString", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
         body->add(method);
     }
 
@@ -307,60 +276,54 @@ ClassDeclarationNode *Semantic::createConsoleClass()
 
     // Methods
     {
-        auto *type = new TypeNode(TypeNode::Type::_NUMBER);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Number"));
+        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "log", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Undefined");
+            "log", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_STRING);
-        type->addJvmDataType(new JvmDataType("JavaRTL/String"));
+        auto *type = new TypeNode(new JvmDataType(RTL_STRING_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "log", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Undefined");
+            "log", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_BOOLEAN);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Boolean"));
+        auto *type = new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "log", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Undefined");
+            "log", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_NULL);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Null"));
+        auto *type = new TypeNode(new JvmDataType(RTL_NULL_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "log", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Undefined");
+            "log", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
-        auto *type = new TypeNode(TypeNode::Type::_UNDEFINED);
-        type->addJvmDataType(new JvmDataType("JavaRTL/Undefined"));
+        auto *type = new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
-            "log", new RequiredParameterListNode(param), nullptr, nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/Undefined");
+            "log", new RequiredParameterListNode(param),
+            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
         method->analyzeArguments();
         body->add(method);
     }
     {
         auto *method = new ClassElementNode(
-            "readLine", RequiredParameterListNode::makeEmpty(), nullptr,
-            nullptr);
-        method->jvmPropertyAndReturnType = new JvmDataType("JavaRTL/String");
+            "readLine", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(RTL_STRING_TYPE)), nullptr);
         body->add(method);
     }
 

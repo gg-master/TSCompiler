@@ -1,8 +1,10 @@
 #pragma once
-#include "../Tree/ts_script.h"
 #include <set>
 #include <string>
 #include <vector>
+
+#include "../Tree/ts_script.h"
+#include "class_analyzer.h"
 
 struct Semantic
 {
@@ -12,14 +14,27 @@ struct Semantic
 
     Semantic(TSScriptNode *root) : root{root} {}
 
-    void analyze(std::string nameMainClass)
+    void analyze(std::string mainClassName)
     {
-        bool isOk = checkBuiltInClasses(nameMainClass);
+        bool isOk = checkBuiltInClasses(mainClassName);
         if (!isOk)
             return;
+
+        ClassAnalyzer analyzer(root);
+        for (auto *class_ : root->classes)
+        {
+            analyzer.attributeClass(class_);
+        }
+
+        for (auto *class_ : root->classes)
+        {
+            analyzer.analyzeClass(class_);
+        }
+
+        errors.insert(analyzer.errors.begin(), analyzer.errors.end());
     }
 
-    bool checkBuiltInClasses(std::string nameMainClass)
+    bool checkBuiltInClasses(std::string mainClassName)
     {
         for (const auto *userClass : root->classes)
         {
@@ -36,22 +51,23 @@ struct Semantic
             {
                 errors.insert("Duplicate identifier 'Boolean'");
             }
-            else if (clsName == nameMainClass)
+            else if (clsName == mainClassName)
             {
-                errors.insert("Duplicate identifier '" + nameMainClass + "'");
+                errors.insert("Duplicate identifier '" + mainClassName + "'");
             }
         }
         if (!errors.empty())
             return false;
 
-        root->add(createNumberClass());
-        root->add(createBooleanClass());
-        root->add(createStringClass());
-        root->add(createNullClass());
-        root->add(createUndefinedClass());
-        root->add(createConsoleClass());
+        // root->add(createNumberClass());
+        // root->add(createBooleanClass());
+        // root->add(createStringClass());
+        // root->add(createNullClass());
+        // root->add(createUndefinedClass());
+        // root->add(createConsoleClass());
 
-        root->add(createMainClass(nameMainClass));
+        this->root->mainClass = createMainClass(mainClassName);
+        root->add(this->root->mainClass);
         return true;
     }
 
@@ -81,14 +97,58 @@ struct Semantic
         auto *mainBody = StatementListNode::makeEmpty();
         for (auto *stmt : root->statements)
         {
+            // adding global "var" stmt as main property
+            for (auto *varStmt : stmt->getAllFunctionScopedVars())
+            {
+                auto *existProp =
+                    body->findPropertyByName(varStmt->identifierStr);
+                if (existProp)
+                {
+                    if (*existProp->propertyAndReturnType != *varStmt->varType)
+                    {
+                        errors.insert(
+                            "Subsequent variable declarations must have the "
+                            "same type. Variable '" +
+                            varStmt->identifierStr + "' must be of type '" +
+                            existProp->propertyAndReturnType->toString() +
+                            "', but here has type '" +
+                            varStmt->varType->toString() + "'");
+                    }
+                    continue;
+                }
+
+                auto *prop = new ClassElementNode(varStmt->identifierStr,
+                                                  varStmt->varType, nullptr);
+                prop->baseNode = varStmt;
+                body->add(prop);
+            }
+
+            // special case for "let" and "const" in global scope
+            if (stmt->type == StatementNode::Type::_VAR && stmt->declList &&
+                isBlockScopeVar(stmt->modifierType))
+            {
+                for (auto *varDecl : stmt->declList->GetSeq())
+                {
+                    if (body->findPropertyByName(varDecl->identifierStr))
+                    {
+                        errors.insert("Duplicate identifier '" +
+                                      varDecl->identifierStr + "'");
+                        continue;
+                    }
+                    auto *prop = new ClassElementNode(
+                        varDecl->identifierStr, varDecl->varType, nullptr);
+                    prop->baseNode = varDecl;
+                    body->add(prop);
+                }
+            }
             mainBody->add(stmt);
         }
 
         auto *mainMethod = new ClassElementNode(
             mainMethodName, RequiredParameterListNode::makeEmpty(), nullptr,
             mainBody);
-        mainMethod->jvmPropertyAndReturnType =
-            new JvmDataType(JvmDataType::Type::Void);
+        mainMethod->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
 
         body->add(mainMethod);
 

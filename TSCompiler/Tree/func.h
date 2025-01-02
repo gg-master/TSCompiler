@@ -28,6 +28,16 @@ struct RequiredParameterListNode final
     {
         return "RequiredParameterListNode";
     }
+
+    std::vector<JvmDataType> getTypes() const
+    {
+        std::vector<JvmDataType> types;
+        for (auto *param : GetSeq())
+        {
+            types.push_back(*param->paramType->jvmType);
+        }
+        return types;
+    }
 };
 
 struct FunctionDeclarationNode final : Node

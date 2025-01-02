@@ -62,6 +62,9 @@
     <ClCompile Include="Semantic\semantic.cpp">
       <Filter>Исходные файлы\Semantic</Filter>
     </ClCompile>
+    <ClCompile Include="Semantic\class_analyzer.cpp">
+      <Filter>Исходные файлы\Semantic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Bison Include="parser.y">
@@ -108,10 +111,13 @@
     <ClInclude Include="Tree\var.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Semantic\JvmClass.h">
+    <ClInclude Include="Semantic\semantic.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Semantic\semantic.h">
+    <ClInclude Include="Semantic\jvm_class.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Semantic\class_analyzer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,29 +1,18 @@
 #pragma once
-#include "../Semantic/JvmClass.h"
-#include "expr.h"
+#include <algorithm>
+#include <iterator>
+
+#include "../Semantic/jvm_class.h"
 #include "func.h"
 #include "node.h"
 #include "stmt.h"
 #include "type.h"
-#include <algorithm>
-#include <iterator>
 
-struct MethodArgumentDTO
-{
-    JvmDataType *type;
-    std::string name;
-};
-
-inline MethodArgumentDTO ToMethodArgumentDTO(RequiredParameterNode *node)
-{
-    return {ToJvmDataType(node->paramType), std::string{node->paramName}};
-}
-
+struct ExpressionNode;
 struct ClassDeclarationNode;
 
 struct ClassElementNode final : Node
 {
-public:
     enum class Type
     {
         _CONSTRUCTOR,
@@ -39,11 +28,12 @@ public:
     RequiredParameterListNode *params{};
     StatementListNode *methodBody{};
 
-    // semantic step
-    JvmDataType *jvmPropertyAndReturnType{};
-    std::vector<MethodArgumentDTO> argumentsDTO{};
+    // semantic step belows
 
     ClassDeclarationNode *elemClass{};
+    VarDeclarationNode *baseNode{};  // using for variables in main class
+
+    std::vector<VarDeclarationNode *> variables{};
 
     ClassElementNode(RequiredParameterListNode *params, StatementListNode *body)
         : type{Type::_CONSTRUCTOR}, params{params}, methodBody{body}
@@ -52,21 +42,29 @@ public:
 
     ClassElementNode(const std::string name, TypeNode *propertyType,
                      ExpressionNode *expression)
-        : type{Type::_PROPERTY}, name{name},
-          propertyAndReturnType{propertyType}, expression{expression}
+        : type{Type::_PROPERTY},
+          name{name},
+          propertyAndReturnType{propertyType},
+          expression{expression}
     {
     }
 
     ClassElementNode(const std::string name, RequiredParameterListNode *params,
                      TypeNode *returnType, StatementListNode *body)
-        : type{Type::_METHOD}, name{name}, params{params},
-          propertyAndReturnType{returnType}, methodBody{body}
+        : type{Type::_METHOD},
+          name{name},
+          params{params},
+          propertyAndReturnType{returnType},
+          methodBody{body}
     {
     }
 
     ClassElementNode(const FunctionDeclarationNode *node)
-        : type{Type::_METHOD}, name{node->funcName}, params{node->params},
-          propertyAndReturnType{node->returnType}, methodBody{node->body}
+        : type{Type::_METHOD},
+          name{node->funcName},
+          params{node->params},
+          propertyAndReturnType{node->returnType},
+          methodBody{node->body}
     {
     }
 
@@ -77,9 +75,21 @@ public:
 
     void analyzeArguments()
     {
-        auto &&varDeclNodes = params->GetSeq();
-        std::transform(varDeclNodes.begin(), varDeclNodes.end(),
-                       std::back_inserter(argumentsDTO), ToMethodArgumentDTO);
+        for (auto *param : params->GetSeq())
+        {
+            param->paramType = new TypeNode(toJvmDataType(param->paramType));
+        }
+    }
+
+    VarDeclarationNode *findVariableByName(std::string name, int scopingLevel)
+    {
+        for (auto *variable : variables)
+        {
+            if (variable->identifierStr == name &&
+                variable->scopingLevel <= scopingLevel)
+                return variable;
+        }
+        return nullptr;
     }
 };
 
@@ -91,6 +101,62 @@ struct ClassElementListNode final
     std::string toString() const noexcept override
     {
         return "ClassElementListNode";
+    }
+
+    std::vector<ClassElementNode *> GetConstructors() const
+    {
+        std::vector<ClassElementNode *> nodes;
+        for (ClassElementNode *node : GetSeq())
+        {
+            if (node->type == ClassElementNode::Type::_CONSTRUCTOR)
+            {
+                nodes.push_back(node);
+            }
+        }
+        return nodes;
+    }
+
+    std::vector<ClassElementNode *> GetMethods() const
+    {
+        std::vector<ClassElementNode *> nodes;
+        for (ClassElementNode *node : GetSeq())
+        {
+            if (node->type == ClassElementNode::Type::_METHOD)
+            {
+                nodes.push_back(node);
+            }
+        }
+        return nodes;
+    }
+
+    std::vector<ClassElementNode *> GetProperties() const
+    {
+        std::vector<ClassElementNode *> nodes;
+        for (ClassElementNode *node : GetSeq())
+        {
+            if (node->type == ClassElementNode::Type::_PROPERTY)
+            {
+                nodes.push_back(node);
+            }
+        }
+        return nodes;
+    }
+
+    ClassElementNode *findPropertyByName(
+        std::string name, ClassElementNode *beforeNode = nullptr) const
+    {
+        for (auto *property : GetProperties())
+        {
+            if (property->name == name)
+            {
+                return property;
+            }
+            if (property == beforeNode)
+            {
+                return nullptr;
+            }
+        }
+        return nullptr;
     }
 };
 
@@ -117,4 +183,6 @@ struct ClassDeclarationNode final : Node
     {
         return "ClassDeclarationNode";
     }
+
+    JvmDataType *toDataType() const { return new JvmDataType(this->className); }
 };

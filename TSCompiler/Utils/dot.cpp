@@ -1,8 +1,9 @@
-#include <iostream>
-#include <process.h>
-#include <string>
-
 #include "dot.h"
+
+#include <process.h>
+
+#include <iostream>
+#include <string>
 
 void RunDot(const std::string dotPath, const std::string dotFilePath)
 {
@@ -36,13 +37,18 @@ std::string MakeConnection(const size_t id1, const size_t id2,
 
 void ToDot(TypeNode *node, std::ostream &out)
 {
-    out << MakeNode(node->id, node->toString());
+    if (!node)
+        return;
+
+    std::string name = "TypeNode:\n" + node->toString();
+    out << MakeNode(node->id, name);
 }
 
 void ToDot(VarDeclarationNode *node, std::ostream &out)
 {
     std::string name =
-        "VarDeclarationNode\nName: " + std::string{node->identifierStr};
+        "VarDeclarationNode\nModifier: " + toString(node->modifierType) +
+        "\nName: " + node->identifierStr;
     out << MakeNode(node->id, name);
 
     if (node->varType != NULL)
@@ -92,20 +98,44 @@ void ToDot(ExpressionNode *node, std::ostream &out)
     switch (node->type)
     {
     case ExpressionNode::Type::_IDENTIFIER:
-        out << MakeNode(node->id,
-                        "IdentName:\n" + std::string{node->identifierString});
+        name = "IdentName:\n" + node->identifierString;
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+        out << MakeNode(node->id, name);
         break;
     case ExpressionNode::Type::_INT_LIT:
-        out << MakeNode(node->id,
-                        "IntLiteral:\n" + std::to_string(node->intValue));
+        name = "IntLiteral:\n" + std::to_string(node->intValue);
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+        out << MakeNode(node->id, name);
         break;
     case ExpressionNode::Type::_FLOAT_LIT:
-        out << MakeNode(node->id,
-                        "FloatLiteral:\n" + std::to_string(node->floatValue));
+        name = "FloatLiteral:\n" + std::to_string(node->floatValue);
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+        out << MakeNode(node->id, name);
         break;
     case ExpressionNode::Type::_STRING_LIT:
-        out << MakeNode(node->id, "StringLiteral:\n\\\"" +
-                                      std::string{node->stringValue} + "\\\"");
+        name = "StringLiteral:\n\\\"" + node->stringValue + "\\\"";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+        out << MakeNode(node->id, name);
         break;
     case ExpressionNode::Type::_BOOLEAN_LIT:
         if (node->boolValue)
@@ -116,76 +146,174 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         {
             name = "false";
         }
-        out << MakeNode(node->id, "BooleanLiteral:\n" + name);
+        name = "BooleanLiteral:\n" + name;
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+        out << MakeNode(node->id, name);
         break;
     case ExpressionNode::Type::_NULL_LIT:
-        out << MakeNode(node->id, "NullLiteral");
+        name = "NullLiteral";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+        out << MakeNode(node->id, name);
         break;
     case ExpressionNode::Type::_UNDEFINED_LIT:
-        out << MakeNode(node->id, "UndefinedLiteral");
-        break;
-    case ExpressionNode::Type::_THIS:
-        out << MakeNode(node->id, "This");
+        name = "UndefinedLiteral";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+        out << MakeNode(node->id, name);
         break;
 
     case ExpressionNode::Type::_PREF_INCREMENT:
-        out << MakeNode(node->id, "PrefIncrement");
+        name = "PrefIncrement";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
     case ExpressionNode::Type::_PREF_DECREMENT:
-        out << MakeNode(node->id, "PrefDecrement");
+        name = "PrefDecrement";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
     case ExpressionNode::Type::_POST_INCREMENT:
-        out << MakeNode(node->id, "PostIncrement");
+        name = "PostIncrement";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
     case ExpressionNode::Type::_POST_DECREMENT:
-        out << MakeNode(node->id, "PostDecrement");
+        name = "PostDecrement";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
 
     case ExpressionNode::Type::_PLUS:
-        out << MakeNode(node->id, "PlusOperator");
+        name = "PlusOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_MINUS:
-        out << MakeNode(node->id, "MinusOperator");
+        name = "MinusOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_MUL:
-        out << MakeNode(node->id, "MulOperator");
+        name = "MulOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_DIV:
-        out << MakeNode(node->id, "DivOperator");
+        name = "DivOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_LESS:
-        out << MakeNode(node->id, "LessOperator");
+        name = "LessOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_GREAT:
-        out << MakeNode(node->id, "GreatOperator");
+        name = "GreatOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
@@ -193,80 +321,209 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         break;
 
     case ExpressionNode::Type::_UPLUS:
-        out << MakeNode(node->id, "UnaryPlusOperator");
+        name = "UnaryPlusOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
     case ExpressionNode::Type::_UMINUS:
-        out << MakeNode(node->id, "UnaryMinusOperator");
+        name = "UnaryMinusOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
 
     case ExpressionNode::Type::_NOT:
-        out << MakeNode(node->id, "LogicalNot");
+        name = "LogicalNot";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         break;
     case ExpressionNode::Type::_LOGICAL_OR:
-        out << MakeNode(node->id, "LogicalOr");
+        name = "LogicalOr";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_LOGICAL_AND:
-        out << MakeNode(node->id, "LogicalAnd");
+        name = "LogicalAnd";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
+    case ExpressionNode::Type::_ASSIGN_TO_ARRAY_ELEMENT:
+        name = "AssignToArrayElement";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
 
+        out << MakeNode(node->id, name);
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id), "arr";
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id, "index");
+        ToDot(node->thirdOperand, out);
+        out << MakeConnection(node->id, node->thirdOperand->id, "value");
+        break;
+    case ExpressionNode::Type::_ASSIGN_TO_FIELD:
+        name = "AssignToField";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
+        ToDot(node->firstOperand, out);
+        out << MakeConnection(node->id, node->firstOperand->id, "obj");
+        ToDot(node->actualField, out);
+        out << MakeConnection(node->id, node->actualField->id, "prop");
+        ToDot(node->secondOperand, out);
+        out << MakeConnection(node->id, node->secondOperand->id, "value");
+        break;
     case ExpressionNode::Type::_ASSIGN:
-        out << MakeNode(node->id, "Assign");
+        name = "Assign";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_ASSIGN_MUL:
-        out << MakeNode(node->id, "AssignMul");
+        name = "AssignMul";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_ASSIGN_DIV:
-        out << MakeNode(node->id, "AssignDiv");
+        name = "AssignDiv";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_ASSIGN_PLUS:
-        out << MakeNode(node->id, "AssignPlus");
+        name = "AssignPlus";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_ASSIGN_MINUS:
-        out << MakeNode(node->id, "AssignMinus");
+        name = "AssignMinus";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_ASSIGN_LOGICAL_AND:
-        out << MakeNode(node->id, "AssignAnd");
+        name = "AssignAnd";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_ASSIGN_LOGICAL_OR:
-        out << MakeNode(node->id, "AssignOr");
+        name = "AssignOr";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
@@ -274,42 +531,59 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         break;
 
     case ExpressionNode::Type::_EQUAL:
-        out << MakeNode(node->id, "Equal");
+        name = "Equal";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_NOT_EQUAL:
-        out << MakeNode(node->id, "NotEqual");
-        ToDot(node->firstOperand, out);
-        out << MakeConnection(node->id, node->firstOperand->id);
-        ToDot(node->secondOperand, out);
-        out << MakeConnection(node->id, node->secondOperand->id);
-        break;
-    case ExpressionNode::Type::_STRICT_EQUAL:
-        out << MakeNode(node->id, "StrictEqual");
-        ToDot(node->firstOperand, out);
-        out << MakeConnection(node->id, node->firstOperand->id);
-        ToDot(node->secondOperand, out);
-        out << MakeConnection(node->id, node->secondOperand->id);
-        break;
-    case ExpressionNode::Type::_STRICT_NOT_EQUAL:
-        out << MakeNode(node->id, "StrictNotEqual");
+        name = "NotEqual";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_LESS_EQUAL:
-        out << MakeNode(node->id, "LessEqual");
+        name = "LessEqual";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_GREAT_EQUAL:
-        out << MakeNode(node->id, "GreaterEqual");
+        name = "GreaterEqual";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
@@ -317,28 +591,60 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         break;
 
     case ExpressionNode::Type::_COMMA:
-        out << MakeNode(node->id, "CommaOperator");
+        name = "CommaOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_INSTANCEOF:
-        out << MakeNode(node->id, "InstanceofOperator");
+        name = "InstanceofOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_IN:
-        out << MakeNode(node->id, "InOperator");
+        name = "InOperator";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id);
         ToDot(node->secondOperand, out);
         out << MakeConnection(node->id, node->secondOperand->id);
         break;
     case ExpressionNode::Type::_TERNARY:
-        out << MakeNode(node->id, "Ternary");
+        name = "Ternary";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id, "condition");
         ToDot(node->secondOperand, out);
@@ -348,7 +654,15 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         break;
 
     case ExpressionNode::Type::_ARRAY_CREATION:
-        out << MakeNode(node->id, "ArrayCreation");
+        name = "ArrayCreation";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         if (node->params != NULL)
         {
             ToDot(node->params, out);
@@ -356,10 +670,26 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         }
         break;
     case ExpressionNode::Type::_ARRAY_EMPTY_ELEMENT:
-        out << MakeNode(node->id, "ArrayEmptyElement");
+        name = "ArrayEmptyElement";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         break;
     case ExpressionNode::Type::_ARRAY_ACCESS:
-        out << MakeNode(node->id, "ArrayAccess");
+        name = "ArrayAccess";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id, "array");
         ToDot(node->secondOperand, out);
@@ -367,8 +697,15 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         break;
 
     case ExpressionNode::Type::_FUNC_CALL:
-        out << MakeNode(node->id, "FuncCall:\nFuncName: " +
-                                      std::string{node->identifierString});
+        name = "FuncCall:\nFuncName: " + node->identifierString;
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id, "returnType");
+        }
+
+        out << MakeNode(node->id, name);
         if (node->params != NULL)
         {
             ToDot(node->params, out);
@@ -376,7 +713,15 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         }
         break;
     case ExpressionNode::Type::_SUPER_CALL:
-        out << MakeNode(node->id, "SuperCall");
+        name = "SuperCall";
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id);
+        }
+
+        out << MakeNode(node->id, name);
         if (node->params != NULL)
         {
             ToDot(node->params, out);
@@ -384,14 +729,28 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         }
         break;
     case ExpressionNode::Type::_FIELD_ACCESS:
-        out << MakeNode(node->id, "FieldAccess:\nFieldName: " +
-                                      std::string{node->identifierString});
+        name = "FieldAccess:\nFieldName: " + node->identifierString;
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id, "fieldType");
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id, "object");
         break;
     case ExpressionNode::Type::_METHOD_CALL:
-        out << MakeNode(node->id, "MethodAccess\nMethodName: " +
-                                      std::string{node->identifierString});
+        name = "MethodAccess\nMethodName: " + node->identifierString;
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id, "returnType");
+        }
+
+        out << MakeNode(node->id, name);
         ToDot(node->firstOperand, out);
         out << MakeConnection(node->id, node->firstOperand->id, "object");
         if (node->params != NULL)
@@ -401,9 +760,15 @@ void ToDot(ExpressionNode *node, std::ostream &out)
         }
         break;
     case ExpressionNode::Type::_NEW:
-        out << MakeNode(node->id, "NewOperator:\nConstructor: " +
-                                      std::string{node->identifierString});
+        name = "NewOperator:\nConstructor: " + node->identifierString;
+        if (node->exprType)
+        {
+            name += "\nJvmType: " + node->exprType->toString();
+            ToDot(node->exprType, out);
+            out << MakeConnection(node->id, node->exprType->id, "objType");
+        }
 
+        out << MakeNode(node->id, name);
         if (node->params != NULL)
         {
             ToDot(node->params, out);
@@ -517,13 +882,6 @@ void ToDot(StatementNode *node, std::ostream &out)
             out << MakeConnection(node->id, node->declList->id,
                                   toString(node->modifierType));
         }
-
-        if (node->decl != NULL)
-        {
-            ToDot(node->decl, out);
-            out << MakeConnection(node->id, node->decl->id,
-                                  toString(node->modifierType));
-        }
         break;
     default:
         break;
@@ -596,6 +954,7 @@ void ToDot(FunctionDeclarationNode *node, std::ostream &out)
 
 void ToDot(ClassElementNode *node, std::ostream &out)
 {
+    std::string name;
     switch (node->type)
     {
     case ClassElementNode::Type::_CONSTRUCTOR:
@@ -612,8 +971,9 @@ void ToDot(ClassElementNode *node, std::ostream &out)
         }
         break;
     case ClassElementNode::Type::_PROPERTY:
-        out << MakeNode(node->id,
-                        "ClassPropertyNode\nName: " + std::string{node->name});
+        name = "ClassPropertyNode\nName: " + node->name;
+
+        out << MakeNode(node->id, name);
 
         if (node->propertyAndReturnType != NULL)
         {
@@ -621,11 +981,15 @@ void ToDot(ClassElementNode *node, std::ostream &out)
             out << MakeConnection(node->id, node->propertyAndReturnType->id,
                                   "type");
         }
-
         if (node->expression != NULL)
         {
             ToDot(node->expression, out);
             out << MakeConnection(node->id, node->expression->id, "init");
+        }
+        if (node->baseNode)
+        {
+            ToDot(node->baseNode, out);
+            out << MakeConnection(node->id, node->baseNode->id, "baseNode");
         }
         break;
     case ClassElementNode::Type::_METHOD:

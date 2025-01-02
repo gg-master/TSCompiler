@@ -1,11 +1,12 @@
 #pragma once
-#include "../Semantic/JvmClass.h"
+#include "../Semantic/jvm_class.h"
 #include "node.h"
 
 struct TypeNode final : Node
 {
     enum class Type
     {
+        _ANY,
         _NUMBER,
         _STRING,
         _BOOLEAN,
@@ -20,7 +21,7 @@ struct TypeNode final : Node
     std::string userTypeName;
 
     // semantic setp
-    JvmDataType *jvmParamType{};
+    JvmDataType *jvmType{};
 
     TypeNode(Type type) : type{type} {}
     TypeNode(const std::string name)
@@ -28,13 +29,30 @@ struct TypeNode final : Node
     {
     }
 
-    void addJvmDataType(JvmDataType *type) { this->jvmParamType = type; }
+    TypeNode(JvmDataType *type) : jvmType{type} {}
+
+    bool operator==(const TypeNode &other) const
+    {
+        if (jvmType)
+            return *jvmType == *other.jvmType;
+
+        return type == other.type && arrayArity == other.arrayArity &&
+               userTypeName == other.userTypeName;
+    }
+
+    bool operator!=(const TypeNode &other) const { return !(*this == other); }
 
     std::string toString() const noexcept override
     {
-        std::string name = "TypeNode:\n";
-        switch (type)
+        if (jvmType)
+            return jvmType->toString();
+
+        std::string name{};
+        switch (this->type)
         {
+        case TypeNode::Type::_ANY:
+            name += "any";
+            break;
         case TypeNode::Type::_NUMBER:
             name += "number";
             break;
@@ -54,38 +72,42 @@ struct TypeNode final : Node
             name += "null";
             break;
         case TypeNode::Type::_USER_TYPE:
-            name += "UserType:\n" + std::string{userTypeName};
+            name += "UserType:\n" + this->userTypeName;
             break;
         default:
             break;
         }
 
-        for (int i = 0; i < arrayArity; ++i)
-        {
-            name += "[]";
-        }
-        name += "\nJvmType: " + this->jvmParamType->toString();
+        for (int i = 0; i < this->arrayArity; ++i) name += "[]";
+
         return name;
     }
 };
 
-inline JvmDataType *ToJvmDataType(const TypeNode *node)
+inline JvmDataType *toJvmDataType(const TypeNode *node)
 {
-    if (node->jvmParamType)
+    if (!node)
+        return new JvmDataType(RTL_ANY_TYPE);
+
+    if (node->jvmType)
     {
-        return node->jvmParamType;
+        return node->jvmType;
     }
     JvmDataType *type;
     switch (node->type)
     {
     case TypeNode::Type::_NUMBER:
-        type = new JvmDataType("JavaRTL/Number");
+        // FIXME int and float are same number type
+        type = new JvmDataType(JvmDataType::Type::Int);
+        // type = new JvmDataType("JavaRTL/Number");
         break;
     case TypeNode::Type::_BOOLEAN:
-        type = new JvmDataType("JavaRTL/Boolean");
+        type = new JvmDataType(JvmDataType::Type::Bool);
+        // type = new JvmDataType("JavaRTL/Boolean");
         break;
     case TypeNode::Type::_STRING:
-        type = new JvmDataType("JavaRTL/String");
+        type = new JvmDataType(JvmDataType::Type::String);
+        // type = new JvmDataType("JavaRTL/String");
         break;
     case TypeNode::Type::_UNDEFINED:
         type = new JvmDataType("JavaRTL/Undefined");
@@ -96,7 +118,33 @@ inline JvmDataType *ToJvmDataType(const TypeNode *node)
     case TypeNode::Type::_VOID:
         type = new JvmDataType(JvmDataType::Type::Void);
         break;
+    case TypeNode::Type::_USER_TYPE:
+        type = new JvmDataType(node->userTypeName);
+        break;
+    default:
+        type = new JvmDataType(RTL_ANY_TYPE);
+        break;
     }
     type->arrayArity = node->arrayArity;
     return type;
+}
+
+inline bool isUnknown(TypeNode *node)
+{
+    if (!node)
+        return true;
+
+    if (!node->jvmType && (node->type == TypeNode::Type::_ANY ||
+                           node->type == TypeNode::Type::_UNDEFINED ||
+                           node->type == TypeNode::Type::_VOID))
+    {
+        return true;
+    }
+
+    if (*node->jvmType == RTL_ANY_TYPE || *node->jvmType == RTL_UNDEFINED_TYPE)
+    {
+        return true;
+    }
+
+    return false;
 }

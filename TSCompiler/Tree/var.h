@@ -1,8 +1,9 @@
 #pragma once
+#include <string>
+
 #include "expr.h"
 #include "node.h"
 #include "type.h"
-#include <string>
 
 enum class VarModifierType
 {
@@ -10,6 +11,16 @@ enum class VarModifierType
     _VAR,
     _CONST,
 };
+
+inline bool isFunctionScopeVar(VarModifierType type)
+{
+    return type == VarModifierType::_VAR;
+}
+
+inline bool isBlockScopeVar(VarModifierType type)
+{
+    return type == VarModifierType::_CONST || type == VarModifierType::_LET;
+}
 
 inline std::string toString(VarModifierType type)
 {
@@ -28,21 +39,51 @@ inline std::string toString(VarModifierType type)
 
 struct VarDeclarationNode final : Node
 {
+    VarModifierType modifierType{};
+
     std::string identifierStr;
     TypeNode *varType;
     ExpressionNode *initExpression;
 
-    VarDeclarationNode(const std::string varName, TypeNode *varType, ExpressionNode *initExpr)
+    int scopingLevel = -1;
+
+    VarDeclarationNode(const std::string varName, TypeNode *varType,
+                       ExpressionNode *initExpr)
         : identifierStr{varName}, varType{varType}, initExpression{initExpr}
     {
     }
 
-    std::string toString() const noexcept override { return "VarDeclarationNode"; }
+    bool operator==(const VarDeclarationNode &other) const
+    {
+        return identifierStr == other.identifierStr && varType == other.varType;
+    }
+
+    bool operator!=(const VarDeclarationNode &other) const
+    {
+        return !(*this == other);
+    }
+
+    std::string toString() const noexcept override
+    {
+        return "VarDeclarationNode";
+    }
 };
 
-struct VarDeclarationListNode final : NodeList<VarDeclarationListNode, VarDeclarationNode>
+struct VarDeclarationListNode final
+    : NodeList<VarDeclarationListNode, VarDeclarationNode>
 {
     using NodeList<VarDeclarationListNode, VarDeclarationNode>::NodeList;
 
-    std::string toString() const noexcept override { return "VarDeclarationListNode"; }
+    std::string toString() const noexcept override
+    {
+        return "VarDeclarationListNode";
+    }
+
+    void setModifierType(VarModifierType type)
+    {
+        for (auto *node : GetSeq())
+        {
+            node->modifierType = type;
+        }
+    }
 };

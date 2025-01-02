@@ -1,5 +1,7 @@
 #include "expr.h"
 
+#include "../Semantic/jvm_class.h"
+
 ExpressionNode *ExpressionNode::fromId(const std::string value)
 {
     auto *node = new ExpressionNode{};
@@ -10,7 +12,8 @@ ExpressionNode *ExpressionNode::fromId(const std::string value)
 ExpressionNode *ExpressionNode::fromThis()
 {
     auto *node = new ExpressionNode{};
-    node->type = ExpressionNode::Type::_THIS;
+    node->type = ExpressionNode::Type::_IDENTIFIER;
+    node->identifierString = "this";
     return node;
 }
 
@@ -69,7 +72,8 @@ ExpressionNode *ExpressionNode::fromUnaryExpr(Type type, ExpressionNode *fOp)
     node->firstOperand = fOp;
     return node;
 }
-ExpressionNode *ExpressionNode::fromBinaryExpr(Type type, ExpressionNode *fOp, ExpressionNode *sOp)
+ExpressionNode *ExpressionNode::fromBinaryExpr(Type type, ExpressionNode *fOp,
+                                               ExpressionNode *sOp)
 {
     auto *node = new ExpressionNode{};
     node->type = type;
@@ -77,7 +81,8 @@ ExpressionNode *ExpressionNode::fromBinaryExpr(Type type, ExpressionNode *fOp, E
     node->secondOperand = sOp;
     return node;
 }
-ExpressionNode *ExpressionNode::fromTernaryExpr(ExpressionNode *fOp, ExpressionNode *sOp,
+ExpressionNode *ExpressionNode::fromTernaryExpr(ExpressionNode *fOp,
+                                                ExpressionNode *sOp,
                                                 ExpressionNode *tOp)
 {
     auto *node = new ExpressionNode{};
@@ -88,7 +93,8 @@ ExpressionNode *ExpressionNode::fromTernaryExpr(ExpressionNode *fOp, ExpressionN
     return node;
 }
 
-ExpressionNode *ExpressionNode::fromArrayAccessExpr(ExpressionNode *arr, ExpressionNode *index)
+ExpressionNode *ExpressionNode::fromArrayAccessExpr(ExpressionNode *arr,
+                                                    ExpressionNode *index)
 {
     auto *node = new ExpressionNode{};
     node->type = ExpressionNode::Type::_ARRAY_ACCESS;
@@ -110,7 +116,8 @@ ExpressionNode *ExpressionNode::fromArrayLiteral(ExpressionListNode *params)
 
     // removing last empty array element
     if (!params->GetSeq().empty() &&
-        params->GetSeq().back()->type == ExpressionNode::Type::_ARRAY_EMPTY_ELEMENT)
+        params->GetSeq().back()->type ==
+            ExpressionNode::Type::_ARRAY_EMPTY_ELEMENT)
     {
         auto &seq = params->GetSeq();
         delete seq.back();
@@ -137,7 +144,8 @@ ExpressionNode *ExpressionNode::fromSuperCall(ExpressionListNode *params)
     node->params = params;
     return node;
 }
-ExpressionNode *ExpressionNode::fromFieldAccess(ExpressionNode *obj, const std::string name)
+ExpressionNode *ExpressionNode::fromFieldAccess(ExpressionNode *obj,
+                                                const std::string name)
 {
     auto *node = new ExpressionNode{};
     node->type = ExpressionNode::Type::_FIELD_ACCESS;
@@ -145,7 +153,8 @@ ExpressionNode *ExpressionNode::fromFieldAccess(ExpressionNode *obj, const std::
     node->identifierString = name;
     return node;
 }
-ExpressionNode *ExpressionNode::fromMethodCall(ExpressionNode *obj, const std::string name,
+ExpressionNode *ExpressionNode::fromMethodCall(ExpressionNode *obj,
+                                               const std::string name,
                                                ExpressionListNode *params)
 {
     auto *node = new ExpressionNode{};
@@ -156,7 +165,8 @@ ExpressionNode *ExpressionNode::fromMethodCall(ExpressionNode *obj, const std::s
     return node;
 }
 
-ExpressionNode *ExpressionNode::fromNew(const std::string name, ExpressionListNode *params)
+ExpressionNode *ExpressionNode::fromNew(const std::string name,
+                                        ExpressionListNode *params)
 {
     auto *node = new ExpressionNode{};
     node->type = ExpressionNode::Type::_NEW;
@@ -193,4 +203,65 @@ ExpressionListNode *ExpressionListNode::fromExpression(ExpressionNode *node)
         list->add(node);
         return list;
     }
+}
+
+ExpressionNode *ExpressionNode::toASsignOnArrayElement() const
+{
+    if (type != Type::_ASSIGN || firstOperand->type != Type::_ARRAY_ACCESS)
+        return nullptr;
+
+    auto *assign = new ExpressionNode{};
+    assign->type = Type::_ASSIGN_TO_ARRAY_ELEMENT;
+
+    assign->firstOperand = firstOperand->firstOperand;
+    assign->secondOperand = firstOperand->secondOperand;
+    assign->thirdOperand = secondOperand;
+    return assign;
+}
+
+ExpressionNode *ExpressionNode::toAssignOnField() const
+{
+    if (type != Type::_ASSIGN || firstOperand->type != Type::_FIELD_ACCESS ||
+        !firstOperand->actualField)
+        return nullptr;
+
+    auto *assign = new ExpressionNode{};
+    assign->type = Type::_ASSIGN_TO_FIELD;
+
+    assign->firstOperand = firstOperand->firstOperand;
+    assign->secondOperand = secondOperand;
+
+    assign->identifierString = identifierString;
+
+    assign->actualField = firstOperand->actualField;
+
+    return assign;
+}
+
+void ExpressionNode::applyToAllChildren(
+    const std::function<ExpressionNode *(ExpressionNode *)> &mapFunction)
+{
+    if (firstOperand)
+        firstOperand = mapFunction(firstOperand);
+    if (secondOperand)
+        secondOperand = mapFunction(secondOperand);
+    if (thirdOperand)
+        thirdOperand = mapFunction(thirdOperand);
+
+    if (params)
+        for (auto &expr : params->GetSeq()) expr = mapFunction(expr);
+}
+
+void ExpressionNode::callForAllChildren(
+    const std::function<void(ExpressionNode *)> &function) const
+{
+    if (firstOperand)
+        function(firstOperand);
+    if (secondOperand)
+        function(secondOperand);
+    if (thirdOperand)
+        function(thirdOperand);
+
+    if (params)
+        for (auto &expr : params->GetSeq()) function(expr);
 }

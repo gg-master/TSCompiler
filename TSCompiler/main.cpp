@@ -63,12 +63,12 @@ int main(const int argc, char **argv)
     std::cout << "Building syntax tree" << std::endl;
     yyparse();
 
-    if (!std::filesystem::exists(dotExecPath))
+    /*if (!std::filesystem::exists(dotExecPath))
     {
         std::cerr << "Error: dot executable not found at " << dotExecPath
                   << std::endl;
         return 1;
-    }
+    }*/
     MakeTreeImage(dotExecPath, "TreeBeforeSemantic.dot");
 
     std::string fileName = GetFilename(filePath);
@@ -78,12 +78,13 @@ int main(const int argc, char **argv)
 
     if (!semantic.errors.empty())
     {
-        std::cout << std::endl << ">>> Semantic errors:" << std::endl;
+        std::cout << std::endl << "------ Semantic errors ------" << std::endl;
+        int errorNumber = 1;
         for (auto const &error : semantic.errors)
         {
-            std::cout << error << std::endl;
+            std::cout << "> " << errorNumber++ << ": " << error << std::endl;
         }
-        std::cout << "<<<" << std::endl;
+        std::cout << "------------ end ------------\n" << std::endl;
     }
 
     MakeTreeImage(dotExecPath, "TreeAfterSemantic.dot");
