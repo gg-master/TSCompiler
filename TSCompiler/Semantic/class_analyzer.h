@@ -8,6 +8,7 @@ struct ClassAnalyzer
 {
     TSScriptNode *root;
 
+    ClassElementNode *currentField = nullptr;
     ClassElementNode *currentMethod = nullptr;
     ClassDeclarationNode *currentClass = nullptr;
 
@@ -42,19 +43,21 @@ struct ClassAnalyzer
     void analyzeClass(ClassDeclarationNode *node);
 
     void analyzeClassConstructor();
+    void analyzeClassFields();
+    void analyzeClassMethod(ClassElementNode *node);
 
-    void analyzeStmt(StatementNode *node);
+    void analyzeStmt(StatementNode *node, StatementListNode *newSeq = nullptr);
+
+    StatementNode *analyzeVarDeclaration(VarDeclarationNode *node = nullptr);
 
     ExpressionNode *analyzeExpr(ExpressionNode *node);
 
+    void analyzeSuperCall(ExpressionNode *node);
     void analyzeFuncCall(ExpressionNode *node);
     void analyzeMethodCall(ExpressionNode *node);
     void analyzeNewCall(ExpressionNode *node);
 
     void analyzeRequiredParam(RequiredParameterNode *param);
-
-    void analyzeClassProperty(ClassElementNode *node,
-                              bool checkConstructorInit);
 
     TypeNode *calculateTypeForExpr(ExpressionNode *node);
 
@@ -64,4 +67,6 @@ struct ClassAnalyzer
 
     void validateTypename(JvmDataType *jvmDataType);
     ClassDeclarationNode *findClass(JvmDataType *jvmDataType) const;
+
+    void moveFunctionScopedVarsOnTop();
 };

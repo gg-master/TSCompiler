@@ -65,6 +65,9 @@
     <ClCompile Include="Semantic\class_analyzer.cpp">
       <Filter>Исходные файлы\Semantic</Filter>
     </ClCompile>
+    <ClCompile Include="Tree\class.cpp">
+      <Filter>Исходные файлы\Tree</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Bison Include="parser.y">

@@ -46,6 +46,7 @@ struct VarDeclarationNode final : Node
     ExpressionNode *initExpression;
 
     int scopingLevel = -1;
+    VarDeclarationNode *baseNode;
 
     VarDeclarationNode(const std::string varName, TypeNode *varType,
                        ExpressionNode *initExpr)

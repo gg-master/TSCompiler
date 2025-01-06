@@ -30,10 +30,14 @@ struct ClassElementNode final : Node
 
     // semantic step belows
 
+    ExpressionNode *initInConstructor{};
+
     ClassDeclarationNode *elemClass{};
     VarDeclarationNode *baseNode{};  // using for variables in main class
 
     std::vector<VarDeclarationNode *> variables{};
+
+    bool isMainMethod{0};
 
     ClassElementNode(RequiredParameterListNode *params, StatementListNode *body)
         : type{Type::_CONSTRUCTOR}, params{params}, methodBody{body}
@@ -81,16 +85,7 @@ struct ClassElementNode final : Node
         }
     }
 
-    VarDeclarationNode *findVariableByName(std::string name, int scopingLevel)
-    {
-        for (auto *variable : variables)
-        {
-            if (variable->identifierStr == name &&
-                variable->scopingLevel <= scopingLevel)
-                return variable;
-        }
-        return nullptr;
-    }
+    VarDeclarationNode* findVariableByName(std::string name, int scopingLevel);
 };
 
 struct ClassElementListNode final
@@ -158,6 +153,18 @@ struct ClassElementListNode final
         }
         return nullptr;
     }
+
+    ClassElementNode *findMethodByName(std::string name) const
+    {
+        for (auto *method : GetMethods())
+        {
+            if (method->name == name)
+            {
+                return method;
+            }
+        }
+        return nullptr;
+    }
 };
 
 struct ClassDeclarationNode final : Node
@@ -166,6 +173,11 @@ struct ClassDeclarationNode final : Node
     std::string heritageName{};
 
     ClassElementListNode *body;
+
+    // if in constructor last stmt is return. then new class exported via that
+    ClassDeclarationNode *returnedClassFromConstructor;
+
+    ClassElementNode *thisProp;
 
     ClassDeclarationNode(const std::string className,
                          ClassElementListNode *const body)

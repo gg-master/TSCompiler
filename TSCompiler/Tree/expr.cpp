@@ -1,6 +1,7 @@
 #include "expr.h"
 
 #include "../Semantic/jvm_class.h"
+#include "func.h"
 
 ExpressionNode *ExpressionNode::fromId(const std::string value)
 {
@@ -14,6 +15,13 @@ ExpressionNode *ExpressionNode::fromThis()
     auto *node = new ExpressionNode{};
     node->type = ExpressionNode::Type::_IDENTIFIER;
     node->identifierString = "this";
+    return node;
+}
+ExpressionNode *ExpressionNode::fromSuper()
+{
+    auto *node = new ExpressionNode{};
+    node->type = ExpressionNode::Type::_IDENTIFIER;
+    node->identifierString = "super";
     return node;
 }
 
@@ -203,6 +211,17 @@ ExpressionListNode *ExpressionListNode::fromExpression(ExpressionNode *node)
         list->add(node);
         return list;
     }
+}
+
+ExpressionListNode *ExpressionListNode::fromRequiredParams(
+    RequiredParameterListNode *node)
+{
+    auto list = ExpressionListNode::makeEmpty();
+    for (RequiredParameterNode *param : node->GetSeq())
+    {
+        list->add(ExpressionNode::fromId(param->paramName));
+    }
+    return list;
 }
 
 ExpressionNode *ExpressionNode::toASsignOnArrayElement() const

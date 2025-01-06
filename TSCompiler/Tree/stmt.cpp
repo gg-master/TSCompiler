@@ -23,6 +23,16 @@ StatementNode *StatementNode::fromVarStmt(VarModifierType modifierType,
     node->declList->setModifierType(modifierType);
     return node;
 }
+
+StatementNode *StatementNode::fromVarDecl(VarDeclarationNode *varDecl)
+{
+    auto *node = new StatementNode{};
+    node->type = StatementNode::Type::_VAR;
+    node->modifierType = varDecl->modifierType;
+    node->declList = new VarDeclarationListNode(varDecl);
+    return node;
+}
+
 StatementNode *StatementNode::fromReturnStmt(ExpressionNode *node)
 {
     auto *stmt = new StatementNode{};

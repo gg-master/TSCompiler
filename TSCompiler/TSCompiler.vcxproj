@@ -155,6 +155,7 @@
     <ClCompile Include="parser.tab.cpp" />
     <ClCompile Include="Semantic\class_analyzer.cpp" />
     <ClCompile Include="Semantic\semantic.cpp" />
+    <ClCompile Include="Tree\class.cpp" />
     <ClCompile Include="Tree\expr.cpp" />
     <ClCompile Include="Tree\parsing_tree.cpp" />
     <ClCompile Include="Tree\stmt.cpp" />

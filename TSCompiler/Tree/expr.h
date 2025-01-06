@@ -91,6 +91,8 @@ struct ExpressionNode final : Node
 
     TypeNode *exprType{};
 
+    bool isLeftHand{0};
+
     ClassElementNode *actualMethodCall{};
     ClassElementNode *actualField{};
     VarDeclarationNode *actualVar{};
@@ -99,6 +101,7 @@ struct ExpressionNode final : Node
 
     static ExpressionNode *fromId(const std::string value);
     static ExpressionNode *fromThis();
+    static ExpressionNode *fromSuper();
 
     static ExpressionNode *fromIntLit(int value);
     static ExpressionNode *fromFloatLit(double value);
@@ -324,6 +327,7 @@ struct ExpressionNode final : Node
     }
 };
 
+struct RequiredParameterListNode;
 struct ExpressionListNode final : NodeList<ExpressionListNode, ExpressionNode>
 {
     using NodeList<ExpressionListNode, ExpressionNode>::NodeList;
@@ -334,11 +338,6 @@ struct ExpressionListNode final : NodeList<ExpressionListNode, ExpressionNode>
     }
 
     static ExpressionListNode *fromExpression(ExpressionNode *node);
-
-    void merge(ExpressionListNode *node)
-    {
-        auto &leftSeq = this->GetSeq();
-        auto &rightSeq = node->GetSeq();
-        leftSeq.insert(leftSeq.end(), rightSeq.begin(), rightSeq.end());
-    }
+    static ExpressionListNode *fromRequiredParams(
+        RequiredParameterListNode *node);
 };

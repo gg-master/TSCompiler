@@ -392,6 +392,8 @@ singleExpression
     | '(' singleExpression ')' 
         { Print("- R: '(' singleExpression ')' -> singleExpression"); $$ = $2; }
 
+    | SUPER
+        { Print("- R: SUPER -> singleExpression"); $$ = ExpressionNode::fromSuper(); }
     | SUPER '(' ')'
         { Print("- R: SUPER '(' ')' -> singleExpression"); $$ = ExpressionNode::fromSuperCall(ExpressionListNode::makeEmpty()); }
     | SUPER '(' singleExpression ')'

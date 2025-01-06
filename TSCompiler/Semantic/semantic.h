@@ -20,13 +20,12 @@ struct Semantic
         if (!isOk)
             return;
 
+        ClassAnalyzer analyzer(root);
+
         for (auto *class_ : root->classes)
         {
-            ClassAnalyzer analyzer(root);
             analyzer.attributeClass(class_);
         }
-
-        ClassAnalyzer analyzer(root);
         for (auto *class_ : root->classes)
         {
             analyzer.analyzeClass(class_);
@@ -103,9 +102,12 @@ struct Semantic
             {
                 auto *existProp =
                     body->findPropertyByName(varStmt->identifierStr);
+
                 if (existProp)
                 {
-                    if (*existProp->propertyAndReturnType != *varStmt->varType)
+                    if (*existProp->propertyAndReturnType !=
+                            *varStmt->varType &&
+                        !varStmt->initExpression && !existProp->expression)
                     {
                         errors.insert(
                             "Subsequent variable declarations must have the "
@@ -132,10 +134,11 @@ struct Semantic
                 {
                     if (body->findPropertyByName(varDecl->identifierStr))
                     {
-                        errors.insert("Duplicate identifier '" +
-                                      varDecl->identifierStr + "'");
+                        // errors.insert("Duplicate identifier '" +
+                        //               varDecl->identifierStr + "'");
                         continue;
                     }
+
                     auto *prop = new ClassElementNode(
                         varDecl->identifierStr, varDecl->varType, nullptr);
                     prop->baseNode = varDecl;
@@ -150,6 +153,7 @@ struct Semantic
             mainBody);
         mainMethod->propertyAndReturnType =
             new TypeNode(new JvmDataType(JvmDataType::Type::Void));
+        mainMethod->isMainMethod = true;
 
         body->add(mainMethod);
 

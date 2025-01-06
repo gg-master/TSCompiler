@@ -22,9 +22,7 @@ struct StatementNode final : Node
     struct ExpressionNode *expression{};
 
     // varStmt, iterations
-    enum class VarModifierType modifierType
-    {
-    };
+    VarModifierType modifierType{};
     struct VarDeclarationListNode *declList{};
 
     // blockStmt
@@ -43,8 +41,11 @@ struct StatementNode final : Node
 
     static StatementNode *fromEmptyStmt();
     static StatementNode *fromExprStmt(ExpressionNode *node);
+
     static StatementNode *fromVarStmt(VarModifierType modifierType,
                                       VarDeclarationListNode *declList);
+    static StatementNode *fromVarDecl(VarDeclarationNode *varDecl);
+
     static StatementNode *fromReturnStmt(ExpressionNode *node);
     static StatementNode *fromBlockStmt(StatementListNode *stmtList);
     static StatementNode *fromIfElseStmt(ExpressionNode *condition,

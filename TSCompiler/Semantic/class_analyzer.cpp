@@ -7,6 +7,9 @@ void ClassAnalyzer::attributeClass(ClassDeclarationNode *node)
     if (currentClass->className.starts_with("JavaRTL"))
         return;
 
+    currentClass->thisProp = new ClassElementNode(
+        "this", new TypeNode(currentClass->toDataType()), nullptr);
+
     resolveClassConstructor();
     attributeMemberSignatures();
 }
@@ -16,25 +19,79 @@ void ClassAnalyzer::resolveClassConstructor()
     std::vector<ClassElementNode *> constructors =
         currentClass->body->GetConstructors();
 
-    if (constructors.empty())
+    if (constructors.size() > 1)
     {
-        auto *constructor =
+        errors.push_back(
+            "Multiple constructor implementations are not allowed.");
+        return;
+    }
+
+    if (!constructors.empty())
+        return;
+
+    if (currentClass->heritageName.empty())
+    {
+        auto constructor =
             new ClassElementNode{RequiredParameterListNode::makeEmpty(),
                                  StatementListNode::makeEmpty()};
         currentClass->body->add(constructor);
+        return;
     }
 
-    if (constructors.size() > 1)
+    // Trying to copy parent class constructor
+    auto foundParent = root->findClass(currentClass->heritageName);
+    if (!foundParent)
     {
-        errors.emplace_back(
-            "Multiple constructor implementations are not allowed.");
+        errors.push_back("Cannot find name '" + currentClass->heritageName +
+                         "'.");
+        return;
     }
 
-    // TODO add inheritance support (here need to resolve default constructor)
-    if (!currentClass->heritageName.empty())
+    auto parentClass =
+        root->findClass(currentClass->heritageName, currentClass);
+    if (!parentClass)
     {
-        errors.emplace_back("Inheritance is not supported in this version.");
+        errors.push_back("Class '" + currentClass->heritageName +
+                         "' used before its declaration.");
+        return;
     }
+
+    // Recursive search for a constructor in parent classes
+    ClassElementNode *constructor = nullptr;
+    while (parentClass)
+    {
+        auto constrs = parentClass->body->GetConstructors();
+        if (!constrs.empty())
+        {
+            constructor = new ClassElementNode(constrs[0]->params,
+                                               StatementListNode::makeEmpty());
+            break;
+        }
+
+        if (!parentClass->heritageName.empty())
+        {
+            parentClass = root->findClass(parentClass->heritageName);
+        }
+        else
+        {
+            parentClass = nullptr;
+        }
+    }
+
+    // If no constructor was found, create an empty one
+    if (!constructor)
+    {
+        constructor =
+            new ClassElementNode{RequiredParameterListNode::makeEmpty(),
+                                 StatementListNode::makeEmpty()};
+    }
+    constructor->methodBody->add(
+        StatementNode::fromExprStmt(ExpressionNode::fromSuperCall(
+            ExpressionListNode::fromRequiredParams(constructor->params))));
+
+    currentClass->body->add(constructor);
+
+    errors.push_back("Inheritance is not supported in this version.");
 }
 
 void ClassAnalyzer::attributeMemberSignatures()
@@ -82,7 +139,12 @@ void ClassAnalyzer::analyzeRequiredParam(RequiredParameterNode *param)
         errors.push_back("Duplicate identifier '" + param->paramName + "'");
         return;
     }
-
+    if (currentMethod->type == ClassElementNode::Type::_CONSTRUCTOR &&
+        param->paramName == "this")
+    {
+        errors.push_back("A constructor cannot have a 'this' parameter.");
+        return;
+    }
     auto *varDecl =
         new VarDeclarationNode(param->paramName, param->paramType, nullptr);
     varDecl->scopingLevel = currentScopingLevel;
@@ -97,10 +159,21 @@ void ClassAnalyzer::attributeClassProperty(ClassElementNode *node)
         toJvmDataType(node->propertyAndReturnType);
     validateTypename(node->propertyAndReturnType->jvmType);
 
-    auto *found = currentClass->body->findPropertyByName(node->name);
-    if (found && found != node)
+    const auto &allProps = currentClass->body->GetProperties();
+    const auto samePropsCount = std::count_if(
+        allProps.begin(), allProps.end(), [&](ClassElementNode *otherProp)
+        { return node->name == otherProp->name; });
+
+    if (samePropsCount > 1)
     {
         errors.push_back("Duplicate identifier '" + node->name + "'");
+        return;
+    }
+
+    if (node->name == "this")
+    {
+        errors.push_back("Cannot create 'this' property of class '" +
+                         currentClass->className + "' in this version.");
         return;
     }
 }
@@ -113,41 +186,54 @@ void ClassAnalyzer::analyzeClass(ClassDeclarationNode *node)
         return;
 
     analyzeClassConstructor();
+    analyzeClassFields();
+
+    for (auto *method : currentClass->body->GetMethods())
+    {
+        analyzeClassMethod(method);
+    }
 }
 
 void ClassAnalyzer::analyzeClassConstructor()
 {
-    ClassElementNode *constructor = currentClass->body->GetConstructors()[0];
+    auto constructors = currentClass->body->GetConstructors();
+    if (constructors.empty())
+        return;
 
-    // TODO add constructor checks for super call
+    ClassElementNode *constructor = constructors[0];
+
     if (!currentClass->heritageName.empty())
     {
         auto const &body = constructor->methodBody->GetSeq();
-        auto const superCallStmt = std::find_if(
-            body.begin(), body.end(),
-            [&](StatementNode *stmt)
-            {
-                return stmt->type == StatementNode::Type::_EXPRESSION &&
-                       stmt->expression->type ==
-                           ExpressionNode::Type::_SUPER_CALL;
-            });
+        int superCount = 0;
+        bool superAtBeginning = false;
 
-        if (superCallStmt == body.end())
+        for (size_t i = 0; i < body.size(); ++i)
+        {
+            if (body[i]->type == StatementNode::Type::_EXPRESSION &&
+                body[i]->expression->type == ExpressionNode::Type::_SUPER_CALL)
+            {
+                superCount++;
+                if (i == 0)
+                    superAtBeginning = true;
+            }
+        }
+        if (superCount == 0)
         {
             errors.push_back(
                 "Constructors for derived classes must contain a 'super' "
                 "call.");
         }
-        else if (superCallStmt != body.begin())
+        else if (superCount > 1)
+        {
+            errors.push_back(
+                "Multiple super call is not supported in this version.");
+        }
+        else if (!superAtBeginning)
         {
             errors.push_back(
                 "A 'super' call must be the first statement in the "
-                "constructor");
-        }
-        else
-        {
-            errors.push_back(
-                "A 'super' call is not supported in this version.");
+                "constructor.");
         }
     }
 
@@ -156,24 +242,14 @@ void ClassAnalyzer::analyzeClassConstructor()
 
     currentScopingLevel = 1;
 
-    auto *thisVar = new VarDeclarationNode(
-        "this", new TypeNode(currentClass->toDataType()), nullptr);
-    currentMethod->variables.push_back(thisVar);
-
-    // move function scoped variables ("var") on top of the function
-    for (auto *stmt : currentMethod->methodBody->GetSeq())
+    if (auto parent = root->findClass(currentClass->heritageName); parent)
     {
-        for (auto *existVarDecl : stmt->getAllFunctionScopedVars())
-        {
-            existVarDecl->scopingLevel = currentScopingLevel;
-
-            auto *varDecl = new VarDeclarationNode(
-                existVarDecl->identifierStr, existVarDecl->varType, nullptr);
-
-            varDecl->scopingLevel = currentScopingLevel;
-            currentMethod->variables.push_back(varDecl);
-        }
+        auto *superVar = new VarDeclarationNode(
+            "super", new TypeNode(parent->toDataType()), nullptr);
+        currentMethod->variables.push_back(superVar);
     }
+
+    moveFunctionScopedVarsOnTop();
 
     incrementScopingLevel();
 
@@ -183,11 +259,13 @@ void ClassAnalyzer::analyzeClassConstructor()
     }
     decrementScopingLevel();
 
+    // move to return stmt
     if (!currentMethod->methodBody->isEmpty())
     {
         auto *lastStmt = currentMethod->methodBody->GetSeq().back();
         if (lastStmt->type == StatementNode::Type::_RETURN &&
-            *lastStmt->expression->exprType != *thisVar->varType)
+            *lastStmt->expression->exprType !=
+                *currentClass->thisProp->propertyAndReturnType)
         {
             errors.push_back(
                 "Return type of constructor signature must be assignable to "
@@ -198,21 +276,227 @@ void ClassAnalyzer::analyzeClassConstructor()
     currentMethod = nullptr;
 }
 
-void ClassAnalyzer::analyzeStmt(StatementNode *node)
+void ClassAnalyzer::analyzeClassFields()
 {
-    if (!node)
-        return;
+    for (auto *field : currentClass->body->GetProperties())
+    {
+        currentField = field;
 
-    node->expression = analyzeExpr(node->expression);
+        if (!isUnknown(field->propertyAndReturnType) && !field->expression &&
+            !field->initInConstructor && currentClass != root->mainClass)
+        {
+            errors.push_back("Property '" + field->name +
+                             "' has no initializer and is not definitely "
+                             "assigned in the constructor.");
+            continue;
+        }
+        field->expression = analyzeExpr(field->expression);
+    }
+    currentField = nullptr;
 }
 
-void ClassAnalyzer::analyzeClassProperty(ClassElementNode *node,
-                                         bool checkConstructorInit)
+void ClassAnalyzer::analyzeClassMethod(ClassElementNode *node)
+{
+    node->elemClass = currentClass;
+    currentMethod = node;
+
+    currentScopingLevel = 1;
+
+    if (auto parent = root->findClass(currentClass->heritageName); parent)
+    {
+        auto *superVar = new VarDeclarationNode(
+            "super", new TypeNode(parent->toDataType()), nullptr);
+        currentMethod->variables.push_back(superVar);
+    }
+
+    const auto &allMethods = currentClass->body->GetMethods();
+    const auto sameMethodsCount = std::count_if(
+        allMethods.begin(), allMethods.end(), [&](ClassElementNode *otherMethod)
+        { return node->name == otherMethod->name; });
+
+    if (sameMethodsCount > 1)
+    {
+        errors.push_back("Duplicate function '" + node->name +
+                         "'implementation.");
+    }
+
+    if (!currentMethod->name.starts_with(root->mainClass->className))
+        moveFunctionScopedVarsOnTop();
+
+    // todo add last stmt return of undefined
+    if (!isUnknown(currentMethod->propertyAndReturnType) &&
+        currentMethod->methodBody->isEmpty())
+    {
+        errors.push_back(
+            "A function whose declared type is neither 'undefined', 'void', "
+            "nor 'any' must return a value.");
+        currentMethod = nullptr;
+        return;
+    }
+
+    incrementScopingLevel();
+
+    auto newMethodBody = new StatementListNode();
+    for (auto *stmt : currentMethod->methodBody->GetSeq())
+    {
+        analyzeStmt(stmt, newMethodBody);
+    }
+    currentMethod->methodBody = newMethodBody;
+
+    decrementScopingLevel();
+
+    if (currentClass == root->mainClass)
+    {
+        currentMethod = nullptr;
+        return;
+    }
+
+    if (!currentMethod->methodBody->isEmpty())
+    {
+        auto *lastStmt = currentMethod->methodBody->GetSeq().back();
+        if (lastStmt->type != StatementNode::Type::_RETURN &&
+            !isUnknown(currentMethod->propertyAndReturnType))
+        {
+            errors.push_back("Last statement in method " + currentMethod->name +
+                             " must be return!");
+        }
+        else if (lastStmt->type != StatementNode::Type::_RETURN)
+        {
+            // TODO add last statement return of undefined
+            // currentMethod
+        }
+    }
+
+    currentMethod = nullptr;
+}
+
+void ClassAnalyzer::analyzeStmt(StatementNode *node, StatementListNode *newSeq)
 {
     if (!node)
         return;
 
-    node->expression = analyzeExpr(node->expression);
+    if (!newSeq)
+        newSeq = new StatementListNode();
+
+    if (node->type == StatementNode::Type::_VAR)
+    {
+        auto newList = new VarDeclarationListNode();
+
+        for (auto varDecl : node->declList->GetSeq())
+        {
+            auto newNode = analyzeVarDeclaration(varDecl);
+            if (newNode)
+                newSeq->add(newNode);
+            else
+                newList->add(varDecl);
+        }
+        if (!newList->isEmpty())
+            newSeq->add(
+                StatementNode::fromVarStmt(node->modifierType, newList));
+    }
+
+    if (node->type == StatementNode::Type::_EXPRESSION)
+    {
+        node->expression = analyzeExpr(node->expression);
+        newSeq->add(node);
+    }
+}
+
+StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
+{
+    if (!node)
+        return nullptr;
+
+    auto field = root->mainClass->body->findPropertyByName(node->identifierStr);
+    if (currentMethod->isMainMethod && field)
+    {
+        currentField = field;
+    }
+
+    node->initExpression = analyzeExpr(node->initExpression);
+
+    node->varType->jvmType = toJvmDataType(node->varType);
+
+    if (node->initExpression &&
+        *node->varType != *node->initExpression->exprType)
+    {
+        if (*node->varType->jvmType != RTL_ANY_TYPE)
+        {
+            errors.push_back("Type '" +
+                             node->initExpression->exprType->toString() +
+                             "' is not assignable to type '" +
+                             node->varType->toString() + "'.");
+        }
+        else
+        {
+            node->varType = node->initExpression->exprType;
+        }
+    }
+
+    validateTypename(node->varType->jvmType);
+
+    if (!currentMethod)
+        return nullptr;
+
+    if (isFunctionScopeVar(node->modifierType))
+    {
+        auto found = currentMethod->findVariableByName(node->identifierStr,
+                                                       currentScopingLevel);
+
+        if (found)
+        {
+            if (isBlockScopeVar(found->modifierType))
+            {
+                errors.push_back("Cannot redeclare block-scoped variable '" +
+                                 node->identifierStr + "'.");
+                return nullptr;
+            }
+
+            if (*found->varType != *node->varType &&
+                *found->varType->jvmType != RTL_ANY_TYPE)
+            {
+                errors.push_back(
+                    "Subsequent variable declarations must have the "
+                    "same type. Variable '" +
+                    node->identifierStr + "' must be of type '" +
+                    found->varType->toString() + "', but here has type '" +
+                    node->varType->toString() + "'");
+                return nullptr;
+            }
+            auto leftExpr = ExpressionNode::fromId(node->identifierStr);
+            auto rightExpr = ExpressionNode::fromId(node->identifierStr);
+            if (node->initExpression)
+            {
+                rightExpr = node->initExpression;
+            }
+
+            auto assignReplaceNode = ExpressionNode::fromBinaryExpr(
+                ExpressionNode::Type::_ASSIGN, leftExpr, rightExpr);
+
+            return StatementNode::fromExprStmt(analyzeExpr(assignReplaceNode));
+        }
+    }
+    else
+    {
+        auto found = currentMethod->findVariableByName(node->identifierStr,
+                                                       currentScopingLevel);
+
+        if (found && found != node)
+        {
+            if (isBlockScopeVar(found->modifierType))
+            {
+                errors.push_back("Cannot redeclare block-scoped variable '" +
+                                 node->identifierStr + "'.");
+                return nullptr;
+            }
+            errors.push_back("Duplicate identifier '" + node->identifierStr +
+                             "'.");
+            return nullptr;
+        }
+    }
+    node->scopingLevel = currentScopingLevel;
+    currentMethod->variables.push_back(node);
+    return nullptr;
 }
 
 ExpressionNode *ClassAnalyzer::analyzeExpr(ExpressionNode *node)
@@ -241,6 +525,59 @@ ExpressionNode *ClassAnalyzer::analyzeExpr(ExpressionNode *node)
     calculateTypeForExpr(changed);
 
     return changed;
+}
+
+void ClassAnalyzer::analyzeSuperCall(ExpressionNode *node)
+{
+    if (!node || node->type != ExpressionNode::Type::_SUPER_CALL)
+        return;
+
+    auto const &body = currentMethod->methodBody->GetSeq();
+    auto const superCallStmt = std::find_if(
+        body.begin(), body.end(),
+        [&](StatementNode *stmt)
+        {
+            return stmt->type == StatementNode::Type::_EXPRESSION &&
+                   stmt->expression->type == ExpressionNode::Type::_SUPER_CALL;
+        });
+
+    if (superCallStmt != body.end() && currentClass->heritageName.empty())
+    {
+        errors.push_back("'super' can only be referenced in a derived class.");
+        return;
+    }
+
+    for (auto argument : node->params->GetSeq())
+        argument = analyzeExpr(argument);
+
+    node->exprType = new TypeNode(new JvmDataType(JvmDataType::Type::Void));
+
+    const auto callTypes = [node, this]()
+    {
+        auto const &arguments = node->params->GetSeq();
+        std::vector<JvmDataType> types(arguments.size());
+        std::transform(arguments.begin(), arguments.end(), types.begin(),
+                       [this](ExpressionNode *arg)
+                       {
+                           validateTypename(arg->exprType->jvmType);
+                           return *arg->exprType->jvmType;
+                       });
+        return types;
+    }();
+
+    auto const &allConstrs =
+        root->findClass(currentClass->heritageName)->body->GetConstructors();
+    const auto found = std::find_if(
+        allConstrs.begin(), allConstrs.end(), [&](ClassElementNode *func)
+        { return callTypes == func->params->getTypes(); });
+
+    if (found == allConstrs.end())
+    {
+        errors.push_back("Cannot super call of '" + currentClass->heritageName +
+                         "' with arguments of types " + toString(callTypes));
+        return;
+    }
+    node->actualMethodCall = *found;
 }
 
 void ClassAnalyzer::analyzeFuncCall(ExpressionNode *node)
@@ -298,7 +635,7 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
     analyzeExpr(node->firstOperand);
     const auto objType = calculateTypeForExpr(node->firstOperand);
 
-    auto *foundClass = findClass(node->firstOperand->exprType->jvmType);
+    auto *foundClass = findClass(objType->jvmType);
 
     if (!foundClass)
     {
@@ -322,22 +659,32 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
         return types;
     }();
 
-    auto const &allMethod = foundClass->body->GetMethods();
-    const auto foundMethod =
-        std::find_if(allMethod.begin(), allMethod.end(),
-                     [&](ClassElementNode *func) {
-                         return methodName == func->name &&
-                                callTypes == func->params->getTypes();
-                     });
-
-    if (foundMethod == allMethod.end())
+    while (foundClass)
     {
-        errors.push_back("Cannot call method with name " + methodName +
-                         " with arguments of types " + toString(callTypes));
-        return;
+        auto const &allMethod = foundClass->body->GetMethods();
+        const auto foundMethod =
+            std::find_if(allMethod.begin(), allMethod.end(),
+                         [&](ClassElementNode *func) {
+                             return methodName == func->name &&
+                                    callTypes == func->params->getTypes();
+                         });
+
+        if (foundMethod != allMethod.end())
+        {
+            node->exprType = (*foundMethod)->propertyAndReturnType;
+            node->actualMethodCall = *foundMethod;
+            return;
+        }
+
+        if (foundClass->heritageName.empty())
+        {
+            break;
+        }
+        foundClass = root->findClass(foundClass->heritageName);
     }
-    node->exprType = (*foundMethod)->propertyAndReturnType;
-    node->actualMethodCall = *foundMethod;
+    errors.push_back("Cannot call method with name " + methodName +
+                     " with arguments of types " + toString(callTypes));
+    return;
 }
 
 void ClassAnalyzer::analyzeNewCall(ExpressionNode *node)
@@ -469,7 +816,15 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
     }
     if (node->type == ExpressionNode::Type::_IDENTIFIER)
     {
-        if (currentMethod)
+        if (node->identifierString == "this")
+        {
+            type = currentClass->thisProp->propertyAndReturnType;
+            node->exprType = type;
+            node->actualField = currentClass->thisProp;
+            return type;
+        }
+
+        if (currentMethod && !currentMethod->isMainMethod)
         {
             auto *var = currentMethod->findVariableByName(
                 node->identifierString, currentScopingLevel);
@@ -482,8 +837,10 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             }
         }
 
-        auto *var =
-            root->mainClass->body->findPropertyByName(node->identifierString);
+        auto beforeNode = currentField ? currentField : nullptr;
+
+        auto *var = root->mainClass->body->findPropertyByName(
+            node->identifierString, beforeNode);
         if (var)
         {
             type = var->propertyAndReturnType;
@@ -492,7 +849,15 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             return type;
         }
 
-        errors.push_back("Cannot find name '" + node->identifierString + "'");
+        auto found =
+            root->mainClass->body->findPropertyByName(node->identifierString);
+
+        if (found)
+            errors.push_back("Variable '" + node->identifierString +
+                             "' is used before being assigned.");
+        else
+            errors.push_back("Cannot find name '" + node->identifierString +
+                             "'");
 
         type = new TypeNode(new JvmDataType());
         node->exprType = type;
@@ -503,6 +868,14 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         if (!node->actualMethodCall)
         {
             analyzeNewCall(node);
+        }
+        return node->exprType;
+    }
+    if (node->type == ExpressionNode::Type::_SUPER_CALL)
+    {
+        if (!node->actualMethodCall)
+        {
+            analyzeSuperCall(node);
         }
         return node->exprType;
     }
@@ -559,25 +932,57 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             node->exprType = type;
             return type;
         }
+
         auto *foundClass = findClass(firstOperand->jvmType);
-        if (!foundClass)
+
+        ClassElementNode *foundField;
+        while (foundClass)
         {
-            errors.push_back("No member " + node->identifierString +
-                             " in type " + firstOperand->toString());
-            node->exprType = new TypeNode(new JvmDataType());;
-            return node->exprType;
+            foundField =
+                foundClass->body->findPropertyByName(node->identifierString);
+
+            if (foundField)
+            {
+                if (node->firstOperand->identifierString == "super")
+                {
+                    errors.push_back(
+                        "Class field '" + node->identifierString +
+                        "' defined by the parent class is not "
+                        "accessible in the child class via super.");
+                }
+
+                if (!isUnknown(foundField->propertyAndReturnType) &&
+                    !foundField->expression && !foundField->initInConstructor &&
+                    !node->isLeftHand)
+                {
+                    errors.push_back("Property '" + foundField->name +
+                                     "' is used before being assigned.");
+                }
+
+                if (currentField && !currentClass->body->findPropertyByName(
+                                        node->identifierString, currentField))
+                {
+                    errors.push_back("Property '" + foundField->name +
+                                     "' is used before its initialization.");
+                }
+
+                node->actualField = foundField;
+                node->exprType = foundField->propertyAndReturnType;
+                return node->exprType;
+            }
+
+            if (foundClass->heritageName.empty())
+            {
+                break;
+            }
+
+            foundClass = root->findClass(foundClass->heritageName);
         }
-        auto foundProp =
-            foundClass->body->findPropertyByName(node->identifierString);
-        if (!foundProp)
-        {
-            errors.push_back("No member " + node->identifierString +
-                             " in type " + firstOperand->toString());
-            node->exprType = new TypeNode(new JvmDataType());;
-            return node->exprType;
-        }
-        node->actualField = foundProp;
-        node->exprType = foundProp->propertyAndReturnType;
+
+        errors.push_back("No member " + node->identifierString + " in type " +
+                         firstOperand->toString());
+
+        node->exprType = new TypeNode(new JvmDataType(RTL_ANY_TYPE));
         return node->exprType;
     }
 
@@ -585,6 +990,8 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         node->type == ExpressionNode::Type::_ASSIGN_TO_ARRAY_ELEMENT ||
         node->type == ExpressionNode::Type::_ASSIGN_TO_FIELD)
     {
+        node->firstOperand->isLeftHand = true;
+
         auto *firstOperand = calculateTypeForExpr(node->firstOperand);
         auto *secondOperand = calculateTypeForExpr(node->secondOperand);
         auto *thirdOperand = calculateTypeForExpr(node->thirdOperand);
@@ -617,6 +1024,20 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             {
                 firstOperand->jvmType = secondOperand->jvmType;
             }
+            else
+            {
+                errors.push_back("Type '" + secondOperand->toString() +
+                                 "' is not assignable to type '" +
+                                 firstOperand->toString() + "'.");
+            }
+        }
+
+        if (node->type == ExpressionNode::Type::_ASSIGN_TO_FIELD &&
+            currentMethod &&
+            currentMethod->type == ClassElementNode::Type::_CONSTRUCTOR &&
+            !isUnknown(firstOperand))
+        {
+            node->actualField->initInConstructor = node;
         }
 
         if (node->type == ExpressionNode::Type::_ASSIGN)
@@ -715,7 +1136,8 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
                 node->firstOperand->type != ExpressionNode::Type::_FIELD_ACCESS)
             {
                 errors.push_back(
-                    "The operand of an increment or decrement operator must be "
+                    "The operand of an increment or decrement operator "
+                    "must be "
                     "a variable or a property access.");
             }
         }
@@ -807,4 +1229,50 @@ ClassDeclarationNode *ClassAnalyzer::findClass(JvmDataType *jvmDataType) const
         return nullptr;
 
     return root->findClass(jvmDataType->complex);
+}
+
+void ClassAnalyzer::moveFunctionScopedVarsOnTop()
+{
+    if (!currentMethod)
+        return;
+
+    std::vector<VarDeclarationNode *> varDeclarations{};
+
+    for (auto *stmt : currentMethod->methodBody->GetSeq())
+    {
+        for (auto *existVarDecl : stmt->getAllFunctionScopedVars())
+        {
+            auto found = currentMethod->findVariableByName(
+                existVarDecl->identifierStr, currentScopingLevel);
+
+            if (found)
+            {
+                if (found->varType != existVarDecl->varType)
+                {
+                    errors.push_back(
+                        "Subsequent variable declarations must have the "
+                        "same type. Variable '" +
+                        existVarDecl->identifierStr + "' must be of type '" +
+                        found->varType->toString() + "', but here has type '" +
+                        existVarDecl->varType->toString() + "'");
+                }
+                continue;
+            }
+            // TODO change type TO RTL/Any and init with undefined;
+            auto *varDecl = new VarDeclarationNode(
+                existVarDecl->identifierStr, existVarDecl->varType, nullptr);
+
+            varDecl->modifierType = existVarDecl->modifierType;
+            varDecl->baseNode = existVarDecl;
+
+            varDeclarations.push_back(varDecl);
+        }
+    }
+
+    for (auto it = varDeclarations.rbegin(); it != varDeclarations.rend(); ++it)
+    {
+        auto stmt = StatementNode::fromVarDecl(*it);
+        currentMethod->methodBody->GetSeq().insert(
+            currentMethod->methodBody->GetSeq().begin(), stmt);
+    }
 }
