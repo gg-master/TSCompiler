@@ -1,5 +1,23 @@
 #include "semantic.h"
 
+ClassDeclarationNode *Semantic::createAnyClass()
+{
+    auto *body = ClassElementListNode::makeEmpty();
+
+    {
+        auto *clsConstructor = new ClassElementNode(
+            RequiredParameterListNode::makeEmpty(), nullptr);
+        clsConstructor->analyzeArguments();
+        body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
+    }
+
+    auto *rtlClass = new ClassDeclarationNode("JavaRTL/Any", body);
+    for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
+    return rtlClass;
+}
+
 ClassDeclarationNode *Semantic::createNumberClass()
 {
     auto *body = ClassElementListNode::makeEmpty();
@@ -12,6 +30,8 @@ ClassDeclarationNode *Semantic::createNumberClass()
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
         clsConstructor->analyzeArguments();
         body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
     }
     {
         auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::Float));
@@ -20,6 +40,8 @@ ClassDeclarationNode *Semantic::createNumberClass()
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
         clsConstructor->analyzeArguments();
         body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
     }
     {
         auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::String));
@@ -28,6 +50,8 @@ ClassDeclarationNode *Semantic::createNumberClass()
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
         clsConstructor->analyzeArguments();
         body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
     }
 
     // Methods
@@ -124,14 +148,9 @@ ClassDeclarationNode *Semantic::createNumberClass()
         method->analyzeArguments();
         body->add(method);
     }
-    {
-        auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(),
-            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
-        body->add(method);
-    }
 
     auto *rtlClass = new ClassDeclarationNode("JavaRTL/Number", body);
+    for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }
 
@@ -147,6 +166,8 @@ ClassDeclarationNode *Semantic::createBooleanClass()
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
         clsConstructor->analyzeArguments();
         body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
     }
     {
         auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::Int));
@@ -155,6 +176,8 @@ ClassDeclarationNode *Semantic::createBooleanClass()
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
         clsConstructor->analyzeArguments();
         body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
     }
 
     // Methods
@@ -201,14 +224,9 @@ ClassDeclarationNode *Semantic::createBooleanClass()
         method->analyzeArguments();
         body->add(method);
     }
-    {
-        auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(),
-            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
-        body->add(method);
-    }
 
     auto *rtlClass = new ClassDeclarationNode("JavaRTL/Boolean", body);
+    for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }
 
@@ -218,37 +236,34 @@ ClassDeclarationNode *Semantic::createStringClass()
 
     // Class constructors
     {
-        auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::String));
+        auto *type = new TypeNode(new JvmDataType(JvmDataType::Type::Int));
         auto *param = new RequiredParameterNode("value", type);
         auto *clsConstructor =
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);
         clsConstructor->analyzeArguments();
         body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
     }
-
-    // Methods
     {
-        auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(),
-            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
-        body->add(method);
+        auto *type = new TypeNode(new JvmDataType(RTL_STRING_TYPE));
+        auto *param = new RequiredParameterNode("value", type);
+        auto *clsConstructor =
+            new ClassElementNode(new RequiredParameterListNode(param), nullptr);
+        clsConstructor->analyzeArguments();
+        body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
     }
 
     auto *rtlClass = new ClassDeclarationNode("JavaRTL/String", body);
+    for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }
 
 ClassDeclarationNode *Semantic::createNullClass()
 {
     auto *body = ClassElementListNode::makeEmpty();
-
-    // Methods
-    {
-        auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(),
-            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
-        body->add(method);
-    }
 
     auto *rtlClass = new ClassDeclarationNode("JavaRTL/Null", body);
     return rtlClass;
@@ -258,15 +273,17 @@ ClassDeclarationNode *Semantic::createUndefinedClass()
 {
     auto *body = ClassElementListNode::makeEmpty();
 
-    // Methods
     {
-        auto *method = new ClassElementNode(
-            "toString", RequiredParameterListNode::makeEmpty(),
-            new TypeNode(new JvmDataType(JvmDataType::Type::String)), nullptr);
-        body->add(method);
+        auto *clsConstructor = new ClassElementNode(
+            RequiredParameterListNode::makeEmpty(), nullptr);
+        clsConstructor->analyzeArguments();
+        body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
     }
 
     auto *rtlClass = new ClassDeclarationNode("JavaRTL/Undefined", body);
+    for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }
 
@@ -274,59 +291,33 @@ ClassDeclarationNode *Semantic::createConsoleClass()
 {
     auto *body = ClassElementListNode::makeEmpty();
 
+    {
+        auto *clsConstructor = new ClassElementNode(
+            RequiredParameterListNode::makeEmpty(), nullptr);
+        clsConstructor->analyzeArguments();
+        body->add(clsConstructor);
+        clsConstructor->propertyAndReturnType =
+            new TypeNode(new JvmDataType(JvmDataType::Type::Void));
+    }
+
     // Methods
     {
-        auto *type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
+        auto *type = new TypeNode(new JvmDataType(RTL_ANY_TYPE));
         auto *param = new RequiredParameterNode("other", type);
         auto *method = new ClassElementNode(
             "log", new RequiredParameterListNode(param),
-            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(new JvmDataType(RTL_STRING_TYPE));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "log", new RequiredParameterListNode(param),
-            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "log", new RequiredParameterListNode(param),
-            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(new JvmDataType(RTL_NULL_TYPE));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "log", new RequiredParameterListNode(param),
-            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
-        method->analyzeArguments();
-        body->add(method);
-    }
-    {
-        auto *type = new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE));
-        auto *param = new RequiredParameterNode("other", type);
-        auto *method = new ClassElementNode(
-            "log", new RequiredParameterListNode(param),
-            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr);
+            new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE)), nullptr, true);
         method->analyzeArguments();
         body->add(method);
     }
     {
         auto *method = new ClassElementNode(
             "readLine", RequiredParameterListNode::makeEmpty(),
-            new TypeNode(new JvmDataType(RTL_STRING_TYPE)), nullptr);
+            new TypeNode(new JvmDataType(RTL_STRING_TYPE)), nullptr, true);
         body->add(method);
     }
 
     auto *rtlClass = new ClassDeclarationNode("JavaRTL/Console", body);
+    for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }

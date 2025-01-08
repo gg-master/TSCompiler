@@ -41,12 +41,14 @@ struct VarDeclarationNode final : Node
 {
     VarModifierType modifierType{};
 
-    std::string identifierStr;
-    TypeNode *varType;
-    ExpressionNode *initExpression;
+    std::string identifierStr{};
+    TypeNode *varType{};
+    ExpressionNode *initExpression{};
 
     int scopingLevel = -1;
-    VarDeclarationNode *baseNode;
+    VarDeclarationNode *baseNode{};
+
+    int positionInMethod{};
 
     VarDeclarationNode(const std::string varName, TypeNode *varType,
                        ExpressionNode *initExpr)

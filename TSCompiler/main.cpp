@@ -88,4 +88,6 @@ int main(const int argc, char **argv)
     }
 
     MakeTreeImage(dotExecPath, "TreeAfterSemantic.dot");
+
+    semantic.generate();
 }

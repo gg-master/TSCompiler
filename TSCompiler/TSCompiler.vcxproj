@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="parser.tab.h" />
     <ClInclude Include="Semantic\class_analyzer.h" />
+    <ClInclude Include="Semantic\commands.h" />
     <ClInclude Include="Semantic\jvm_class.h" />
     <ClInclude Include="Semantic\semantic.h" />
     <ClInclude Include="Tree\class.h" />

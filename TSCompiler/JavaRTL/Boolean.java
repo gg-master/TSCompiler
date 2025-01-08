@@ -7,15 +7,15 @@ public class Boolean extends Any {
     
     public Boolean(boolean value){
         this._value = value;
-        this._ivalue = value == true;
+        this._ivalue = value ? 1 : 0;
     }
 
     public Boolean(int value) {
-        this(value == true);
+        this(value == 1);
     }
 
     public Boolean(java.lang.String value) {
-        this(value == true)
+        this(value.isEmpty());
     }
 
     public Boolean equals(Boolean other) {
@@ -40,6 +40,6 @@ public class Boolean extends Any {
 
     @Override
     public java.lang.String toString() {
-        return this._value;
+        return java.lang.String.valueOf(this._value);
     }
 }

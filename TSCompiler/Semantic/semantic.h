@@ -59,18 +59,20 @@ struct Semantic
         if (!errors.empty())
             return false;
 
-        // root->add(createNumberClass());
-        // root->add(createBooleanClass());
-        // root->add(createStringClass());
-        // root->add(createNullClass());
-        // root->add(createUndefinedClass());
-        // root->add(createConsoleClass());
+        root->add(createAnyClass());
+        root->add(createNumberClass());
+        root->add(createBooleanClass());
+        root->add(createStringClass());
+        root->add(createNullClass());
+        root->add(createUndefinedClass());
+        root->add(createConsoleClass());
 
         this->root->mainClass = createMainClass(mainClassName);
         root->add(this->root->mainClass);
         return true;
     }
 
+    static ClassDeclarationNode *createAnyClass();
     static ClassDeclarationNode *createNumberClass();
     static ClassDeclarationNode *createBooleanClass();
     static ClassDeclarationNode *createStringClass();
@@ -80,7 +82,7 @@ struct Semantic
 
     ClassDeclarationNode *createMainClass(std::string name)
     {
-        std::string mainMethodName = name + "_main";
+        std::string mainMethodName = "main";
 
         auto *body = ClassElementListNode::makeEmpty();
 
@@ -120,8 +122,8 @@ struct Semantic
                     continue;
                 }
 
-                auto *prop = new ClassElementNode(varStmt->identifierStr,
-                                                  varStmt->varType, nullptr);
+                auto *prop = new ClassElementNode(
+                    varStmt->identifierStr, varStmt->varType, nullptr, true);
                 prop->baseNode = varStmt;
                 body->add(prop);
             }
@@ -140,7 +142,7 @@ struct Semantic
                     }
 
                     auto *prop = new ClassElementNode(
-                        varDecl->identifierStr, varDecl->varType, nullptr);
+                        varDecl->identifierStr, varDecl->varType, nullptr, true);
                     prop->baseNode = varDecl;
                     body->add(prop);
                 }
@@ -150,7 +152,7 @@ struct Semantic
 
         auto *mainMethod = new ClassElementNode(
             mainMethodName, RequiredParameterListNode::makeEmpty(), nullptr,
-            mainBody);
+            mainBody, true);
         mainMethod->propertyAndReturnType =
             new TypeNode(new JvmDataType(JvmDataType::Type::Void));
         mainMethod->isMainMethod = true;
@@ -163,5 +165,23 @@ struct Semantic
         root->statements.clear();
 
         return mainCls;
+    }
+
+    void generate() const
+    {
+        if (!errors.empty())
+            return;
+
+        ClassAnalyzer analyzer(root);
+        for (auto class_ : root->classes)
+        {
+            if (class_->className.starts_with("JavaRTL"))
+                continue;
+
+            analyzer.currentClass = class_;
+
+            analyzer.fillTables();
+            analyzer.generate();
+        }
     }
 };

@@ -25,7 +25,7 @@ struct TSScriptNode final : Node
     {
         for (auto *class_ : classes)
         {
-            if (class_->className == name)
+            if (class_->toDataType()->complex.back() == name)
             {
                 return class_;
             }

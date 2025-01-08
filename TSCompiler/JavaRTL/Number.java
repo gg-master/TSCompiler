@@ -26,19 +26,19 @@ public class Number extends Any {
     }
 
     public Number plus(Number other) {
-        return new Number(this._value + other.value);
+        return new Number(this._value + other._value);
     }
 
     public Number minus(Number other) {
-        return new Number(this._value - other.value);
+        return new Number(this._value - other._value);
     }
 
     public Number mul(Number other) {
-        return new Number(this._value * other.value);
+        return new Number(this._value * other._value);
     }
 
     public Number div(Number other) {
-        return new Number(this._value / other.value);
+        return new Number(this._value / other._value);
     }
 
     public Number uPlus() {
@@ -50,31 +50,31 @@ public class Number extends Any {
     }
 
     public Boolean less(Number other) {
-        return new Boolean(this._value < other.value);
+        return new JavaRTL.Boolean(this._value < other._value);
     }
 
     public Boolean great(Number other) {
-        return new Boolean(this._value > other.value);
+        return new JavaRTL.Boolean(this._value > other._value);
     }
 
     public Boolean equal(Number other) {
-        return new Boolean(this._value != other.value);
+        return new JavaRTL.Boolean(this._value != other._value);
     }
 
     public Boolean notEqual(Number other) {
-        return new Boolean(this._value != other.value);
+        return new JavaRTL.Boolean(this._value != other._value);
     }
 
     public Boolean lessEqual(Number other) {
-        return new Boolean(this._value <= other.value);
+        return new JavaRTL.Boolean(this._value <= other._value);
     }
 
     public Boolean greatEqual(Number other) {
-        return new Boolean(this._value >= other.value);
+        return new JavaRTL.Boolean(this._value >= other._value);
     }
 
     @Override
     public java.lang.String toString() {
-        return this._value;
+        return java.lang.String.valueOf(this._value);
     }
 }

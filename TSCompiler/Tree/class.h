@@ -37,29 +37,36 @@ struct ClassElementNode final : Node
 
     std::vector<VarDeclarationNode *> variables{};
 
-    bool isMainMethod{0};
+    bool isMainMethod = false;
+    bool isStatic = false;
 
     ClassElementNode(RequiredParameterListNode *params, StatementListNode *body)
-        : type{Type::_CONSTRUCTOR}, params{params}, methodBody{body}
+        : type{Type::_CONSTRUCTOR},
+          name{"<init>"},
+          params{params},
+          methodBody{body}
     {
     }
 
     ClassElementNode(const std::string name, TypeNode *propertyType,
-                     ExpressionNode *expression)
+                     ExpressionNode *expression, bool isStatic = false)
         : type{Type::_PROPERTY},
           name{name},
           propertyAndReturnType{propertyType},
-          expression{expression}
+          expression{expression},
+          isStatic{isStatic}
     {
     }
 
     ClassElementNode(const std::string name, RequiredParameterListNode *params,
-                     TypeNode *returnType, StatementListNode *body)
+                     TypeNode *returnType, StatementListNode *body,
+                     bool isStatic = false)
         : type{Type::_METHOD},
           name{name},
           params{params},
           propertyAndReturnType{returnType},
-          methodBody{body}
+          methodBody{body},
+          isStatic{isStatic}
     {
     }
 
@@ -68,13 +75,39 @@ struct ClassElementNode final : Node
           name{node->funcName},
           params{node->params},
           propertyAndReturnType{node->returnType},
-          methodBody{node->body}
+          methodBody{node->body},
+          isStatic{true}
     {
+    }
+
+    bool isConstructor() const
+    {
+        return type == ClassElementNode::Type::_CONSTRUCTOR;
     }
 
     std::string toString() const noexcept override
     {
         return "ClassElementNode";
+    }
+
+    std::string toDescriptor() const
+    {
+        if (type == ClassElementNode::Type::_PROPERTY)
+            return propertyAndReturnType->jvmType->toDescriptor();
+
+        std::string desc = "(";
+        for (const auto &param : params->GetSeq())
+        {
+            desc += param->paramType->jvmType->toDescriptor();
+        }
+        desc += ")";
+
+        desc += propertyAndReturnType->jvmType->toDescriptor();
+
+        /*if (type != ClassElementNode::Type::_CONSTRUCTOR)
+            desc = "V";*/
+
+        return desc;
     }
 
     void analyzeArguments()
@@ -85,7 +118,7 @@ struct ClassElementNode final : Node
         }
     }
 
-    VarDeclarationNode* findVariableByName(std::string name, int scopingLevel);
+    VarDeclarationNode *findVariableByName(std::string name, int scopingLevel);
 };
 
 struct ClassElementListNode final

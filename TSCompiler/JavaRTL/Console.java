@@ -6,33 +6,12 @@ import java.io.InputStreamReader;
 
 public class Console {
 
-    public static JavaRTL.Undefined log(Number value) {
-        System.out.println(value.toString());
-        return new Undefined();
+    public static JavaRTL.Undefined log(java.lang.String value) {
+        System.out.println(value);
+        return new JavaRTL.Undefined();
     }
 
-    public static JavaRTL.Undefined log(JavaRTL.String value) {
-        System.out.println(value.toString());
-        return new Undefined();
-    }
-
-    public static JavaRTL.Undefined log(JavaRTL.Boolean value) {
-        System.out.println(value.toString());
-        return new Undefined();
-    }
-
-    public static JavaRTL.Undefined log(JavaRTL.Null value) {
-        System.out.println(value.toString());
-        return new Undefined();
-    }
-
-    public static JavaRTL.Undefined log(JavaRTL.Undefined value) {
-        System.out.println(value.toString());
-        return new Undefined();
-    }
-
-    public static JavaRTL.Undefined log(JavaRTL.Void value) {
-        // NOTE in normal way Void must not be printable. If this code print void - smth broken
+    public static JavaRTL.Undefined log(JavaRTL.Any value) {
         System.out.println(value.toString());
         return new Undefined();
     }

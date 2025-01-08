@@ -1,5 +1,216 @@
 #include "class_analyzer.h"
 
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <set>
+
+#include "commands.h"
+using namespace std::string_literals;
+
+bool operator==(const Constant &lhs, const Constant &rhs)
+{
+    if (lhs.Type != rhs.Type)
+    {
+        return false;
+    }
+    switch (lhs.Type)
+    {
+    case Constant::TypeT::Utf8:
+        return lhs.Utf8 == rhs.Utf8;
+    case Constant::TypeT::Integer:
+        return lhs.Integer == rhs.Integer;
+    case Constant::TypeT::Float:
+        return lhs.Float == rhs.Float;
+    case Constant::TypeT::String:
+        return lhs.Utf8Id == rhs.Utf8Id;
+    case Constant::TypeT::Class:
+        return lhs.ClassNameId == rhs.ClassNameId;
+    case Constant::TypeT::NameAndType:
+        return lhs.NameId == rhs.NameId && lhs.TypeId == rhs.TypeId;
+    case Constant::TypeT::MethodRef:
+    case Constant::TypeT::FieldRef:
+        return lhs.NameAndTypeId == rhs.NameAndTypeId &&
+               lhs.ClassId == rhs.ClassId;
+    }
+    return false;
+}
+
+Constant Constant::CreateUtf8(std::string const &content)
+{
+    Constant constant;
+    constant.Type = TypeT::Utf8;
+    constant.Utf8 = content;
+    return constant;
+}
+
+Constant Constant::CreateInt(IntT i)
+{
+    Constant constant;
+    constant.Type = TypeT::Integer;
+    constant.Integer = i;
+    return constant;
+}
+
+Constant Constant::CreateFloat(FloatT float_)
+{
+    Constant constant;
+    constant.Type = TypeT::Float;
+    constant.Float = float_;
+    return constant;
+}
+
+Constant Constant::CreateString(IdT Utf8)
+{
+    Constant constant;
+    constant.Type = TypeT::String;
+    constant.Utf8Id = Utf8;
+    return constant;
+}
+
+Constant Constant::CreateNaT(IdT nameId, IdT typeId)
+{
+    Constant constant;
+    constant.Type = TypeT::NameAndType;
+    constant.NameId = nameId;
+    constant.TypeId = typeId;
+    return constant;
+}
+
+Constant Constant::CreateClass(IdT classNameId)
+{
+    Constant constant;
+    constant.Type = TypeT::Class;
+    constant.ClassNameId = classNameId;
+    return constant;
+}
+
+Constant Constant::CreateFieldRef(IdT natId, IdT classId)
+{
+    Constant constant;
+    constant.Type = TypeT::FieldRef;
+    constant.NameAndTypeId = natId;
+    constant.ClassId = classId;
+    return constant;
+}
+
+Constant Constant::CreateMethodRef(IdT natId, IdT classId)
+{
+    Constant constant;
+    constant.Type = TypeT::MethodRef;
+    constant.NameAndTypeId = natId;
+    constant.ClassId = classId;
+    return constant;
+}
+
+IdT ConstantTable::FindUtf8(std::string utf8)
+{
+    const auto constant = Constant::CreateUtf8(std::string{utf8});
+    const auto foundIter =
+        std::find(Constants.begin(), Constants.end(), constant);
+    if (foundIter == Constants.end())
+    {
+        Constants.push_back(constant);
+        return Constants.end() - Constants.begin();
+    }
+    return foundIter - Constants.begin() + 1;
+}
+
+IdT ConstantTable::FindString(std::string str)
+{
+    const auto constant = Constant::CreateString(FindUtf8(str));
+    const auto foundIter =
+        std::find(Constants.begin(), Constants.end(), constant);
+    if (foundIter == Constants.end())
+    {
+        Constants.push_back(constant);
+        return Constants.end() - Constants.begin();
+    }
+    return foundIter - Constants.begin() + 1;
+}
+
+IdT ConstantTable::FindInt(IntT i)
+{
+    const auto constant = Constant::CreateInt(i);
+    const auto foundIter =
+        std::find(Constants.begin(), Constants.end(), constant);
+    if (foundIter == Constants.end())
+    {
+        Constants.push_back(constant);
+        return Constants.end() - Constants.begin();
+    }
+    return foundIter - Constants.begin() + 1;
+}
+
+IdT ConstantTable::FindFloat(FloatT i)
+{
+    const auto constant = Constant::CreateFloat(i);
+    const auto foundIter =
+        std::find(Constants.begin(), Constants.end(), constant);
+    if (foundIter == Constants.end())
+    {
+        Constants.push_back(constant);
+        return Constants.end() - Constants.begin();
+    }
+    return foundIter - Constants.begin() + 1;
+}
+
+IdT ConstantTable::FindClass(std::string className)
+{
+    const auto constant = Constant::CreateClass(FindUtf8(className));
+    const auto foundIter =
+        std::find(Constants.begin(), Constants.end(), constant);
+    if (foundIter == Constants.end())
+    {
+        Constants.push_back(constant);
+        return Constants.end() - Constants.begin();
+    }
+    return foundIter - Constants.begin() + 1;
+}
+
+IdT ConstantTable::FindNaT(std::string name, std::string type)
+{
+    const auto constant = Constant::CreateNaT(FindUtf8(name), FindUtf8(type));
+    const auto foundIter =
+        std::find(Constants.begin(), Constants.end(), constant);
+    if (foundIter == Constants.end())
+    {
+        Constants.push_back(constant);
+        return Constants.end() - Constants.begin();
+    }
+    return foundIter - Constants.begin() + 1;
+}
+
+IdT ConstantTable::FindFieldRef(std::string className, std::string name,
+                                std::string type)
+{
+    const auto constant =
+        Constant::CreateFieldRef(FindNaT(name, type), FindClass(className));
+    const auto foundIter =
+        std::find(Constants.begin(), Constants.end(), constant);
+    if (foundIter == Constants.end())
+    {
+        Constants.push_back(constant);
+        return Constants.end() - Constants.begin();
+    }
+    return foundIter - Constants.begin() + 1;
+}
+
+IdT ConstantTable::FindMethodRef(std::string className, std::string name,
+                                 std::string type)
+{
+    const auto constant =
+        Constant::CreateMethodRef(FindNaT(name, type), FindClass(className));
+    const auto foundIter =
+        std::find(Constants.begin(), Constants.end(), constant);
+    if (foundIter == Constants.end())
+    {
+        Constants.push_back(constant);
+        return Constants.end() - Constants.begin();
+    }
+    return foundIter - Constants.begin() + 1;
+}
+
 void ClassAnalyzer::attributeClass(ClassDeclarationNode *node)
 {
     currentClass = node;
@@ -320,6 +531,13 @@ void ClassAnalyzer::analyzeClassMethod(ClassElementNode *node)
                          "'implementation.");
     }
 
+    if (!currentMethod->isStatic)
+    {
+        currentMethod->variables.push_back(new VarDeclarationNode(
+            currentClass->thisProp->name,
+            currentClass->thisProp->propertyAndReturnType, nullptr));
+    }
+
     if (!currentMethod->name.starts_with(root->mainClass->className))
         moveFunctionScopedVarsOnTop();
 
@@ -496,6 +714,7 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
     }
     node->scopingLevel = currentScopingLevel;
     currentMethod->variables.push_back(node);
+    node->positionInMethod = currentMethod->variables.size() - 1;
     return nullptr;
 }
 
@@ -662,6 +881,9 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
     while (foundClass)
     {
         auto const &allMethod = foundClass->body->GetMethods();
+
+        // TODO replace find_if. Compression between Any and other types is
+        // buggable
         const auto foundMethod =
             std::find_if(allMethod.begin(), allMethod.end(),
                          [&](ClassElementNode *func) {
@@ -676,6 +898,7 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
             return;
         }
 
+        // XXX tries in inheritance
         if (foundClass->heritageName.empty())
         {
             break;
@@ -702,7 +925,7 @@ void ClassAnalyzer::analyzeNewCall(ExpressionNode *node)
         return;
     }
 
-    const auto constructorName = node->identifierString;
+    const auto className = node->identifierString;
     const auto callTypes = [node, this]()
     {
         auto const &arguments = node->params->GetSeq();
@@ -720,18 +943,15 @@ void ClassAnalyzer::analyzeNewCall(ExpressionNode *node)
     const auto foundConstructor =
         std::find_if(allConstructors.begin(), allConstructors.end(),
                      [&](ClassElementNode *func)
-                     {
-                         return constructorName == func->name &&
-                                callTypes == func->params->getTypes();
-                     });
+                     { return callTypes == func->params->getTypes(); });
 
     if (foundConstructor == allConstructors.end())
     {
-        errors.push_back("Cannot call constructor with name " +
-                         constructorName + " with arguments of types " +
-                         toString(callTypes));
+        errors.push_back("Cannot call constructor of " + className +
+                         " with arguments of types " + toString(callTypes));
         return;
     }
+    node->exprType->jvmType = foundClass->toDataType();
     node->actualMethodCall = *foundConstructor;
 }
 
@@ -846,6 +1066,15 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             type = var->propertyAndReturnType;
             node->exprType = type;
             node->actualField = var;
+            return type;
+        }
+
+        // for static RTL methods
+        auto *class_ = root->findClass(node->identifierString);
+        if (class_)
+        {
+            type = new TypeNode(class_->toDataType());
+            node->exprType = type;
             return type;
         }
 
@@ -1208,14 +1437,15 @@ void ClassAnalyzer::validateTypename(JvmDataType *jvmDataType)
     if (!jvmDataType || jvmDataType->type != JvmDataType::Type::Complex)
         return;
 
-    const auto foundClass =
-        std::find_if(root->classes.begin(), root->classes.end(),
-                     [&](ClassDeclarationNode *class_)
-                     { return class_->className == jvmDataType->complex; });
+    const auto foundClass = std::find_if(
+        root->classes.begin(), root->classes.end(),
+        [&](ClassDeclarationNode *class_)
+        { return class_->toDataType()->complex == jvmDataType->complex; });
 
     if (foundClass == root->classes.end())
     {
-        errors.push_back("Cannot find name '" + jvmDataType->complex + "'");
+        errors.push_back("Cannot find name '" + jvmDataType->complex.back() +
+                         "'");
         return;
     }
 }
@@ -1228,7 +1458,7 @@ ClassDeclarationNode *ClassAnalyzer::findClass(JvmDataType *jvmDataType) const
     if (jvmDataType->arrayArity > 0)
         return nullptr;
 
-    return root->findClass(jvmDataType->complex);
+    return root->findClass(jvmDataType->complex.back());
 }
 
 void ClassAnalyzer::moveFunctionScopedVarsOnTop()
@@ -1275,4 +1505,666 @@ void ClassAnalyzer::moveFunctionScopedVarsOnTop()
         currentMethod->methodBody->GetSeq().insert(
             currentMethod->methodBody->GetSeq().begin(), stmt);
     }
+}
+
+void ClassAnalyzer::fillTables()
+{
+    for (auto *item : currentClass->body->GetSeq())
+    {
+        if (item->type == ClassElementNode::Type::_PROPERTY)
+            fillFieldTables(item);
+        else
+            fillMethodTables(item);
+    }
+}
+
+void ClassAnalyzer::fillFieldTables(ClassElementNode *node)
+{
+    const auto nameId = File.Constants.FindUtf8(node->name);
+    const auto typeId = File.Constants.FindUtf8(
+        node->propertyAndReturnType->jvmType->toDescriptor());
+
+    auto accessFlags = AccessFlags::Public;
+
+    if (node->isStatic)
+        accessFlags = AccessFlags::Static | AccessFlags::Public;
+
+    File.Fields.push_back({nameId, typeId, accessFlags});
+}
+
+void ClassAnalyzer::fillMethodTables(ClassElementNode *node)
+{
+    const auto nameId = File.Constants.FindUtf8(node->name);
+    const auto methodDescriptor =
+        node->isMainMethod ? "([Ljava/lang/String;)V" : node->toDescriptor();
+
+    const auto typeId = File.Constants.FindUtf8(methodDescriptor);
+    auto accessFlags = AccessFlags::Public;
+
+    if (node->isStatic)
+        accessFlags = AccessFlags::Static | AccessFlags::Public;
+
+    File.Methods.push_back({nameId, typeId, accessFlags, node});
+}
+
+Bytes toBytes(const ConstantTable &constants)
+{
+    auto bytes = toBytes((uint16_t)(constants.Constants.size() + 1));
+    for (auto const &constant : constants.Constants)
+    {
+        append(bytes, toBytes(constant));
+    }
+    return bytes;
+}
+
+Bytes toBytes(JvmField field)
+{
+    Bytes bytes;
+    append(bytes, toBytes(static_cast<uint16_t>(field.AccessFlags)));
+    append(bytes, toBytes(field.NameId));
+    append(bytes, toBytes(field.TypeId));
+    constexpr auto attributesCount = (uint16_t)0;
+    append(bytes, toBytes(attributesCount));
+    return bytes;
+}
+
+Bytes toBytes(ExpressionNode *expr, ClassFile &file)
+{
+    if (expr->type == ExpressionNode::Type::_INT_LIT)
+    {
+        Bytes bytes;
+        const auto intVal = expr->intValue;
+        if (intVal >= -32768 && intVal <= 32767)
+        {
+            const auto intBytes = toBytes((IntT)intVal);
+            bytes.push_back((uint8_t)Command::sipush);
+            bytes.push_back(intBytes[2]);
+            bytes.push_back(intBytes[3]);
+        }
+        else
+        {
+            const auto constantId = file.Constants.FindInt(expr->intValue);
+            const auto constantIdBytes = toBytes(constantId);
+            append(bytes, (uint8_t)Command::ldc_w);
+            append(bytes, constantIdBytes);
+        }
+        return bytes;
+    }
+    if (expr->type == ExpressionNode::Type::_FLOAT_LIT)
+    {
+        throw std::runtime_error{"float literals is not supported yet"};
+    }
+    if (expr->type == ExpressionNode::Type::_STRING_LIT)
+    {
+        Bytes bytes;
+
+        const auto stringClassId =
+            file.Constants.FindClass(RTL_STRING_TYPE.toTypename());
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(stringClassId));
+        append(bytes, (uint8_t)Command::dup);
+
+        const auto stringLiteralId =
+            file.Constants.FindString(expr->stringValue);
+        append(bytes, (uint8_t)Command::ldc_w);
+        append(bytes, toBytes(stringLiteralId));
+
+        // TODO place constructor name and descriptor to class
+        const auto constructorId = file.Constants.FindMethodRef(
+            RTL_STRING_TYPE.toTypename(), "<init>", "(Ljava/lang/String;)V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorId));
+        return bytes;
+    }
+    if (expr->type == ExpressionNode::Type::_BOOLEAN_LIT)
+    {
+        Bytes bytes;
+        if (expr->boolValue)
+            append(bytes, (uint8_t)Command::iconst_1);
+        else
+            append(bytes, (uint8_t)Command::iconst_0);
+        return bytes;
+    }
+
+    if (expr->type == ExpressionNode::Type::_IDENTIFIER)
+    {
+        Bytes bytes;
+        if (expr->actualVar)
+        {
+            auto *const var = expr->actualVar;
+            if (var->varType->jvmType->type == JvmDataType::Type::Int)
+            {
+                append(bytes, (uint8_t)Command::iload);
+                append(bytes, (uint8_t)var->positionInMethod);
+            }
+            else
+            {
+                append(bytes, (uint8_t)Command::aload);
+                append(bytes, (uint8_t)var->positionInMethod);
+            }
+            return bytes;
+        }
+        if (expr->actualField)
+        {
+            Bytes objectBytes;
+            auto *const field = expr->actualField;
+
+            if (!field->isStatic)
+            {
+                append(objectBytes, (uint8_t)Command::aload_0);
+                append(bytes, objectBytes);
+                append(bytes, (uint8_t)Command::getfield);
+            }
+            else
+            {
+                append(bytes, (uint8_t)Command::getstatic);
+            }
+
+            const auto fieldRefId = file.Constants.FindFieldRef(
+                field->elemClass->toDataType()->toTypename(), field->name,
+                field->propertyAndReturnType->jvmType->toDescriptor());
+            append(bytes, toBytes(fieldRefId));
+            return bytes;
+        }
+        throw std::runtime_error{"could not load " +
+                                 std::string{expr->identifierString}};
+    }
+
+    if (expr->type == ExpressionNode::Type::_FIELD_ACCESS)
+    {
+        if (expr->actualField)
+        {
+            Bytes bytes;
+            auto *const field = expr->actualField;
+
+            Bytes objectBytes = toBytes(expr->firstOperand, file);
+            append(bytes, objectBytes);
+            append(bytes, (uint8_t)Command::getfield);
+
+            const auto fieldRefId = file.Constants.FindFieldRef(
+                field->elemClass->toDataType()->toTypename(), field->name,
+                field->propertyAndReturnType->jvmType->toDescriptor());
+            append(bytes, toBytes(fieldRefId));
+            return bytes;
+        }
+        return {};
+    }
+
+    if (expr->type == ExpressionNode::Type::_FUNC_CALL)
+    {
+        Bytes bytes;
+        for (auto *arg : expr->params->GetSeq())
+        {
+            append(bytes, toBytes(arg, file));
+            const auto *method = expr->actualMethodCall;
+            const auto methodRefConstant = file.Constants.FindMethodRef(
+                method->elemClass->toDataType()->toTypename(), method->name,
+                method->toDescriptor());
+            append(bytes, (uint8_t)Command::invokestatic);
+            append(bytes, toBytes(methodRefConstant));
+            return bytes;
+        }
+    }
+
+    if (expr->type == ExpressionNode::Type::_METHOD_CALL)
+    {
+        Bytes bytes;
+
+        if (!expr->actualMethodCall->isStatic)
+            append(bytes, toBytes(expr->firstOperand, file));
+
+        for (auto *arg : expr->params->GetSeq())
+        {
+            append(bytes, toBytes(arg, file));
+        }
+
+        const auto *method = expr->actualMethodCall;
+        const auto methodRefConstant = file.Constants.FindMethodRef(
+            method->elemClass->toDataType()->toTypename(), method->name,
+            method->toDescriptor());
+
+        if (!method->isStatic)
+            append(bytes, (uint8_t)Command::invokevirtual);
+        else
+            append(bytes, (uint8_t)Command::invokestatic);
+
+        append(bytes, toBytes(methodRefConstant));
+        return bytes;
+    }
+
+    if (expr->type == ExpressionNode::Type::_ARRAY_LENGTH)
+    {
+        Bytes bytes;
+        append(bytes, toBytes(expr->firstOperand, file));
+        append(bytes, (uint8_t)Command::arraylength);
+        return bytes;
+    }
+
+    if (expr->type == ExpressionNode::Type::_ASSIGN)
+    {
+        if (expr->firstOperand && expr->firstOperand->actualVar)
+        {
+            Bytes bytes;
+            const auto rightBytes = toBytes(expr->secondOperand, file);
+            append(bytes, rightBytes);
+            auto *var = expr->firstOperand->actualVar;
+            const auto variableNumberBytes = (uint8_t)(var->positionInMethod);
+            if (var->varType->jvmType->isReferenceType())
+            {
+                append(bytes, (uint8_t)Command::astore);
+            }
+            else if (var->varType->jvmType->isPrimitiveType())
+            {
+                append(bytes, (uint8_t)Command::istore);
+            }
+
+            append(bytes, variableNumberBytes);
+            return bytes;
+        }
+        if (expr->firstOperand && expr->firstOperand->actualField)
+        {
+            Bytes bytes;
+
+            append(bytes, toBytes(expr->secondOperand, file));
+
+            auto *const field = expr->firstOperand->actualField;
+
+            append(bytes, (uint8_t)Command::putstatic);
+
+            const auto fieldRefId = file.Constants.FindFieldRef(
+                field->elemClass->toDataType()->toTypename(), field->name,
+                field->propertyAndReturnType->jvmType->toDescriptor());
+
+            append(bytes, toBytes(fieldRefId));
+
+            return bytes;
+        }
+        throw std::runtime_error{"cant assign"};
+    }
+
+    if (expr->type == ExpressionNode::Type::_ASSIGN_TO_FIELD)
+    {
+        Bytes bytes;
+
+        Bytes objectBytes;
+
+        if (expr->firstOperand)
+        {
+            objectBytes = toBytes(expr->firstOperand, file);
+        }
+        else
+        {
+            append(objectBytes, (uint8_t)Command::aload_0);
+        }
+
+        auto *const field = expr->actualField;
+        append(bytes, objectBytes);
+        append(bytes, toBytes(expr->secondOperand, file));
+
+        append(bytes, (uint8_t)Command::putfield);
+        const auto fieldRefId = file.Constants.FindFieldRef(
+            field->elemClass->toDataType()->toTypename(), field->name,
+            field->propertyAndReturnType->jvmType->toDescriptor());
+        append(bytes, toBytes(fieldRefId));
+        return bytes;
+    }
+
+    if (expr->type == ExpressionNode::Type::_NEW)
+    {
+        const auto type = expr->exprType->jvmType;
+        if (type->type != JvmDataType::Type::Complex && type->arrayArity > 0)
+            throw std::runtime_error{"Cannot create object of type " +
+                                     type->toString()};
+
+        const auto classIdConstant =
+            file.Constants.FindClass(type->toTypename());
+
+        Bytes bytes;
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(classIdConstant));
+        append(bytes, (uint8_t)Command::dup);
+
+        for (auto *arg : expr->params->GetSeq())
+        {
+            append(bytes, toBytes(arg, file));
+        }
+
+        const auto constructorRef = file.Constants.FindMethodRef(
+            type->toTypename(), expr->actualMethodCall->name,
+            expr->actualMethodCall->toDescriptor());
+
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorRef));
+
+        return bytes;
+    }
+    return {};
+    // TODO remove null
+    // if (expr->type == ExpressionNode::Type::_NULL_LIT)
+    // {
+    //     Bytes bytes;
+    //     append(bytes, (uint8_t)Command::aconst_null);
+    //     return bytes;
+    // }
+
+    // if (expr->type == ExpressionNode::Type::_POST_INCREMENT ||
+    //     expr->type == ExpressionNode::Type::_POST_DECREMENT)
+    // {
+    //     Bytes bytes;
+
+    //     auto *operand = expr->firstOperand;
+
+    //     ClassElementNode *field = operand->actualField;
+    //     VarDeclarationNode *variable = operand->actualVar;
+
+    //     if (!field && !variable)
+    //         throw std::runtime_error{
+    //             "Internal error: cant find actual field or variable"};
+
+    //     if (variable)
+    //     {
+    //         auto varIndex = (uint8_t)variable->positionInMethod;
+    //         // place value before changes on stack
+    //         append(bytes, (uint8_t)Command::iload);
+    //         append(bytes, varIndex);
+
+    //         append(bytes, (uint8_t)Command::iinc);
+    //         append(bytes, varIndex);
+    //         int8_t incVal =
+    //             expr->type == ExpressionNode::Type::_POST_INCREMENT ? 1 : -1;
+    //         append(bytes, incVal);
+    //     }
+    //     if (field)
+    //     {
+    //     }
+    //     return bytes;
+    // }
+
+    // if (expr->type == ExpressionNode::Type::_PREF_INCREMENT ||
+    //     expr->type == ExpressionNode::Type::_PREF_DECREMENT)
+    // {
+    // }
+}
+
+Bytes toBytes(VarDeclarationNode *node, ClassFile &file)
+{
+    Bytes bytes;
+
+    // Инициализация переменной
+    if (node->initExpression)
+    {
+        append(bytes, toBytes(node->initExpression, file));
+    }
+    else
+    {
+        if (node->varType->jvmType->isPrimitiveType())
+        {
+            append(bytes, (uint8_t)Command::iconst_0);
+        }
+        else if (node->varType->jvmType->isReferenceType())
+        {
+            append(bytes, (uint8_t)Command::aconst_null);
+        }
+        else
+        {
+            throw std::runtime_error("unsupported type of variable " +
+                                     node->varType->toString());
+        }
+    }
+
+    if (node->varType->jvmType->isPrimitiveType())
+    {
+        append(bytes, (uint8_t)Command::istore);
+    }
+    else if (node->varType->jvmType->isReferenceType())
+    {
+        append(bytes, (uint8_t)Command::astore);
+    }
+
+    append(bytes, (uint8_t)node->positionInMethod);
+
+    return bytes;
+}
+
+Bytes toBytes(StatementNode *stmt, ClassFile &file)
+{
+    if (!stmt)
+        return {};
+    Bytes bytes;
+
+    switch (stmt->type)
+    {
+    case StatementNode::Type::_EMPTY:
+        return bytes;
+    case StatementNode::Type::_VAR:
+    {
+        for (auto decl : stmt->declList->GetSeq())
+        {
+            append(bytes, toBytes(decl, file));
+        }
+        return bytes;
+    }
+    // case StatementNode::Type::While:
+    //     return ToBytes(stmt->While, file);
+    // case StatementNode::Type::DoWhile:
+    //     return ToBytes(stmt->DoWhile, file);
+    // case StatementNode::Type::For:
+    //     return ToBytes(stmt->For, file);
+    // case StatementNode::Type::Foreach:
+    //     break;
+    // case StatementNode::Type::BlockStmt:
+    //     return ToBytes(stmt->Block, file);
+    // case StatementNode::Type::IfStmt:
+    //     return ToBytes(stmt->If, file);
+    // case StatementNode::Type::Return:
+    //     return ReturnToBytes(stmt->Expr, file);
+    case StatementNode::Type::_EXPRESSION:
+        return toBytes(stmt->expression, file);
+    default:;
+    }
+    return {};
+}
+
+Bytes toBytes(ClassElementNode *method, ClassFile &classFile)
+{
+    Bytes bytes;
+
+    constexpr auto stackSize = (uint16_t)1000;
+    append(bytes, toBytes(stackSize));
+
+    const uint16_t localVariablesCount = method->variables.size() + 1;
+
+    append(bytes, toBytes(localVariablesCount));
+
+    Bytes codeBytes;
+
+    if (method->type == ClassElementNode::Type::_CONSTRUCTOR)
+    {
+        append(codeBytes, (uint8_t)Command::aload_0);
+        append(codeBytes, (uint8_t)Command::invokespecial);
+        const auto javaBaseObjectConstructor =
+            classFile.Constants.FindMethodRef(JAVA_OBJECT_TYPE.toTypename(),
+                                              "<init>", "()V");
+        append(codeBytes, toBytes(javaBaseObjectConstructor));
+    }
+
+    for (auto *stmt : method->methodBody->GetSeq())
+    {
+        append(codeBytes, toBytes(stmt, classFile));
+    }
+
+    append(codeBytes, (uint8_t)Command::return_);
+
+    append(bytes, toBytes((uint32_t)codeBytes.size()));
+    append(bytes, codeBytes);
+
+    constexpr auto exceptionTableSize = (uint16_t)0;
+    constexpr auto attributesTableSize = (uint16_t)0;
+
+    append(bytes, toBytes(exceptionTableSize));
+    append(bytes, toBytes(attributesTableSize));
+
+    return bytes;
+}
+
+Bytes toBytes(JvmMethod method, ClassFile &classFile)
+{
+    Bytes bytes;
+    append(bytes, toBytes(static_cast<uint16_t>(method.AccessFlags)));
+    append(bytes, toBytes(method.NameId));
+    append(bytes, toBytes(method.TypeId));
+    constexpr auto attributesCount = (uint16_t)1;  // The only attribute is Code
+    append(bytes, toBytes(attributesCount));
+    append(bytes, toBytes(classFile.Constants.FindUtf8("Code")));
+    const auto codeBytes = toBytes(method.ActualMethod, classFile);
+    auto codeBytesLength = toBytes((uint32_t)codeBytes.size());
+    append(bytes, codeBytesLength);
+    append(bytes, codeBytes);
+    return bytes;
+}
+
+#include <filesystem>
+#include <fstream>
+
+void ClassAnalyzer::generate()
+{
+    using namespace std::filesystem;
+    const auto filename = std::string{currentClass->className} + ".class";
+    auto filepath = current_path() / "Output" / filename;
+    create_directory(current_path() / "Output");
+    std::fstream out{filepath, std::ios_base::out | std::ios_base::binary |
+                                   std::ios_base::trunc};
+    out << (char)0xCA << (char)0xFE << (char)0xBA << (char)0xBE;
+    const auto minorVersion = ::toBytes(ClassFile::MinorVersion);
+    out.write((char *)minorVersion.data(), minorVersion.size());
+    const auto majorVersion = ::toBytes(ClassFile::MajorVersion);
+    out.write((char *)majorVersion.data(), majorVersion.size());
+
+    auto const classBytes = this->toBytes();
+    auto const constantBytes = ::toBytes(File.Constants);
+    out.write((char *)constantBytes.data(), constantBytes.size());
+
+    out.write((char *)classBytes.data(), classBytes.size());
+
+    const auto classAttributesCount = ::toBytes((uint16_t)0);
+    out.write((char *)classAttributesCount.data(), classAttributesCount.size());
+}
+
+Bytes ClassAnalyzer::toBytes()
+{
+    Bytes bytes;
+    const auto classConstantId =
+        File.Constants.FindClass(currentClass->toDataType()->toTypename());
+    const auto superClassId =
+        File.Constants.FindClass(JAVA_OBJECT_TYPE.toTypename());
+
+    const auto accessFlags = AccessFlags::Super | AccessFlags::Public;
+    append(bytes, ::toBytes((uint16_t)accessFlags));
+    append(bytes, ::toBytes(classConstantId));
+    append(bytes, ::toBytes(superClassId));
+
+    constexpr auto interfacesCount = (uint16_t)0;
+    append(bytes, ::toBytes(interfacesCount));
+
+    append(bytes, ::toBytes((uint16_t)File.Fields.size()));
+    for (auto field : File.Fields)
+    {
+        append(bytes, ::toBytes(field));
+    }
+
+    std::sort(File.Methods.begin(), File.Methods.end(),
+              [](auto const &lhs, auto const &rhs)
+              {
+                  return (lhs.ActualMethod->type ==
+                          ClassElementNode::Type::_CONSTRUCTOR) >
+                         (rhs.ActualMethod->type ==
+                          ClassElementNode::Type::_CONSTRUCTOR);
+              });
+    append(bytes, ::toBytes((uint16_t)File.Methods.size()));
+    for (auto method : File.Methods)
+    {
+        append(bytes, ::toBytes(method, File));
+    }
+    return bytes;
+}
+
+Bytes toBytes(const uint32_t n)
+{
+    const auto netNum = n;
+
+    union
+    {
+        uint32_t num;
+        unsigned char bytes[sizeof(uint32_t)];
+    } u;
+
+    u.num = netNum;
+
+    Bytes bytes(sizeof(n), '\0');
+
+    std::reverse_copy(std::begin(u.bytes), std::end(u.bytes), bytes.begin());
+
+    return bytes;
+}
+
+Bytes toBytes(const int16_t n)
+{
+    Bytes bytes;
+    const auto otherBytes = toBytes((int32_t)n);
+    bytes.push_back(otherBytes[2]);
+    bytes.push_back(otherBytes[3]);
+    return bytes;
+}
+
+Bytes toBytes(const uint16_t n)
+{
+    const auto netNum = n;
+    Bytes bytes(sizeof n, '\0');
+    for (int i = 0; i < bytes.size(); i++)
+        bytes[bytes.size() - 1 - i] = (netNum >> (i * 8));
+    return bytes;
+}
+
+Bytes toBytes(const IntT n)
+{
+    const auto netNum = n;
+    Bytes bytes(sizeof n, '\0');
+    for (int i = 0; i < bytes.size(); i++)
+        bytes[bytes.size() - 1 - i] = (netNum >> (i * 8));
+    return bytes;
+}
+
+Bytes toBytes(Constant const &constant)
+{
+    Bytes bytes;
+    append(bytes, static_cast<uint8_t>(constant.Type));
+    switch (constant.Type)
+    {
+    case Constant::TypeT::Utf8:
+        append(bytes, toBytes((uint16_t)constant.Utf8.size()));
+        append(bytes, constant.Utf8);
+        break;
+    case Constant::TypeT::Integer:
+        append(bytes, toBytes(constant.Integer));
+        break;
+    case Constant::TypeT::Float:
+        throw std::runtime_error{"Float is not supported"};
+    case Constant::TypeT::String:
+        append(bytes, toBytes(constant.Utf8Id));
+        break;
+    case Constant::TypeT::NameAndType:
+        append(bytes, toBytes(constant.NameId));
+        append(bytes, toBytes(constant.TypeId));
+        break;
+    case Constant::TypeT::Class:
+        append(bytes, toBytes(constant.ClassNameId));
+        break;
+    case Constant::TypeT::MethodRef:
+    case Constant::TypeT::FieldRef:
+        append(bytes, toBytes(constant.ClassId));
+        append(bytes, toBytes(constant.NameAndTypeId));
+        break;
+    default:;
+    }
+    return bytes;
 }

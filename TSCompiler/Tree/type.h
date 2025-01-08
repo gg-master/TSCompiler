@@ -36,6 +36,9 @@ struct TypeNode final : Node
         if (jvmType)
             return *jvmType == *other.jvmType;
 
+        if (type == Type::_ANY)
+            return arrayArity == other.arrayArity;
+
         return type == other.type && arrayArity == other.arrayArity &&
                userTypeName == other.userTypeName;
     }
@@ -106,8 +109,8 @@ inline JvmDataType *toJvmDataType(const TypeNode *node)
         // type = new JvmDataType("JavaRTL/Boolean");
         break;
     case TypeNode::Type::_STRING:
-        type = new JvmDataType(JvmDataType::Type::String);
-        // type = new JvmDataType("JavaRTL/String");
+        // type = new JvmDataType(JvmDataType::Type::String);
+        type = new JvmDataType("JavaRTL/String");
         break;
     case TypeNode::Type::_UNDEFINED:
         type = new JvmDataType("JavaRTL/Undefined");
