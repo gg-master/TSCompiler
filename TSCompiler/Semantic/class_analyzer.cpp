@@ -938,8 +938,29 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
         }
         foundClass = root->findClass(foundClass->heritageName);
     }
-    errors.push_back("Cannot call method with name " + methodName +
-                     " with arguments of types " + toString(callTypes));
+
+    if (node->convertedFrom)
+    {
+        if (node->convertedFrom->isBinary())
+        {
+            errors.push_back(
+                "Types '" + objType->toString() + "' and '" +
+                node->convertedFrom->secondOperand->exprType->toString() +
+                "' are not compatible with operation " +
+                node->convertedFrom->toStringType() + ".");
+            return;
+        }
+        else if (node->convertedFrom->isUnary())
+        {
+            errors.push_back("Type '" + objType->toString() +
+                             "' is not compatible with operation " +
+                             node->convertedFrom->toStringType() + ".");
+            return;
+        }
+    }
+    errors.push_back("Cannot call method " + methodName + "  of " +
+                     objType->toString() + "with arguments of types " +
+                     toString(callTypes) + ".");
     return;
 }
 
@@ -1482,7 +1503,10 @@ ExpressionNode *ClassAnalyzer::replaceOperationsOnMethodCall(
 {
     auto *converted = node->toRTLMethodCall();
     if (converted)
+    {
+        converted->convertedFrom = node;
         return converted;
+    }
     return node;
 }
 

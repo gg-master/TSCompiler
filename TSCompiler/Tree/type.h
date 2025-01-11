@@ -142,7 +142,7 @@ inline bool isUnknown(TypeNode *node)
 
     if (*node->jvmType == RTL_ANY_TYPE ||
         *node->jvmType == RTL_UNDEFINED_TYPE ||
-        node->jvmType->type == RTL_VOID_TYPE ||
+        *node->jvmType == RTL_VOID_TYPE ||
         node->jvmType->type == JvmDataType::Type::Void)
     {
         return true;

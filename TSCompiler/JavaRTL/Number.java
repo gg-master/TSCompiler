@@ -1,5 +1,7 @@
 package JavaRTL;
 
+import java.text.DecimalFormat;
+
 public class Number extends Any {
     public double _value = 0;
 
@@ -158,6 +160,7 @@ public class Number extends Any {
 
     @Override
     public java.lang.String toString() {
-        return java.lang.String.valueOf(this._value);
+        DecimalFormat df = new DecimalFormat("#.##########");
+        return df.format(this._value);
     }
 }

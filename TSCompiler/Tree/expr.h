@@ -89,6 +89,8 @@ struct ExpressionNode final : Node
 
     ExpressionListNode *params{};
 
+    ExpressionNode *convertedFrom{};  // using for saving info after conversion
+                                      // between node types
     TypeNode *exprType{};
 
     bool isLeftHand{0};
