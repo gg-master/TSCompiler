@@ -23,6 +23,8 @@ int isASIActivated = 0;
 int isInFunctionBody = 0; // need for return stmt
 int isInForHeader = 0;
 
+int isConstDeclarated = 0;
+
 int syntaxErrorCounter = 0;
 %}
 
@@ -438,8 +440,9 @@ singleExpression
     // ====== Variables ======
 
 varStatement
-    : varModifier varDeclarationList ';' { Print("- R: varModifier varDeclarationList ';' -> varStatement"); $$ = StatementNode::fromVarStmt($1, $2); }
-    | varModifier error ';'
+    : varModifier varDeclarationList ';' 
+        { Print("- R: varModifier varDeclarationList ';' -> varStatement"); $$ = StatementNode::fromVarStmt($1, $2); isConstDeclarated = 0; }
+    | varModifier error ';' { isConstDeclarated = 0; }
     ;
 
 varDeclarationList
@@ -451,7 +454,13 @@ varDeclarationList
 
 varDeclaration
     : identifier typeAnnotationOpt                         
-        { Print("- R: identifier typeAnnotationOpt -> varDeclaration"); $$ = new VarDeclarationNode($1, $2, nullptr); }
+        { 
+            if (isConstDeclarated) {
+                yyerror("const variable must be initialized.");
+                YYERROR;
+            }
+            Print("- R: identifier typeAnnotationOpt -> varDeclaration"); $$ = new VarDeclarationNode($1, $2, nullptr);
+        }
     | identifier typeAnnotationOpt '=' singleExpression    
         { Print("- R: identifier typeAnnotationOpt '=' singleExpression -> varDeclaration"); $$ = new VarDeclarationNode($1, $2, $4); }
     ;
@@ -459,7 +468,7 @@ varDeclaration
 varModifier
     : VAR   { Print("- R: VAR -> varModifier"); $$ = VarModifierType::_VAR; }
     | LET   { Print("- R: LET -> varModifier"); $$ = VarModifierType::_LET; }
-    | CONST { Print("- R: CONST -> varModifier"); $$ = VarModifierType::_CONST; }
+    | CONST { Print("- R: CONST -> varModifier"); $$ = VarModifierType::_CONST; isConstDeclarated = 1; }
     ;
 
     // ====== Conditions ====== 

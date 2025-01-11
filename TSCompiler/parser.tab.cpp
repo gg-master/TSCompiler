@@ -93,9 +93,11 @@ int isASIActivated = 0;
 int isInFunctionBody = 0; // need for return stmt
 int isInForHeader = 0;
 
+int isConstDeclarated = 0;
+
 int syntaxErrorCounter = 0;
 
-#line 99 "parser.tab.cpp"
+#line 101 "parser.tab.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -664,24 +666,24 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   162,   162,   173,   175,   180,   181,   182,   183,   187,
-     188,   192,   193,   194,   195,   196,   197,   204,   208,   209,
-     210,   211,   212,   219,   221,   225,   237,   238,   244,   245,
-     249,   250,   251,   252,   253,   254,   255,   259,   260,   264,
-     269,   271,   276,   278,   283,   284,   285,   296,   300,   301,
-     305,   306,   307,   308,   309,   310,   312,   313,   314,   315,
-     317,   319,   322,   325,   327,   330,   332,   334,   336,   339,
-     341,   343,   345,   347,   349,   352,   354,   356,   358,   361,
-     363,   365,   367,   369,   371,   373,   376,   378,   381,   383,
-     386,   389,   392,   395,   397,   399,   401,   405,   407,   410,
-     414,   416,   418,   420,   423,   425,   427,   430,   432,   434,
-     441,   442,   446,   448,   453,   455,   460,   461,   462,   468,
-     474,   484,   484,   490,   496,   496,   502,   502,   508,   508,
-     514,   514,   522,   528,   529,   533,   541,   542,   542,   551,
-     552,   553,   557,   562,   570,   580,   585,   593,   597,   598,
-     602,   603,   607,   614,   619,   626,   633,   638,   646,   650,
-     651,   652,   653,   654,   655,   656,   657,   658,   659,   660,
-     661,   662,   663,   664,   665,   666
+       0,   164,   164,   175,   177,   182,   183,   184,   185,   189,
+     190,   194,   195,   196,   197,   198,   199,   206,   210,   211,
+     212,   213,   214,   221,   223,   227,   239,   240,   246,   247,
+     251,   252,   253,   254,   255,   256,   257,   261,   262,   266,
+     271,   273,   278,   280,   285,   286,   287,   298,   302,   303,
+     307,   308,   309,   310,   311,   312,   314,   315,   316,   317,
+     319,   321,   324,   327,   329,   332,   334,   336,   338,   341,
+     343,   345,   347,   349,   351,   354,   356,   358,   360,   363,
+     365,   367,   369,   371,   373,   375,   378,   380,   383,   385,
+     388,   391,   394,   397,   399,   401,   403,   407,   409,   412,
+     416,   418,   420,   422,   425,   427,   429,   432,   434,   436,
+     443,   445,   449,   451,   456,   464,   469,   470,   471,   477,
+     483,   493,   493,   499,   505,   505,   511,   511,   517,   517,
+     523,   523,   531,   537,   538,   542,   550,   551,   551,   560,
+     561,   562,   566,   571,   579,   589,   594,   602,   606,   607,
+     611,   612,   616,   623,   628,   635,   642,   647,   655,   659,
+     660,   661,   662,   663,   664,   665,   666,   667,   668,   669,
+     670,   671,   672,   673,   674,   675
 };
 #endif
 
@@ -2319,7 +2321,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* script: scriptElementList  */
-#line 163 "parser.y"
+#line 165 "parser.y"
         { 
             if ( syntaxErrorCounter > 0 ) {
                 PrintError("Found " + std::to_string(syntaxErrorCounter) + " syntax errors. Fix them and rerun.");
@@ -2327,141 +2329,141 @@ yyreduce:
             }
             Print("- R: scriptElementList -> script"); 
         }
-#line 2331 "parser.tab.cpp"
+#line 2333 "parser.tab.cpp"
     break;
 
   case 3: /* scriptElementList: scriptElement  */
-#line 174 "parser.y"
+#line 176 "parser.y"
         { Print("- R: scriptElement -> scriptElementList"); }
-#line 2337 "parser.tab.cpp"
+#line 2339 "parser.tab.cpp"
     break;
 
   case 4: /* scriptElementList: scriptElementList scriptElement  */
-#line 176 "parser.y"
+#line 178 "parser.y"
         { Print("- R: scriptElementList scriptElement -> scriptElementList"); }
-#line 2343 "parser.tab.cpp"
+#line 2345 "parser.tab.cpp"
     break;
 
   case 5: /* scriptElement: statementListItem  */
-#line 180 "parser.y"
+#line 182 "parser.y"
                             { Print("- R: statementListItem -> scriptElement"); root -> add((yyvsp[0].stmtNode)); }
-#line 2349 "parser.tab.cpp"
+#line 2351 "parser.tab.cpp"
     break;
 
   case 6: /* scriptElement: functionDeclaration  */
-#line 181 "parser.y"
+#line 183 "parser.y"
                             { Print("- R: functionDeclaration -> scriptElement"); root -> add((yyvsp[0].funcDeclarationNode)); }
-#line 2355 "parser.tab.cpp"
+#line 2357 "parser.tab.cpp"
     break;
 
   case 7: /* scriptElement: classDeclaration  */
-#line 182 "parser.y"
+#line 184 "parser.y"
                             { Print("- R: classDeclaration -> scriptElement"); root -> add((yyvsp[0].classDeclNode)); }
-#line 2361 "parser.tab.cpp"
+#line 2363 "parser.tab.cpp"
     break;
 
   case 9: /* statementList: statementListItem  */
-#line 187 "parser.y"
+#line 189 "parser.y"
                                         { Print("- R: statementListItem -> statementList"); (yyval.stmtListNode) = new StatementListNode((yyvsp[0].stmtNode)); }
-#line 2367 "parser.tab.cpp"
+#line 2369 "parser.tab.cpp"
     break;
 
   case 10: /* statementList: statementList statementListItem  */
-#line 188 "parser.y"
+#line 190 "parser.y"
                                         { Print("- R: statementList statementListItem -> statementList"); (yyval.stmtListNode) -> add((yyvsp[0].stmtNode)); }
-#line 2373 "parser.tab.cpp"
+#line 2375 "parser.tab.cpp"
     break;
 
   case 11: /* statementListItem: emptyStatement  */
-#line 192 "parser.y"
+#line 194 "parser.y"
                             { Print("- R: emptyStatement -> statementListItem"); }
-#line 2379 "parser.tab.cpp"
+#line 2381 "parser.tab.cpp"
     break;
 
   case 12: /* statementListItem: expressionStatement  */
-#line 193 "parser.y"
+#line 195 "parser.y"
                             { Print("- R: expressionStatement -> statementListItem"); }
-#line 2385 "parser.tab.cpp"
+#line 2387 "parser.tab.cpp"
     break;
 
   case 13: /* statementListItem: varStatement  */
-#line 194 "parser.y"
+#line 196 "parser.y"
                             { Print("- R: varStatement -> statementListItem"); }
-#line 2391 "parser.tab.cpp"
+#line 2393 "parser.tab.cpp"
     break;
 
   case 14: /* statementListItem: ifStatement  */
-#line 195 "parser.y"
+#line 197 "parser.y"
                             { Print("- R: ifStatement -> statementListItem"); }
-#line 2397 "parser.tab.cpp"
+#line 2399 "parser.tab.cpp"
     break;
 
   case 15: /* statementListItem: iterationStatement  */
-#line 196 "parser.y"
+#line 198 "parser.y"
                             { Print("- R: iterationStatement -> statementListItem"); }
-#line 2403 "parser.tab.cpp"
+#line 2405 "parser.tab.cpp"
     break;
 
   case 16: /* statementListItem: returnStatement  */
-#line 198 "parser.y"
+#line 200 "parser.y"
         { 
             if ( !isInFunctionBody ) { 
                 yyerror("illegal return statement."); YYERROR;
             } 
             Print("- R: returnStatement -> statementListItem");
         }
-#line 2414 "parser.tab.cpp"
+#line 2416 "parser.tab.cpp"
     break;
 
   case 17: /* statementListItem: blockStatement  */
-#line 204 "parser.y"
+#line 206 "parser.y"
                             { Print("- R: blockStatement -> statementListItem"); }
-#line 2420 "parser.tab.cpp"
+#line 2422 "parser.tab.cpp"
     break;
 
   case 18: /* statementListItemWithoutEmptyStatement: expressionStatement  */
-#line 208 "parser.y"
+#line 210 "parser.y"
                             { Print("- R: expressionStatement -> statementListItemWithoutEmptyStatement"); }
-#line 2426 "parser.tab.cpp"
+#line 2428 "parser.tab.cpp"
     break;
 
   case 19: /* statementListItemWithoutEmptyStatement: varStatement  */
-#line 209 "parser.y"
+#line 211 "parser.y"
                             { Print("- R: varStatement -> statementListItemWithoutEmptyStatement"); }
-#line 2432 "parser.tab.cpp"
+#line 2434 "parser.tab.cpp"
     break;
 
   case 20: /* statementListItemWithoutEmptyStatement: ifStatement  */
-#line 210 "parser.y"
+#line 212 "parser.y"
                             { Print("- R: ifStatement -> statementListItemWithoutEmptyStatement"); }
-#line 2438 "parser.tab.cpp"
+#line 2440 "parser.tab.cpp"
     break;
 
   case 21: /* statementListItemWithoutEmptyStatement: iterationStatement  */
-#line 211 "parser.y"
+#line 213 "parser.y"
                             { Print("- R: iterationStatement -> statementListItemWithoutEmptyStatement"); }
-#line 2444 "parser.tab.cpp"
+#line 2446 "parser.tab.cpp"
     break;
 
   case 22: /* statementListItemWithoutEmptyStatement: returnStatement  */
-#line 213 "parser.y"
+#line 215 "parser.y"
         { 
             if ( !isInFunctionBody ) { 
                 yyerror("illegal return statement."); YYERROR;
             } 
             Print("- R: returnStatement -> statementListItemWithoutEmptyStatement");
         }
-#line 2455 "parser.tab.cpp"
+#line 2457 "parser.tab.cpp"
     break;
 
   case 23: /* statementListItemWithoutEmptyStatement: blockStatement  */
-#line 219 "parser.y"
+#line 221 "parser.y"
                             { Print("- R: blockStatement -> statementListItemWithoutEmptyStatement"); }
-#line 2461 "parser.tab.cpp"
+#line 2463 "parser.tab.cpp"
     break;
 
   case 25: /* emptyStatement: ';'  */
-#line 226 "parser.y"
+#line 228 "parser.y"
         { 
             if ( isASIActivated ) {
                 std::string text(yytext_ptr, yyleng);
@@ -2470,973 +2472,985 @@ yyreduce:
             Print("- R: ';' -> emptyStatement");
             (yyval.stmtNode) = StatementNode::fromEmptyStmt();
         }
-#line 2474 "parser.tab.cpp"
+#line 2476 "parser.tab.cpp"
     break;
 
   case 26: /* blockStatement: '{' '}'  */
-#line 237 "parser.y"
+#line 239 "parser.y"
                             { Print("- R: '{' '}' -> blockStatement"); (yyval.stmtNode) = StatementNode::fromBlockStmt(nullptr); }
-#line 2480 "parser.tab.cpp"
+#line 2482 "parser.tab.cpp"
     break;
 
   case 27: /* blockStatement: '{' statementList '}'  */
-#line 238 "parser.y"
+#line 240 "parser.y"
                             { Print("- R: '{' statementList '}' -> blockStatement"); (yyval.stmtNode) = StatementNode::fromBlockStmt((yyvsp[-1].stmtListNode)); }
-#line 2486 "parser.tab.cpp"
+#line 2488 "parser.tab.cpp"
     break;
 
   case 28: /* type: predefinedType  */
-#line 244 "parser.y"
+#line 246 "parser.y"
                      { Print("- R: predefinedType -> type"); (yyval.typeNode) = (yyvsp[0].typeNode); }
-#line 2492 "parser.tab.cpp"
+#line 2494 "parser.tab.cpp"
     break;
 
   case 29: /* type: type '[' ']'  */
-#line 245 "parser.y"
+#line 247 "parser.y"
                      { Print("- R: type '[' ']' -> type"); (yyval.typeNode) -> arrayArity++; }
-#line 2498 "parser.tab.cpp"
+#line 2500 "parser.tab.cpp"
     break;
 
   case 30: /* predefinedType: NUMBER  */
-#line 249 "parser.y"
+#line 251 "parser.y"
                     { Print("- R: NUMBER -> predefinedType"); (yyval.typeNode) = new TypeNode(TypeNode::Type::_NUMBER); }
-#line 2504 "parser.tab.cpp"
+#line 2506 "parser.tab.cpp"
     break;
 
   case 31: /* predefinedType: STRING  */
-#line 250 "parser.y"
+#line 252 "parser.y"
                     { Print("- R: STRING -> predefinedType"); (yyval.typeNode) = new TypeNode(TypeNode::Type::_STRING); }
-#line 2510 "parser.tab.cpp"
+#line 2512 "parser.tab.cpp"
     break;
 
   case 32: /* predefinedType: BOOLEAN  */
-#line 251 "parser.y"
+#line 253 "parser.y"
                     { Print("- R: BOOLEAN -> predefinedType"); (yyval.typeNode) = new TypeNode(TypeNode::Type::_BOOLEAN); }
-#line 2516 "parser.tab.cpp"
+#line 2518 "parser.tab.cpp"
     break;
 
   case 33: /* predefinedType: UNDEFINED  */
-#line 252 "parser.y"
+#line 254 "parser.y"
                     { Print("- R: UNDEFINED -> predefinedType"); (yyval.typeNode) = new TypeNode(TypeNode::Type::_UNDEFINED); }
-#line 2522 "parser.tab.cpp"
+#line 2524 "parser.tab.cpp"
     break;
 
   case 34: /* predefinedType: VOID  */
-#line 253 "parser.y"
+#line 255 "parser.y"
                     { Print("- R: VOID -> predefinedType"); (yyval.typeNode) = new TypeNode(TypeNode::Type::_VOID); }
-#line 2528 "parser.tab.cpp"
+#line 2530 "parser.tab.cpp"
     break;
 
   case 35: /* predefinedType: NULL_KW  */
-#line 254 "parser.y"
+#line 256 "parser.y"
                     { Print("- R: NULL_KW -> predefinedType"); (yyval.typeNode) = new TypeNode(TypeNode::Type::_NULL); }
-#line 2534 "parser.tab.cpp"
+#line 2536 "parser.tab.cpp"
     break;
 
   case 36: /* predefinedType: ID  */
-#line 255 "parser.y"
+#line 257 "parser.y"
                     { Print("- R: ID -> predefinedType"); (yyval.typeNode) = new TypeNode((yyvsp[0].identName)); }
-#line 2540 "parser.tab.cpp"
+#line 2542 "parser.tab.cpp"
     break;
 
   case 37: /* typeAnnotationOpt: %empty  */
-#line 259 "parser.y"
+#line 261 "parser.y"
                         { Print("- R: # empty # -> typeAnnotationOpt"); (yyval.typeNode) = new TypeNode(TypeNode::Type::_ANY);; }
-#line 2546 "parser.tab.cpp"
+#line 2548 "parser.tab.cpp"
     break;
 
   case 38: /* typeAnnotationOpt: typeAnnotation  */
-#line 260 "parser.y"
+#line 262 "parser.y"
                         { Print("- R: typeAnnotation -> typeAnnotationOpt"); (yyval.typeNode) = (yyvsp[0].typeNode); }
-#line 2552 "parser.tab.cpp"
+#line 2554 "parser.tab.cpp"
     break;
 
   case 39: /* typeAnnotation: ':' type  */
-#line 264 "parser.y"
+#line 266 "parser.y"
                { Print("- R: ':' type -> typeAnnotation"); (yyval.typeNode) = (yyvsp[0].typeNode); }
-#line 2558 "parser.tab.cpp"
+#line 2560 "parser.tab.cpp"
     break;
 
   case 40: /* arrayLiteral: '[' elementList ']'  */
-#line 270 "parser.y"
+#line 272 "parser.y"
         { Print("- R: '[' elementList ']' -> arrayLiteral"); (yyval.exprNode) = ExpressionNode::fromArrayLiteral((yyvsp[-1].exprListNode)); }
-#line 2564 "parser.tab.cpp"
+#line 2566 "parser.tab.cpp"
     break;
 
   case 41: /* arrayLiteral: ENDL_BRACKET_OPEN elementList ']'  */
-#line 272 "parser.y"
+#line 274 "parser.y"
         { Print("- R: ENDL_BRACKET_OPEN elementList ']' -> arrayLiteral"); (yyval.exprNode) = ExpressionNode::fromArrayLiteral((yyvsp[-1].exprListNode)); }
-#line 2570 "parser.tab.cpp"
+#line 2572 "parser.tab.cpp"
     break;
 
   case 42: /* elementList: elementListItem  */
-#line 277 "parser.y"
+#line 279 "parser.y"
         { Print("- R: elementListItem -> elementList"); (yyval.exprListNode) = ExpressionListNode::fromExpression((yyvsp[0].exprNode)); }
-#line 2576 "parser.tab.cpp"
+#line 2578 "parser.tab.cpp"
     break;
 
   case 43: /* elementList: elementList ',' elementListItem  */
-#line 279 "parser.y"
+#line 281 "parser.y"
         { Print("- R: elementList ',' elementListItem -> elementList"); (yyval.exprListNode) -> merge(ExpressionListNode::fromExpression((yyvsp[0].exprNode))); }
-#line 2582 "parser.tab.cpp"
+#line 2584 "parser.tab.cpp"
     break;
 
   case 44: /* elementListItem: %empty  */
-#line 283 "parser.y"
+#line 285 "parser.y"
                   { Print("- R: #empty# -> elementListItem"); (yyval.exprNode) = ExpressionNode::fromEmptyArrayElementExpr(); }
-#line 2588 "parser.tab.cpp"
+#line 2590 "parser.tab.cpp"
     break;
 
   case 45: /* elementListItem: singleExpression  */
-#line 284 "parser.y"
+#line 286 "parser.y"
                        { Print("- R: singleExpression -> elementListItem"); (yyval.exprNode) = (yyvsp[0].exprNode); }
-#line 2594 "parser.tab.cpp"
+#line 2596 "parser.tab.cpp"
     break;
 
   case 46: /* elementListItem: singleExpression ','  */
-#line 286 "parser.y"
+#line 288 "parser.y"
         { 
             Print("- R: singleExpression ',' -> elementListItem");
             ExpressionNode *node = ExpressionNode::fromEmptyArrayElementExpr();
             (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_COMMA, (yyvsp[-1].exprNode), node);
         }
-#line 2604 "parser.tab.cpp"
+#line 2606 "parser.tab.cpp"
     break;
 
   case 47: /* expressionStatement: singleExpression ';'  */
-#line 296 "parser.y"
+#line 298 "parser.y"
                            { Print("- R: expressionList ';' -> expressionStatement"); (yyval.stmtNode) = StatementNode::fromExprStmt((yyvsp[-1].exprNode)); }
-#line 2610 "parser.tab.cpp"
+#line 2612 "parser.tab.cpp"
     break;
 
   case 48: /* singleExpressionOpt: %empty  */
-#line 300 "parser.y"
+#line 302 "parser.y"
                         { Print("- R: #empty# -> singleExpressionOpt"); (yyval.exprNode) = nullptr; }
-#line 2616 "parser.tab.cpp"
+#line 2618 "parser.tab.cpp"
     break;
 
   case 49: /* singleExpressionOpt: singleExpression  */
-#line 301 "parser.y"
+#line 303 "parser.y"
                         { Print("- R: singleExpression -> singleExpressionOpt"); (yyval.exprNode) = (yyvsp[0].exprNode); }
-#line 2622 "parser.tab.cpp"
+#line 2624 "parser.tab.cpp"
     break;
 
   case 50: /* singleExpression: identifier  */
-#line 305 "parser.y"
+#line 307 "parser.y"
                     { Print("- R: identifier -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromId((yyvsp[0].identName)); }
-#line 2628 "parser.tab.cpp"
+#line 2630 "parser.tab.cpp"
     break;
 
   case 51: /* singleExpression: THIS  */
-#line 306 "parser.y"
+#line 308 "parser.y"
                     { Print("- R: THIS -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromThis(); }
-#line 2634 "parser.tab.cpp"
+#line 2636 "parser.tab.cpp"
     break;
 
   case 52: /* singleExpression: TRUE_KW  */
-#line 307 "parser.y"
+#line 309 "parser.y"
                     { Print("- R: TRUE_LITERAL -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromTrueLit(); }
-#line 2640 "parser.tab.cpp"
+#line 2642 "parser.tab.cpp"
     break;
 
   case 53: /* singleExpression: FALSE_KW  */
-#line 308 "parser.y"
+#line 310 "parser.y"
                     { Print("- R: FALSE_LITERAL -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromFalseLit(); }
-#line 2646 "parser.tab.cpp"
+#line 2648 "parser.tab.cpp"
     break;
 
   case 54: /* singleExpression: NULL_KW  */
-#line 309 "parser.y"
+#line 311 "parser.y"
                     { Print("- R: NULL_LITERAL -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromNullLit(); }
-#line 2652 "parser.tab.cpp"
+#line 2654 "parser.tab.cpp"
     break;
 
   case 55: /* singleExpression: UNDEFINED  */
-#line 310 "parser.y"
+#line 312 "parser.y"
                     { Print("- R: NULL_LITERAL -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUndefinedLit(); }
-#line 2658 "parser.tab.cpp"
+#line 2660 "parser.tab.cpp"
     break;
 
   case 56: /* singleExpression: STRING_LIT  */
-#line 312 "parser.y"
+#line 314 "parser.y"
                     { Print("- R: STRING_LIT -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromStringLit((yyvsp[0].stringValue)); }
-#line 2664 "parser.tab.cpp"
+#line 2666 "parser.tab.cpp"
     break;
 
   case 57: /* singleExpression: TEMPLATE_LIT  */
-#line 313 "parser.y"
+#line 315 "parser.y"
                     { Print("- R: TEMPLATE_LIT -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromStringLit((yyvsp[0].stringValue)); }
-#line 2670 "parser.tab.cpp"
+#line 2672 "parser.tab.cpp"
     break;
 
   case 58: /* singleExpression: INT_LIT  */
-#line 314 "parser.y"
+#line 316 "parser.y"
                     { Print("- R: INT_LIT -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromIntLit((yyvsp[0].integerValue)); }
-#line 2676 "parser.tab.cpp"
+#line 2678 "parser.tab.cpp"
     break;
 
   case 59: /* singleExpression: FLOAT_LIT  */
-#line 315 "parser.y"
+#line 317 "parser.y"
                     { Print("- R: FLOAT_LIT -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromFloatLit((yyvsp[0].floatingPointValue)); }
-#line 2682 "parser.tab.cpp"
+#line 2684 "parser.tab.cpp"
     break;
 
   case 60: /* singleExpression: '-' singleExpression  */
-#line 318 "parser.y"
+#line 320 "parser.y"
         { Print("- R: '-' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_UMINUS, (yyvsp[0].exprNode)); }
-#line 2688 "parser.tab.cpp"
+#line 2690 "parser.tab.cpp"
     break;
 
   case 61: /* singleExpression: '+' singleExpression  */
-#line 320 "parser.y"
+#line 322 "parser.y"
         { Print("- R: '+' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_UPLUS, (yyvsp[0].exprNode)); }
-#line 2694 "parser.tab.cpp"
+#line 2696 "parser.tab.cpp"
     break;
 
   case 62: /* singleExpression: '!' singleExpression  */
-#line 323 "parser.y"
+#line 325 "parser.y"
         { Print("- R: '!' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_NOT, (yyvsp[0].exprNode)); }
-#line 2700 "parser.tab.cpp"
+#line 2702 "parser.tab.cpp"
     break;
 
   case 63: /* singleExpression: singleExpression OPERATOR_INCREMENT  */
-#line 326 "parser.y"
+#line 328 "parser.y"
         { Print("- R: singleExpression OPERATOR_INCREMENT -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_POST_INCREMENT, (yyvsp[-1].exprNode)); }
-#line 2706 "parser.tab.cpp"
+#line 2708 "parser.tab.cpp"
     break;
 
   case 64: /* singleExpression: singleExpression OPERATOR_DECREMENT  */
-#line 328 "parser.y"
+#line 330 "parser.y"
         { Print("- R: singleExpression OPERATOR_DECREMENT -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_POST_DECREMENT, (yyvsp[-1].exprNode)); }
-#line 2712 "parser.tab.cpp"
+#line 2714 "parser.tab.cpp"
     break;
 
   case 65: /* singleExpression: ENDL_OPERATOR_INCREMENT singleExpression  */
-#line 331 "parser.y"
+#line 333 "parser.y"
         { Print("- R: ENDL_OPERATOR_INCREMENT singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_PREF_INCREMENT, (yyvsp[0].exprNode)); }
-#line 2718 "parser.tab.cpp"
+#line 2720 "parser.tab.cpp"
     break;
 
   case 66: /* singleExpression: ENDL_OPERATOR_DECREMENT singleExpression  */
-#line 333 "parser.y"
+#line 335 "parser.y"
         { Print("- R: ENDL_OPERATOR_DECREMENT singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_PREF_DECREMENT, (yyvsp[0].exprNode)); }
-#line 2724 "parser.tab.cpp"
+#line 2726 "parser.tab.cpp"
     break;
 
   case 67: /* singleExpression: OPERATOR_INCREMENT singleExpression  */
-#line 335 "parser.y"
+#line 337 "parser.y"
         { Print("- R: OPERATOR_INCREMENT singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_PREF_INCREMENT, (yyvsp[0].exprNode)); }
-#line 2730 "parser.tab.cpp"
+#line 2732 "parser.tab.cpp"
     break;
 
   case 68: /* singleExpression: OPERATOR_DECREMENT singleExpression  */
-#line 337 "parser.y"
+#line 339 "parser.y"
         { Print("- R: OPERATOR_DECREMENT singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_PREF_DECREMENT, (yyvsp[0].exprNode)); }
-#line 2736 "parser.tab.cpp"
+#line 2738 "parser.tab.cpp"
     break;
 
   case 69: /* singleExpression: singleExpression '+' singleExpression  */
-#line 340 "parser.y"
+#line 342 "parser.y"
         { Print("- R: singleExpression '+' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_PLUS, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2742 "parser.tab.cpp"
+#line 2744 "parser.tab.cpp"
     break;
 
   case 70: /* singleExpression: singleExpression '-' singleExpression  */
-#line 342 "parser.y"
+#line 344 "parser.y"
         { Print("- R: singleExpression '-' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_MINUS, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2748 "parser.tab.cpp"
+#line 2750 "parser.tab.cpp"
     break;
 
   case 71: /* singleExpression: singleExpression '*' singleExpression  */
-#line 344 "parser.y"
+#line 346 "parser.y"
         { Print("- R: singleExpression '*' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_MUL, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2754 "parser.tab.cpp"
+#line 2756 "parser.tab.cpp"
     break;
 
   case 72: /* singleExpression: singleExpression '/' singleExpression  */
-#line 346 "parser.y"
+#line 348 "parser.y"
         { Print("- R: singleExpression '/' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_DIV, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2760 "parser.tab.cpp"
+#line 2762 "parser.tab.cpp"
     break;
 
   case 73: /* singleExpression: singleExpression '<' singleExpression  */
-#line 348 "parser.y"
+#line 350 "parser.y"
         { Print("- R: singleExpression '<' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_LESS, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2766 "parser.tab.cpp"
+#line 2768 "parser.tab.cpp"
     break;
 
   case 74: /* singleExpression: singleExpression '>' singleExpression  */
-#line 350 "parser.y"
+#line 352 "parser.y"
         { Print("- R: singleExpression '>' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_GREAT, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2772 "parser.tab.cpp"
+#line 2774 "parser.tab.cpp"
     break;
 
   case 75: /* singleExpression: singleExpression OPERATOR_EQUAL singleExpression  */
-#line 353 "parser.y"
+#line 355 "parser.y"
         { Print("- R: singleExpression OPERATOR_EQUAL singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_EQUAL, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2778 "parser.tab.cpp"
+#line 2780 "parser.tab.cpp"
     break;
 
   case 76: /* singleExpression: singleExpression OPERATOR_NOT_EQUAL singleExpression  */
-#line 355 "parser.y"
+#line 357 "parser.y"
         { Print("- R: singleExpression OPERATOR_NOT_EQUAL singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_NOT_EQUAL, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2784 "parser.tab.cpp"
+#line 2786 "parser.tab.cpp"
     break;
 
   case 77: /* singleExpression: singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression  */
-#line 357 "parser.y"
+#line 359 "parser.y"
         { Print("- R: singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_LESS_EQUAL, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2790 "parser.tab.cpp"
+#line 2792 "parser.tab.cpp"
     break;
 
   case 78: /* singleExpression: singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression  */
-#line 359 "parser.y"
+#line 361 "parser.y"
         { Print("- R: singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_GREAT_EQUAL, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2796 "parser.tab.cpp"
+#line 2798 "parser.tab.cpp"
     break;
 
   case 79: /* singleExpression: singleExpression '=' singleExpression  */
-#line 362 "parser.y"
+#line 364 "parser.y"
         { Print("- R: singleExpression '=' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2802 "parser.tab.cpp"
+#line 2804 "parser.tab.cpp"
     break;
 
   case 80: /* singleExpression: singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression  */
-#line 364 "parser.y"
+#line 366 "parser.y"
         { Print("- R: singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_MUL, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2808 "parser.tab.cpp"
+#line 2810 "parser.tab.cpp"
     break;
 
   case 81: /* singleExpression: singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression  */
-#line 366 "parser.y"
+#line 368 "parser.y"
         { Print("- R: singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_DIV, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2814 "parser.tab.cpp"
+#line 2816 "parser.tab.cpp"
     break;
 
   case 82: /* singleExpression: singleExpression OPERATOR_ASSIGN_PLUS singleExpression  */
-#line 368 "parser.y"
+#line 370 "parser.y"
         { Print("- R: singleExpression OPERATOR_ASSIGN_PLUS singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_PLUS, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2820 "parser.tab.cpp"
+#line 2822 "parser.tab.cpp"
     break;
 
   case 83: /* singleExpression: singleExpression OPERATOR_ASSIGN_MINUS singleExpression  */
-#line 370 "parser.y"
+#line 372 "parser.y"
         { Print("- R: singleExpression OPERATOR_ASSIGN_MINUS singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_MINUS, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2826 "parser.tab.cpp"
+#line 2828 "parser.tab.cpp"
     break;
 
   case 84: /* singleExpression: singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression  */
-#line 372 "parser.y"
+#line 374 "parser.y"
         { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_LOGICAL_AND, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2832 "parser.tab.cpp"
+#line 2834 "parser.tab.cpp"
     break;
 
   case 85: /* singleExpression: singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression  */
-#line 374 "parser.y"
+#line 376 "parser.y"
         { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_LOGICAL_OR, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2838 "parser.tab.cpp"
+#line 2840 "parser.tab.cpp"
     break;
 
   case 86: /* singleExpression: singleExpression OPERATOR_LOGICAL_OR singleExpression  */
-#line 377 "parser.y"
+#line 379 "parser.y"
         { Print("- R: singleExpression OPERATOR_LOGICAL_OR singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_LOGICAL_OR, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2844 "parser.tab.cpp"
+#line 2846 "parser.tab.cpp"
     break;
 
   case 87: /* singleExpression: singleExpression OPERATOR_LOGICAL_AND singleExpression  */
-#line 379 "parser.y"
+#line 381 "parser.y"
         { Print("- R: singleExpression OPERATOR_LOGICAL_AND singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_LOGICAL_AND, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2850 "parser.tab.cpp"
+#line 2852 "parser.tab.cpp"
     break;
 
   case 88: /* singleExpression: singleExpression INSTANCEOF singleExpression  */
-#line 382 "parser.y"
+#line 384 "parser.y"
         { Print("- R: singleExpression INSTANCEOF singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_INSTANCEOF, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2856 "parser.tab.cpp"
+#line 2858 "parser.tab.cpp"
     break;
 
   case 89: /* singleExpression: singleExpression IN singleExpression  */
-#line 384 "parser.y"
+#line 386 "parser.y"
         { Print("- R: singleExpression IN singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_IN, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2862 "parser.tab.cpp"
+#line 2864 "parser.tab.cpp"
     break;
 
   case 90: /* singleExpression: singleExpression '?' singleExpression ':' singleExpression  */
-#line 387 "parser.y"
+#line 389 "parser.y"
         { Print("- R: singleExpression '?' singleExpression ':' singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromTernaryExpr((yyvsp[-4].exprNode), (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2868 "parser.tab.cpp"
+#line 2870 "parser.tab.cpp"
     break;
 
   case 91: /* singleExpression: singleExpression ',' singleExpression  */
-#line 390 "parser.y"
+#line 392 "parser.y"
         { Print("- R: singleExpression ',' singleExpressionn -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_COMMA, (yyvsp[-2].exprNode), (yyvsp[0].exprNode)); }
-#line 2874 "parser.tab.cpp"
+#line 2876 "parser.tab.cpp"
     break;
 
   case 92: /* singleExpression: '(' singleExpression ')'  */
-#line 393 "parser.y"
+#line 395 "parser.y"
         { Print("- R: '(' singleExpression ')' -> singleExpression"); (yyval.exprNode) = (yyvsp[-1].exprNode); }
-#line 2880 "parser.tab.cpp"
+#line 2882 "parser.tab.cpp"
     break;
 
   case 93: /* singleExpression: SUPER  */
-#line 396 "parser.y"
+#line 398 "parser.y"
         { Print("- R: SUPER -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromSuper(); }
-#line 2886 "parser.tab.cpp"
+#line 2888 "parser.tab.cpp"
     break;
 
   case 94: /* singleExpression: SUPER '(' ')'  */
-#line 398 "parser.y"
+#line 400 "parser.y"
         { Print("- R: SUPER '(' ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromSuperCall(ExpressionListNode::makeEmpty()); }
-#line 2892 "parser.tab.cpp"
+#line 2894 "parser.tab.cpp"
     break;
 
   case 95: /* singleExpression: SUPER '(' singleExpression ')'  */
-#line 400 "parser.y"
+#line 402 "parser.y"
         { Print("- R: SUPER '(' singleExpression ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromSuperCall(ExpressionListNode::fromExpression((yyvsp[-1].exprNode))); }
-#line 2898 "parser.tab.cpp"
+#line 2900 "parser.tab.cpp"
     break;
 
   case 96: /* singleExpression: SUPER '(' singleExpression ',' ')'  */
-#line 402 "parser.y"
+#line 404 "parser.y"
         { Print("- R: SUPER '(' singleExpression ',' ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromSuperCall(ExpressionListNode::fromExpression((yyvsp[-2].exprNode))); }
-#line 2904 "parser.tab.cpp"
+#line 2906 "parser.tab.cpp"
     break;
 
   case 97: /* singleExpression: identifier '(' ')'  */
-#line 406 "parser.y"
+#line 408 "parser.y"
         { Print("- R: identifier '(' ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromFuncCall((yyvsp[-2].identName), ExpressionListNode::makeEmpty()); }
-#line 2910 "parser.tab.cpp"
+#line 2912 "parser.tab.cpp"
     break;
 
   case 98: /* singleExpression: identifier '(' singleExpression ')'  */
-#line 408 "parser.y"
+#line 410 "parser.y"
         { Print("- R: identifier '(' singleExpression ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromFuncCall((yyvsp[-3].identName), ExpressionListNode::fromExpression((yyvsp[-1].exprNode))); }
-#line 2916 "parser.tab.cpp"
+#line 2918 "parser.tab.cpp"
     break;
 
   case 99: /* singleExpression: identifier '(' singleExpression ',' ')'  */
-#line 411 "parser.y"
+#line 413 "parser.y"
         { Print("- R: identifier '(' singleExpression ',' ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromFuncCall((yyvsp[-4].identName), ExpressionListNode::fromExpression((yyvsp[-2].exprNode))); }
-#line 2922 "parser.tab.cpp"
+#line 2924 "parser.tab.cpp"
     break;
 
   case 100: /* singleExpression: singleExpression '.' identifier  */
-#line 415 "parser.y"
+#line 417 "parser.y"
         { Print("- R: singleExpression '.' identifier -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromFieldAccess((yyvsp[-2].exprNode), (yyvsp[0].identName)); }
-#line 2928 "parser.tab.cpp"
+#line 2930 "parser.tab.cpp"
     break;
 
   case 101: /* singleExpression: singleExpression '.' identifier '(' ')'  */
-#line 417 "parser.y"
+#line 419 "parser.y"
         { Print("- R: singleExpression '.' identifier '(' ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromMethodCall((yyvsp[-4].exprNode), (yyvsp[-2].identName), ExpressionListNode::makeEmpty()); }
-#line 2934 "parser.tab.cpp"
+#line 2936 "parser.tab.cpp"
     break;
 
   case 102: /* singleExpression: singleExpression '.' identifier '(' singleExpression ')'  */
-#line 419 "parser.y"
+#line 421 "parser.y"
         { Print("- R: singleExpression '.' identifier '(' singleExpression ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromMethodCall((yyvsp[-5].exprNode), (yyvsp[-3].identName), ExpressionListNode::fromExpression((yyvsp[-1].exprNode))); }
-#line 2940 "parser.tab.cpp"
+#line 2942 "parser.tab.cpp"
     break;
 
   case 103: /* singleExpression: singleExpression '.' identifier '(' singleExpression ',' ')'  */
-#line 421 "parser.y"
+#line 423 "parser.y"
         { Print("- R: singleExpression '.' identifier '(' singleExpression ',' ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromMethodCall((yyvsp[-6].exprNode), (yyvsp[-4].identName), ExpressionListNode::fromExpression((yyvsp[-2].exprNode))); }
-#line 2946 "parser.tab.cpp"
+#line 2948 "parser.tab.cpp"
     break;
 
   case 104: /* singleExpression: arrayLiteral  */
-#line 423 "parser.y"
+#line 425 "parser.y"
                    { Print("- R: arrayLiteral -> singleExpression"); (yyval.exprNode) = (yyvsp[0].exprNode); }
-#line 2952 "parser.tab.cpp"
+#line 2954 "parser.tab.cpp"
     break;
 
   case 105: /* singleExpression: singleExpression '[' singleExpression ']'  */
-#line 426 "parser.y"
+#line 428 "parser.y"
         { Print("- R: singleExpression '[' singleExpression ']' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromArrayAccessExpr((yyvsp[-3].exprNode), (yyvsp[-1].exprNode)); }
-#line 2958 "parser.tab.cpp"
+#line 2960 "parser.tab.cpp"
     break;
 
   case 106: /* singleExpression: singleExpression ENDL_BRACKET_OPEN singleExpression ']'  */
-#line 428 "parser.y"
+#line 430 "parser.y"
         { Print("- R: singleExpression ENDL_BRACKET_OPEN singleExpression ']' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromArrayAccessExpr((yyvsp[-3].exprNode), (yyvsp[-1].exprNode)); }
-#line 2964 "parser.tab.cpp"
+#line 2966 "parser.tab.cpp"
     break;
 
   case 107: /* singleExpression: NEW identifier  */
-#line 431 "parser.y"
+#line 433 "parser.y"
         { Print("- R: NEW singleExpression -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromNew((yyvsp[0].identName), ExpressionListNode::makeEmpty()); }
-#line 2970 "parser.tab.cpp"
+#line 2972 "parser.tab.cpp"
     break;
 
   case 108: /* singleExpression: NEW identifier '(' ')'  */
-#line 433 "parser.y"
+#line 435 "parser.y"
         { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromNew((yyvsp[-2].identName), ExpressionListNode::makeEmpty()); }
-#line 2976 "parser.tab.cpp"
+#line 2978 "parser.tab.cpp"
     break;
 
   case 109: /* singleExpression: NEW identifier '(' singleExpression ')'  */
-#line 435 "parser.y"
+#line 437 "parser.y"
         { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); (yyval.exprNode) = ExpressionNode::fromNew((yyvsp[-3].identName), ExpressionListNode::fromExpression((yyvsp[-1].exprNode))); }
-#line 2982 "parser.tab.cpp"
+#line 2984 "parser.tab.cpp"
     break;
 
   case 110: /* varStatement: varModifier varDeclarationList ';'  */
-#line 441 "parser.y"
-                                         { Print("- R: varModifier varDeclarationList ';' -> varStatement"); (yyval.stmtNode) = StatementNode::fromVarStmt((yyvsp[-2].varModifierType), (yyvsp[-1].varDeclListNode)); }
-#line 2988 "parser.tab.cpp"
+#line 444 "parser.y"
+        { Print("- R: varModifier varDeclarationList ';' -> varStatement"); (yyval.stmtNode) = StatementNode::fromVarStmt((yyvsp[-2].varModifierType), (yyvsp[-1].varDeclListNode)); isConstDeclarated = 0; }
+#line 2990 "parser.tab.cpp"
+    break;
+
+  case 111: /* varStatement: varModifier error ';'  */
+#line 445 "parser.y"
+                            { isConstDeclarated = 0; }
+#line 2996 "parser.tab.cpp"
     break;
 
   case 112: /* varDeclarationList: varDeclaration  */
-#line 447 "parser.y"
+#line 450 "parser.y"
         { Print("- R: varDeclaration -> varDeclarationList"); (yyval.varDeclListNode) = new VarDeclarationListNode((yyvsp[0].varDeclNode)); }
-#line 2994 "parser.tab.cpp"
+#line 3002 "parser.tab.cpp"
     break;
 
   case 113: /* varDeclarationList: varDeclarationList ',' varDeclaration  */
-#line 449 "parser.y"
+#line 452 "parser.y"
         { Print("- R: varDeclarationList ',' varDeclaration -> varDeclarationList"); (yyval.varDeclListNode) -> add((yyvsp[0].varDeclNode)); }
-#line 3000 "parser.tab.cpp"
+#line 3008 "parser.tab.cpp"
     break;
 
   case 114: /* varDeclaration: identifier typeAnnotationOpt  */
-#line 454 "parser.y"
-        { Print("- R: identifier typeAnnotationOpt -> varDeclaration"); (yyval.varDeclNode) = new VarDeclarationNode((yyvsp[-1].identName), (yyvsp[0].typeNode), nullptr); }
-#line 3006 "parser.tab.cpp"
+#line 457 "parser.y"
+        { 
+            if (isConstDeclarated) {
+                yyerror("const variable must be initialized.");
+                YYERROR;
+            }
+            Print("- R: identifier typeAnnotationOpt -> varDeclaration"); (yyval.varDeclNode) = new VarDeclarationNode((yyvsp[-1].identName), (yyvsp[0].typeNode), nullptr);
+        }
+#line 3020 "parser.tab.cpp"
     break;
 
   case 115: /* varDeclaration: identifier typeAnnotationOpt '=' singleExpression  */
-#line 456 "parser.y"
+#line 465 "parser.y"
         { Print("- R: identifier typeAnnotationOpt '=' singleExpression -> varDeclaration"); (yyval.varDeclNode) = new VarDeclarationNode((yyvsp[-3].identName), (yyvsp[-2].typeNode), (yyvsp[0].exprNode)); }
-#line 3012 "parser.tab.cpp"
+#line 3026 "parser.tab.cpp"
     break;
 
   case 116: /* varModifier: VAR  */
-#line 460 "parser.y"
+#line 469 "parser.y"
             { Print("- R: VAR -> varModifier"); (yyval.varModifierType) = VarModifierType::_VAR; }
-#line 3018 "parser.tab.cpp"
+#line 3032 "parser.tab.cpp"
     break;
 
   case 117: /* varModifier: LET  */
-#line 461 "parser.y"
+#line 470 "parser.y"
             { Print("- R: LET -> varModifier"); (yyval.varModifierType) = VarModifierType::_LET; }
-#line 3024 "parser.tab.cpp"
+#line 3038 "parser.tab.cpp"
     break;
 
   case 118: /* varModifier: CONST  */
-#line 462 "parser.y"
-            { Print("- R: CONST -> varModifier"); (yyval.varModifierType) = VarModifierType::_CONST; }
-#line 3030 "parser.tab.cpp"
+#line 471 "parser.y"
+            { Print("- R: CONST -> varModifier"); (yyval.varModifierType) = VarModifierType::_CONST; isConstDeclarated = 1; }
+#line 3044 "parser.tab.cpp"
     break;
 
   case 119: /* ifStatement: IF '(' singleExpression ')' statementListItemWithoutEmptyStatement  */
-#line 469 "parser.y"
+#line 478 "parser.y"
         { 
             Print("- R: IF '(' expressionList ')' statementListItem -> ifStatement");
             (yyval.stmtNode) = StatementNode::fromIfElseStmt((yyvsp[-2].exprNode), (yyvsp[0].stmtNode), nullptr);
         }
-#line 3039 "parser.tab.cpp"
+#line 3053 "parser.tab.cpp"
     break;
 
   case 120: /* ifStatement: IF '(' singleExpression ')' statementListItemWithoutEmptyStatement ELSE statementListItem  */
-#line 475 "parser.y"
+#line 484 "parser.y"
         { 
             Print("- R: IF '(' expressionList ')' statementListItem ELSE statementListItem -> ifStatement");
             (yyval.stmtNode) = StatementNode::fromIfElseStmt((yyvsp[-4].exprNode), (yyvsp[-2].stmtNode), (yyvsp[0].stmtNode));
         }
-#line 3048 "parser.tab.cpp"
+#line 3062 "parser.tab.cpp"
     break;
 
   case 121: /* $@1: %empty  */
-#line 484 "parser.y"
+#line 493 "parser.y"
                                                           { doWhileASI(); }
-#line 3054 "parser.tab.cpp"
+#line 3068 "parser.tab.cpp"
     break;
 
   case 122: /* iterationStatement: DO statementListItem WHILE '(' singleExpression ')' $@1 ';'  */
-#line 485 "parser.y"
+#line 494 "parser.y"
         { 
             Print("- R: DO statementListItem WHILE '(' expressionList ')' ';' -> iterationStatement");
             (yyval.stmtNode) = StatementNode::fromDoWhileStmt((yyvsp[-6].stmtNode), (yyvsp[-3].exprNode));
         }
-#line 3063 "parser.tab.cpp"
+#line 3077 "parser.tab.cpp"
     break;
 
   case 123: /* iterationStatement: WHILE '(' singleExpression ')' statementListItem  */
-#line 491 "parser.y"
+#line 500 "parser.y"
         { 
             Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement");
             (yyval.stmtNode) = StatementNode::fromWhileStmt((yyvsp[-2].exprNode), (yyvsp[0].stmtNode));
         }
-#line 3072 "parser.tab.cpp"
+#line 3086 "parser.tab.cpp"
     break;
 
   case 124: /* $@2: %empty  */
-#line 496 "parser.y"
+#line 505 "parser.y"
                                                                                         { isInForHeader = 0; }
-#line 3078 "parser.tab.cpp"
+#line 3092 "parser.tab.cpp"
     break;
 
   case 125: /* iterationStatement: forHeader singleExpressionOpt ';' singleExpressionOpt ';' singleExpressionOpt ')' $@2 statementListItem  */
-#line 497 "parser.y"
+#line 506 "parser.y"
         { 
             Print("- R: FOR '(' singleExpressionOpt ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement");
             (yyval.stmtNode) = StatementNode::fromClassicForStmt((yyvsp[-7].exprNode), (yyvsp[-5].exprNode), (yyvsp[-3].exprNode), (yyvsp[0].stmtNode));
         }
-#line 3087 "parser.tab.cpp"
+#line 3101 "parser.tab.cpp"
     break;
 
   case 126: /* $@3: %empty  */
-#line 502 "parser.y"
+#line 511 "parser.y"
                                                                                                    { isInForHeader = 0; }
-#line 3093 "parser.tab.cpp"
+#line 3107 "parser.tab.cpp"
     break;
 
   case 127: /* iterationStatement: forHeader varModifier varDeclarationList ';' singleExpressionOpt ';' singleExpressionOpt ')' $@3 statementListItem  */
-#line 503 "parser.y"
+#line 512 "parser.y"
         {
             Print("- R: FOR '(' varModifier varDeclarationList ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement");
             (yyval.stmtNode) = StatementNode::fromClassicForWithVarDeclStmt((yyvsp[-8].varModifierType), (yyvsp[-7].varDeclListNode), (yyvsp[-5].exprNode), (yyvsp[-3].exprNode), (yyvsp[0].stmtNode));
         }
-#line 3102 "parser.tab.cpp"
+#line 3116 "parser.tab.cpp"
     break;
 
   case 128: /* $@4: %empty  */
-#line 508 "parser.y"
+#line 517 "parser.y"
                                                          { isInForHeader = 0; }
-#line 3108 "parser.tab.cpp"
+#line 3122 "parser.tab.cpp"
     break;
 
   case 129: /* iterationStatement: forHeader singleExpression IN singleExpression ')' $@4 statementListItem  */
-#line 509 "parser.y"
+#line 518 "parser.y"
         {
             Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement");
             (yyval.stmtNode) = StatementNode::fromForExprInExprStmt((yyvsp[-5].exprNode), (yyvsp[-3].exprNode), (yyvsp[0].stmtNode));
         }
-#line 3117 "parser.tab.cpp"
+#line 3131 "parser.tab.cpp"
     break;
 
   case 130: /* $@5: %empty  */
-#line 514 "parser.y"
+#line 523 "parser.y"
                                                                    { isInForHeader = 0; }
-#line 3123 "parser.tab.cpp"
+#line 3137 "parser.tab.cpp"
     break;
 
   case 131: /* iterationStatement: forHeader varModifier varDeclaration IN singleExpression ')' $@5 statementListItem  */
-#line 515 "parser.y"
+#line 524 "parser.y"
         {
             Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement");
             (yyval.stmtNode) = StatementNode::fromForVarDeclInExprStmt((yyvsp[-6].varModifierType), (yyvsp[-5].varDeclNode), (yyvsp[-3].exprNode), (yyvsp[0].stmtNode));
         }
-#line 3132 "parser.tab.cpp"
+#line 3146 "parser.tab.cpp"
     break;
 
   case 132: /* forHeader: FOR '('  */
-#line 522 "parser.y"
+#line 531 "parser.y"
                { isInForHeader = 1; }
-#line 3138 "parser.tab.cpp"
+#line 3152 "parser.tab.cpp"
     break;
 
   case 133: /* returnStatement: RETURN ';'  */
-#line 528 "parser.y"
+#line 537 "parser.y"
                                     { Print("- R: RETURN ';' -> returnStatement"); (yyval.stmtNode) = StatementNode::fromReturnStmt(nullptr); }
-#line 3144 "parser.tab.cpp"
+#line 3158 "parser.tab.cpp"
     break;
 
   case 134: /* returnStatement: RETURN singleExpression ';'  */
-#line 529 "parser.y"
+#line 538 "parser.y"
                                     { Print("- R: RETURN singleExpression ';' -> returnStatement"); (yyval.stmtNode) = StatementNode::fromReturnStmt((yyvsp[-1].exprNode)); }
-#line 3150 "parser.tab.cpp"
+#line 3164 "parser.tab.cpp"
     break;
 
   case 135: /* functionDeclaration: FUNCTION identifier '(' parameterList ')' typeAnnotationOpt functionBody  */
-#line 534 "parser.y"
+#line 543 "parser.y"
         {
             Print("- R: FUNCTION ID '(' parameterList ')' typeAnnotation functionBody -> functionDeclaration");
             (yyval.funcDeclarationNode) = new FunctionDeclarationNode((yyvsp[-5].identName), (yyvsp[-3].requiredParameterListNode), (yyvsp[-1].typeNode), (yyvsp[0].stmtListNode));
         }
-#line 3159 "parser.tab.cpp"
+#line 3173 "parser.tab.cpp"
     break;
 
   case 136: /* functionBody: '{' '}'  */
-#line 541 "parser.y"
+#line 550 "parser.y"
               { Print("- R: '{' '}' -> functionBody"); (yyval.stmtListNode) = StatementListNode::makeEmpty(); }
-#line 3165 "parser.tab.cpp"
+#line 3179 "parser.tab.cpp"
     break;
 
   case 137: /* $@6: %empty  */
-#line 542 "parser.y"
+#line 551 "parser.y"
           { isInFunctionBody = 1; }
-#line 3171 "parser.tab.cpp"
+#line 3185 "parser.tab.cpp"
     break;
 
   case 138: /* functionBody: '{' $@6 statementList '}'  */
-#line 543 "parser.y"
+#line 552 "parser.y"
         { 
             isInFunctionBody = 0; 
             Print("- R: '{' statementList '}' -> functionBody");
             (yyval.stmtListNode) = (yyvsp[-1].stmtListNode);
         }
-#line 3181 "parser.tab.cpp"
+#line 3195 "parser.tab.cpp"
     break;
 
   case 139: /* parameterList: %empty  */
-#line 551 "parser.y"
+#line 560 "parser.y"
                                 { Print("- R: #empty# -> parameterList"); (yyval.requiredParameterListNode) = RequiredParameterListNode::makeEmpty(); }
-#line 3187 "parser.tab.cpp"
+#line 3201 "parser.tab.cpp"
     break;
 
   case 140: /* parameterList: requiredParameterList  */
-#line 552 "parser.y"
+#line 561 "parser.y"
                                 { Print("- R: requiredParameterList -> parameterList"); (yyval.requiredParameterListNode) = (yyvsp[0].requiredParameterListNode); }
-#line 3193 "parser.tab.cpp"
+#line 3207 "parser.tab.cpp"
     break;
 
   case 141: /* parameterList: requiredParameterList ','  */
-#line 553 "parser.y"
+#line 562 "parser.y"
                                 { Print("- R: requiredParameterList ',' -> parameterList"); (yyval.requiredParameterListNode) = (yyvsp[-1].requiredParameterListNode); }
-#line 3199 "parser.tab.cpp"
+#line 3213 "parser.tab.cpp"
     break;
 
   case 142: /* requiredParameterList: requiredParameter  */
-#line 558 "parser.y"
+#line 567 "parser.y"
         {
             Print("- R: requiredParameter -> requiredParameterList");
             (yyval.requiredParameterListNode) = new RequiredParameterListNode((yyvsp[0].requiredParameterNode));
         }
-#line 3208 "parser.tab.cpp"
+#line 3222 "parser.tab.cpp"
     break;
 
   case 143: /* requiredParameterList: requiredParameterList ',' requiredParameter  */
-#line 563 "parser.y"
+#line 572 "parser.y"
         {
             Print("- R: requiredParameterList ',' requiredParameter -> requiredParameterList");
             (yyval.requiredParameterListNode) -> add((yyvsp[0].requiredParameterNode));
         }
-#line 3217 "parser.tab.cpp"
+#line 3231 "parser.tab.cpp"
     break;
 
   case 144: /* requiredParameter: identifier typeAnnotationOpt  */
-#line 571 "parser.y"
+#line 580 "parser.y"
         { 
             Print("- R: ID typeAnnotationOpt -> requiredParameter");
             (yyval.requiredParameterNode) = new RequiredParameterNode((yyvsp[-1].identName), (yyvsp[0].typeNode));
         }
-#line 3226 "parser.tab.cpp"
+#line 3240 "parser.tab.cpp"
     break;
 
   case 145: /* classDeclaration: CLASS identifier classTail  */
-#line 581 "parser.y"
+#line 590 "parser.y"
         {
             Print("- R: CLASS identifier classTail -> classDeclaration");
             (yyval.classDeclNode) = new ClassDeclarationNode((yyvsp[-1].identName), (yyvsp[0].classElementListNode));
         }
-#line 3235 "parser.tab.cpp"
+#line 3249 "parser.tab.cpp"
     break;
 
   case 146: /* classDeclaration: CLASS identifier classHeritage classTail  */
-#line 586 "parser.y"
+#line 595 "parser.y"
         {
             Print("- R: CLASS identifier classHeritage classTail -> classDeclaration");
             (yyval.classDeclNode) = new ClassDeclarationNode((yyvsp[-2].identName), (yyvsp[-1].identName), (yyvsp[0].classElementListNode));
         }
-#line 3244 "parser.tab.cpp"
+#line 3258 "parser.tab.cpp"
     break;
 
   case 147: /* classHeritage: EXTENDS identifier  */
-#line 593 "parser.y"
+#line 602 "parser.y"
                          { Print("- R: EXTENDS identifier -> classHeritage"); (yyval.identName) = (yyvsp[0].identName); }
-#line 3250 "parser.tab.cpp"
+#line 3264 "parser.tab.cpp"
     break;
 
   case 148: /* classTail: '{' '}'  */
-#line 597 "parser.y"
+#line 606 "parser.y"
                                 { Print("- R: '{' '}' -> classTail"); (yyval.classElementListNode) = ClassElementListNode::makeEmpty(); }
-#line 3256 "parser.tab.cpp"
+#line 3270 "parser.tab.cpp"
     break;
 
   case 149: /* classTail: '{' classElementList '}'  */
-#line 598 "parser.y"
+#line 607 "parser.y"
                                 { Print("- R: '{' classElementList '}' -> classTail"); (yyval.classElementListNode) = (yyvsp[-1].classElementListNode); }
-#line 3262 "parser.tab.cpp"
+#line 3276 "parser.tab.cpp"
     break;
 
   case 150: /* classElementList: classElement  */
-#line 602 "parser.y"
+#line 611 "parser.y"
                                     { Print("- R: classElement -> classElementList"); (yyval.classElementListNode) = new ClassElementListNode((yyvsp[0].classElementNode)); }
-#line 3268 "parser.tab.cpp"
+#line 3282 "parser.tab.cpp"
     break;
 
   case 151: /* classElementList: classElementList classElement  */
-#line 603 "parser.y"
+#line 612 "parser.y"
                                     { Print("- R: classElementList classElement -> classElementList"); (yyval.classElementListNode) ->add((yyvsp[0].classElementNode)); }
-#line 3274 "parser.tab.cpp"
+#line 3288 "parser.tab.cpp"
     break;
 
   case 152: /* classElement: CONSTRUCTOR '(' parameterList ')' functionBody  */
-#line 608 "parser.y"
+#line 617 "parser.y"
         {
             Print("- R: CONSTRUCTOR '(' parameterList ')' functionBody -> classElement");
             (yyval.classElementNode) = new ClassElementNode((yyvsp[-2].requiredParameterListNode), (yyvsp[0].stmtListNode));
         }
-#line 3283 "parser.tab.cpp"
+#line 3297 "parser.tab.cpp"
     break;
 
   case 153: /* classElement: propertyName typeAnnotationOpt ';'  */
-#line 615 "parser.y"
+#line 624 "parser.y"
         {
             Print("- R: propertyName typeAnnotationOpt ';' -> classElement");
             (yyval.classElementNode) = new ClassElementNode((yyvsp[-2].identName), (yyvsp[-1].typeNode), nullptr);
         }
-#line 3292 "parser.tab.cpp"
+#line 3306 "parser.tab.cpp"
     break;
 
   case 154: /* classElement: propertyName typeAnnotationOpt '=' singleExpression ';'  */
-#line 620 "parser.y"
+#line 629 "parser.y"
         {
             Print("- R: propertyName typeAnnotationOpt '=' singleExpression ';' -> classElement");
             (yyval.classElementNode) = new ClassElementNode((yyvsp[-4].identName), (yyvsp[-3].typeNode), (yyvsp[-1].exprNode));
         }
-#line 3301 "parser.tab.cpp"
+#line 3315 "parser.tab.cpp"
     break;
 
   case 155: /* classElement: propertyName '(' parameterList ')' typeAnnotationOpt functionBody  */
-#line 627 "parser.y"
+#line 636 "parser.y"
         {
             Print("- R: propertyName '(' parameterList ')' typeAnnotationOpt functionBody -> classElement");
             (yyval.classElementNode) = new ClassElementNode((yyvsp[-5].identName), (yyvsp[-3].requiredParameterListNode), (yyvsp[-1].typeNode), (yyvsp[0].stmtListNode));
         }
-#line 3310 "parser.tab.cpp"
+#line 3324 "parser.tab.cpp"
     break;
 
   case 156: /* classElement: GET propertyName '(' ')' typeAnnotationOpt functionBody  */
-#line 634 "parser.y"
+#line 643 "parser.y"
         {
             Print("- R: GET propertyName '(' ')' typeAnnotationOpt functionBody -> classElement");
             (yyval.classElementNode) = new ClassElementNode((yyvsp[-4].identName), nullptr, (yyvsp[-1].typeNode), (yyvsp[0].stmtListNode));
         }
-#line 3319 "parser.tab.cpp"
+#line 3333 "parser.tab.cpp"
     break;
 
   case 157: /* classElement: SET propertyName '(' parameterList ')' functionBody  */
-#line 639 "parser.y"
+#line 648 "parser.y"
         {
             Print("- R: SET propertyName callSignature functionBody -> classElement");
             (yyval.classElementNode) = new ClassElementNode((yyvsp[-4].identName), (yyvsp[-2].requiredParameterListNode), nullptr, (yyvsp[0].stmtListNode));
         }
-#line 3328 "parser.tab.cpp"
+#line 3342 "parser.tab.cpp"
     break;
 
   case 158: /* propertyName: identifier  */
-#line 646 "parser.y"
+#line 655 "parser.y"
                  { Print("- R: identifier -> propertyName"); }
-#line 3334 "parser.tab.cpp"
+#line 3348 "parser.tab.cpp"
     break;
 
   case 159: /* identifier: ID  */
-#line 650 "parser.y"
+#line 659 "parser.y"
                 { Print("- R: ID -> identifier"); (yyval.identName) = (yyvsp[0].identName); }
-#line 3340 "parser.tab.cpp"
+#line 3354 "parser.tab.cpp"
     break;
 
   case 160: /* identifier: ASYNC  */
-#line 651 "parser.y"
+#line 660 "parser.y"
                 { Print("- R: ASYNC -> identifier"); (yyval.identName) = _strdup("async"); }
-#line 3346 "parser.tab.cpp"
+#line 3360 "parser.tab.cpp"
     break;
 
   case 161: /* identifier: AS  */
-#line 652 "parser.y"
+#line 661 "parser.y"
                 { Print("- R: AS -> identifier"); (yyval.identName) = _strdup("as"); }
-#line 3352 "parser.tab.cpp"
+#line 3366 "parser.tab.cpp"
     break;
 
   case 162: /* identifier: FROM  */
-#line 653 "parser.y"
+#line 662 "parser.y"
                 { Print("- R: FROM -> identifier"); (yyval.identName) = _strdup("from"); }
-#line 3358 "parser.tab.cpp"
+#line 3372 "parser.tab.cpp"
     break;
 
   case 163: /* identifier: YIELD  */
-#line 654 "parser.y"
+#line 663 "parser.y"
                 { Print("- R: YIELD -> identifier"); (yyval.identName) = _strdup("yield"); }
-#line 3364 "parser.tab.cpp"
+#line 3378 "parser.tab.cpp"
     break;
 
   case 164: /* identifier: ANY  */
-#line 655 "parser.y"
+#line 664 "parser.y"
                 { Print("- R: ANY -> identifier"); (yyval.identName) = _strdup("any"); }
-#line 3370 "parser.tab.cpp"
+#line 3384 "parser.tab.cpp"
     break;
 
   case 165: /* identifier: NUMBER  */
-#line 656 "parser.y"
+#line 665 "parser.y"
                 { Print("- R: NUMBER -> identifier"); (yyval.identName) = _strdup("number"); }
-#line 3376 "parser.tab.cpp"
+#line 3390 "parser.tab.cpp"
     break;
 
   case 166: /* identifier: BOOLEAN  */
-#line 657 "parser.y"
+#line 666 "parser.y"
                 { Print("- R: BOOLEAN -> identifier"); (yyval.identName) = _strdup("boolean"); }
-#line 3382 "parser.tab.cpp"
+#line 3396 "parser.tab.cpp"
     break;
 
   case 167: /* identifier: STRING  */
-#line 658 "parser.y"
+#line 667 "parser.y"
                 { Print("- R: STRING -> identifier"); (yyval.identName) = _strdup("string"); }
-#line 3388 "parser.tab.cpp"
+#line 3402 "parser.tab.cpp"
     break;
 
   case 168: /* identifier: UNIQUE  */
-#line 659 "parser.y"
+#line 668 "parser.y"
                 { Print("- R: UNIQUE -> identifier"); (yyval.identName) = _strdup("unique"); }
-#line 3394 "parser.tab.cpp"
+#line 3408 "parser.tab.cpp"
     break;
 
   case 169: /* identifier: SYMBOL  */
-#line 660 "parser.y"
+#line 669 "parser.y"
                 { Print("- R: SYMBOL -> identifier"); (yyval.identName) = _strdup("symbol"); }
-#line 3400 "parser.tab.cpp"
+#line 3414 "parser.tab.cpp"
     break;
 
   case 170: /* identifier: NEVER  */
-#line 661 "parser.y"
+#line 670 "parser.y"
                 { Print("- R: NEVER -> identifier"); (yyval.identName) = _strdup("never"); }
-#line 3406 "parser.tab.cpp"
+#line 3420 "parser.tab.cpp"
     break;
 
   case 171: /* identifier: OBJECT  */
-#line 662 "parser.y"
+#line 671 "parser.y"
                 { Print("- R: OBJECT -> identifier"); (yyval.identName) = _strdup("object"); }
-#line 3412 "parser.tab.cpp"
+#line 3426 "parser.tab.cpp"
     break;
 
   case 172: /* identifier: KEYOF  */
-#line 663 "parser.y"
+#line 672 "parser.y"
                 { Print("- R: KEYOF -> identifier"); (yyval.identName) = _strdup("keyof"); }
-#line 3418 "parser.tab.cpp"
+#line 3432 "parser.tab.cpp"
     break;
 
   case 173: /* identifier: NAMESPACE  */
-#line 664 "parser.y"
+#line 673 "parser.y"
                 { Print("- R: NAMESPACE -> identifier"); (yyval.identName) = _strdup("namespace"); }
-#line 3424 "parser.tab.cpp"
+#line 3438 "parser.tab.cpp"
     break;
 
   case 174: /* identifier: ABSTRACT  */
-#line 665 "parser.y"
+#line 674 "parser.y"
                 { Print("- R: ABSTRACT -> identifier"); (yyval.identName) = _strdup("abstract"); }
-#line 3430 "parser.tab.cpp"
+#line 3444 "parser.tab.cpp"
     break;
 
   case 175: /* identifier: REQUIRE  */
-#line 666 "parser.y"
+#line 675 "parser.y"
                 { Print("- R: REQUIRE -> identifier"); (yyval.identName) = _strdup("require"); }
-#line 3436 "parser.tab.cpp"
+#line 3450 "parser.tab.cpp"
     break;
 
 
-#line 3440 "parser.tab.cpp"
+#line 3454 "parser.tab.cpp"
 
       default: break;
     }
@@ -3665,7 +3679,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 669 "parser.y"
+#line 678 "parser.y"
 
 
 
