@@ -6,13 +6,17 @@ import java.io.InputStreamReader;
 
 public class Console {
 
-    public static JavaRTL.Undefined log(java.lang.String value) {
+    public static JavaRTL.Void log(java.lang.String value) {
         System.out.println(value);
         return new JavaRTL.Undefined();
     }
 
-    public static JavaRTL.Undefined log(JavaRTL.Any value) {
-        System.out.println(value.toString());
+    public static JavaRTL.Void log(JavaRTL.Any value) {
+        if (value == null) {
+            System.out.println("undefined");
+        } else { 
+            System.out.println(value.toString());
+        }
         return new Undefined();
     }
 
