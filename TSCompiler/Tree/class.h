@@ -33,6 +33,8 @@ struct ClassElementNode final : Node
     ExpressionNode *initInConstructor{};
 
     ClassDeclarationNode *elemClass{};
+
+    bool isPropertyAssigned = false;
     VarDeclarationNode *baseNode{};  // using for variables in main class
 
     std::vector<VarDeclarationNode *> variables{};
@@ -56,6 +58,7 @@ struct ClassElementNode final : Node
           expression{expression},
           isStatic{isStatic}
     {
+        if (expression) isPropertyAssigned = true;
     }
 
     ClassElementNode(const std::string name, RequiredParameterListNode *params,
@@ -211,6 +214,7 @@ struct ClassDeclarationNode final : Node
     ClassDeclarationNode *returnedClassFromConstructor;
 
     ClassElementNode *thisProp;
+    ClassElementNode *superProp;
 
     ClassDeclarationNode(const std::string className,
                          ClassElementListNode *const body)

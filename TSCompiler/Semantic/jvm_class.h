@@ -9,7 +9,7 @@ struct JvmDataType
     enum class Type
     {
         Int,
-        Float,
+        Double,
         Bool,
         String,
         Complex,
@@ -37,10 +37,23 @@ struct JvmDataType
 
     bool operator==(const JvmDataType &other) const
     {
-        return (type == other.type ||
-                (type == Type::Complex &&
-                 complex == std::vector<std::string>{"JavaRTL", "Any"})) &&
-               arrayArity == other.arrayArity;
+        if (arrayArity != other.arrayArity)
+            return false;
+
+        bool isAnyTypeCompare =
+            type == Type::Complex &&
+            complex == std::vector<std::string>{"JavaRTL", "Any"};
+
+        bool isVoidUndefinedTypesCompare =
+            type == Type::Complex && other.type == Type::Complex &&
+            complex == std::vector<std::string>{"JavaRTL", "Void"} &&
+            other.complex == std::vector<std::string>{"JavaRTL", "Undefined"};
+
+        bool isOtherTypeCompare =
+            type == other.type && complex == other.complex;
+
+        return isAnyTypeCompare || isVoidUndefinedTypesCompare ||
+               isOtherTypeCompare;
     }
 
     bool operator!=(const JvmDataType &other) const
@@ -55,7 +68,7 @@ struct JvmDataType
 
     bool isPrimitiveType() const
     {
-        return (type == Type::Int || type == Type::Float ||
+        return (type == Type::Int || type == Type::Double ||
                 type == Type::Bool) &&
                arrayArity == 0;
     }
@@ -68,8 +81,8 @@ struct JvmDataType
         case JvmDataType::Type::Int:
             name += "int";
             break;
-        case JvmDataType::Type::Float:
-            name += "float";
+        case JvmDataType::Type::Double:
+            name += "double";
             break;
         case JvmDataType::Type::String:
             name += "string";
@@ -100,8 +113,8 @@ struct JvmDataType
             return "I";
         case Type::Bool:
             return "Z";
-        case Type::Float:
-            return "F";
+        case Type::Double:
+            return "D";
         case Type::String:
             return "Ljava/lang/String;";
         case Type::Complex:
@@ -178,6 +191,12 @@ const inline JvmDataType RTL_BOOLEAN_TYPE = []
 const inline JvmDataType RTL_UNDEFINED_TYPE = []
 {
     JvmDataType type{"JavaRTL/Undefined"};
+    return type;
+}();
+
+const inline JvmDataType RTL_VOID_TYPE = []
+{
+    JvmDataType type{"JavaRTL/Void"};
     return type;
 }();
 

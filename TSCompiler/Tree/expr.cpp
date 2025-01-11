@@ -257,6 +257,66 @@ ExpressionNode *ExpressionNode::toAssignOnField() const
     return assign;
 }
 
+ExpressionNode *ExpressionNode::toRTLMethodCall() const
+{
+    switch (type)
+    {
+    case Type::_PLUS:
+        return fromMethodCall(firstOperand, "plus",
+                              new ExpressionListNode(secondOperand));
+    case Type::_MINUS:
+        return fromMethodCall(firstOperand, "minus",
+                              new ExpressionListNode(secondOperand));
+    case Type::_MUL:
+        return fromMethodCall(firstOperand, "mul",
+                              new ExpressionListNode(secondOperand));
+    case Type::_DIV:
+        return fromMethodCall(firstOperand, "div",
+                              new ExpressionListNode(secondOperand));
+    case Type::_UPLUS:
+        return fromMethodCall(firstOperand, "uPlus",
+                              new ExpressionListNode(secondOperand));
+    case Type::_UMINUS:
+        return fromMethodCall(firstOperand, "uMinus",
+                              new ExpressionListNode(secondOperand));
+    case Type::_LESS:
+        return fromMethodCall(firstOperand, "less",
+                              new ExpressionListNode(secondOperand));
+    case Type::_GREAT:
+        return fromMethodCall(firstOperand, "great",
+                              new ExpressionListNode(secondOperand));
+    case Type::_EQUAL:
+        return fromMethodCall(firstOperand, "equal",
+                              new ExpressionListNode(secondOperand));
+    case Type::_NOT_EQUAL:
+        return fromMethodCall(firstOperand, "notEqual",
+                              new ExpressionListNode(secondOperand));
+    case Type::_LESS_EQUAL:
+        return fromMethodCall(firstOperand, "lessEqual",
+                              new ExpressionListNode(secondOperand));
+    case Type::_GREAT_EQUAL:
+        return fromMethodCall(firstOperand, "greatEqual",
+                              new ExpressionListNode(secondOperand));
+    case Type::_NOT:
+        return fromMethodCall(
+            fromNew("Boolean", new ExpressionListNode(firstOperand)), "not",
+            ExpressionListNode::makeEmpty());
+    case Type::_LOGICAL_OR:
+        return fromMethodCall(
+            fromNew("Boolean", new ExpressionListNode(firstOperand)), "or",
+            new ExpressionListNode(
+                fromNew("Boolean", new ExpressionListNode(secondOperand))));
+    case Type::_LOGICAL_AND:
+        return fromMethodCall(
+            fromNew("Boolean", new ExpressionListNode(firstOperand)), "and",
+            new ExpressionListNode(
+                fromNew("Boolean", new ExpressionListNode(secondOperand))));
+    default:
+        break;
+    }
+    return nullptr;
+}
+
 void ExpressionNode::applyToAllChildren(
     const std::function<ExpressionNode *(ExpressionNode *)> &mapFunction)
 {

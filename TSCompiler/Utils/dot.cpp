@@ -1069,6 +1069,9 @@ void ToDot(TSScriptNode *node, std::ostream &out)
 
     for (ClassDeclarationNode *child : node->classes)
     {
+        if (child->className.starts_with("JavaRTL"))
+            continue;
+
         ToDot(child, out);
         out << MakeConnection(node->id, child->id);
     }

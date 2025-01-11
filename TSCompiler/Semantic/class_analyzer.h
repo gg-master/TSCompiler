@@ -6,7 +6,7 @@
 
 using IdT = uint16_t;
 using IntT = std::int32_t;
-using FloatT = double;
+using DoubleT = double;
 using Bytes = std::vector<unsigned char>;
 
 inline void append(Bytes &bytes, Bytes::value_type value)
@@ -36,19 +36,20 @@ struct Constant
 {
     enum class TypeT : uint8_t
     {
+        Empty = 0,
         Utf8 = 1,
         Integer = 3,
-        Float = 4,
+        Double = 6,
         String = 8,
         NameAndType = 12,
         Class = 7,
-        MethodRef = 10,
-        FieldRef = 9
+        FieldRef = 9,
+        MethodRef = 10
     } Type{};
 
     std::string Utf8{};
     IntT Integer{};
-    FloatT Float{};
+    DoubleT Double{};
 
     IdT Utf8Id{};
 
@@ -71,7 +72,8 @@ struct Constant
 
     static Constant CreateInt(IntT i);
 
-    static Constant CreateFloat(FloatT float_);
+    static Constant CreateEmpty();
+    static Constant CreateDouble(DoubleT float_);
 
     static Constant CreateString(IdT Utf8);
 
@@ -97,7 +99,7 @@ struct ConstantTable
 
     IdT FindInt(IntT i);
 
-    IdT FindFloat(FloatT i);
+    IdT FindDouble(DoubleT i);
 
     IdT FindClass(std::string className);
 
@@ -236,6 +238,8 @@ struct ClassAnalyzer
     static ExpressionNode *replaceAssignmentsOnArrayElements(
         ExpressionNode *node);
     static ExpressionNode *replaceAssignmentsOnField(ExpressionNode *node);
+
+    static ExpressionNode *replaceOperationsOnMethodCall(ExpressionNode *node);
 
     void validateTypename(JvmDataType *jvmDataType);
     ClassDeclarationNode *findClass(JvmDataType *jvmDataType) const;

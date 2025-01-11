@@ -100,26 +100,22 @@ inline JvmDataType *toJvmDataType(const TypeNode *node)
     switch (node->type)
     {
     case TypeNode::Type::_NUMBER:
-        // FIXME int and float are same number type
-        type = new JvmDataType(JvmDataType::Type::Int);
-        // type = new JvmDataType("JavaRTL/Number");
+        type = new JvmDataType(RTL_NUMBER_TYPE);
         break;
     case TypeNode::Type::_BOOLEAN:
-        type = new JvmDataType(JvmDataType::Type::Bool);
-        // type = new JvmDataType("JavaRTL/Boolean");
+        type = new JvmDataType(RTL_BOOLEAN_TYPE);
         break;
     case TypeNode::Type::_STRING:
-        // type = new JvmDataType(JvmDataType::Type::String);
-        type = new JvmDataType("JavaRTL/String");
+        type = new JvmDataType(RTL_STRING_TYPE);
         break;
     case TypeNode::Type::_UNDEFINED:
-        type = new JvmDataType("JavaRTL/Undefined");
+        type = new JvmDataType(RTL_UNDEFINED_TYPE);
         break;
     case TypeNode::Type::_NULL:
-        type = new JvmDataType("JavaRTL/Null");
+        type = new JvmDataType(RTL_NULL_TYPE);
         break;
     case TypeNode::Type::_VOID:
-        type = new JvmDataType(JvmDataType::Type::Void);
+        type = new JvmDataType(RTL_VOID_TYPE);
         break;
     case TypeNode::Type::_USER_TYPE:
         type = new JvmDataType(node->userTypeName);
@@ -144,7 +140,10 @@ inline bool isUnknown(TypeNode *node)
         return true;
     }
 
-    if (*node->jvmType == RTL_ANY_TYPE || *node->jvmType == RTL_UNDEFINED_TYPE)
+    if (*node->jvmType == RTL_ANY_TYPE ||
+        *node->jvmType == RTL_UNDEFINED_TYPE ||
+        node->jvmType->type == RTL_VOID_TYPE ||
+        node->jvmType->type == JvmDataType::Type::Void)
     {
         return true;
     }

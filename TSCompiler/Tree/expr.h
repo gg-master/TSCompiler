@@ -141,6 +141,8 @@ struct ExpressionNode final : Node
     ExpressionNode *toASsignOnArrayElement() const;
     ExpressionNode *toAssignOnField() const;
 
+    ExpressionNode *toRTLMethodCall() const;
+
     void applyToAllChildren(
         const std::function<ExpressionNode *(ExpressionNode *)> &mapFunction);
     void callForAllChildren(

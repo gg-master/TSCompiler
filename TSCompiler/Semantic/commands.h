@@ -14,6 +14,7 @@ enum class Command : uint8_t
     sipush = 0x11,
     ldc = 0x12,
     ldc_w = 0x13,
+    ldc2_w = 0x14,
     iload = 0x15,
     aload = 0x19,
     istore = 0x36,

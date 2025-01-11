@@ -11,8 +11,12 @@ public class Boolean extends Any {
         this._value = value;
         this.origValue = this;
     }
+    public Boolean(int value){
+        this._value = value == 0 ? true : false;
+        this.origValue = new Number(value);
+    }
     public Boolean(java.lang.String value) {
-        this(value.isEmpty());
+        this(!value.isEmpty());
         this.origValue = new JavaRTL.String(value);
     }
 
@@ -28,7 +32,7 @@ public class Boolean extends Any {
         } else if (value instanceof JavaRTL.Number) {
             this._value = ((JavaRTL.Number)value)._value == 0 ? false : true;
         } else if (value instanceof JavaRTL.String) {
-            this._value = ((JavaRTL.String)value)._value.isEmpty();
+            this._value = !((JavaRTL.String)value)._value.isEmpty();
         } else if (value instanceof JavaRTL.Null) {
             this._value = false;
         } else if (value instanceof JavaRTL.Void) {

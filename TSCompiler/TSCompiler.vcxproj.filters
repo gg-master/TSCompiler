@@ -37,6 +37,9 @@
     <Filter Include="Файлы заголовков\Utils">
       <UniqueIdentifier>{7b435f9d-7a58-4a26-91cc-4f4c806da24a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Semantic\RTL">
+      <UniqueIdentifier>{3424d2f2-1c17-44a4-bb35-51b095b4f48e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Flex Include="lexer.l">
@@ -76,6 +79,24 @@
     </ClCompile>
     <ClCompile Include="Tree\class.cpp">
       <Filter>Исходные файлы\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\boolean.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\null.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\number.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\string.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\undefined.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\void.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

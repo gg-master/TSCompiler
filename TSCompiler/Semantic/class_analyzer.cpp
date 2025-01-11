@@ -20,8 +20,8 @@ bool operator==(const Constant &lhs, const Constant &rhs)
         return lhs.Utf8 == rhs.Utf8;
     case Constant::TypeT::Integer:
         return lhs.Integer == rhs.Integer;
-    case Constant::TypeT::Float:
-        return lhs.Float == rhs.Float;
+    case Constant::TypeT::Double:
+        return lhs.Double == rhs.Double;
     case Constant::TypeT::String:
         return lhs.Utf8Id == rhs.Utf8Id;
     case Constant::TypeT::Class:
@@ -51,12 +51,18 @@ Constant Constant::CreateInt(IntT i)
     constant.Integer = i;
     return constant;
 }
-
-Constant Constant::CreateFloat(FloatT float_)
+Constant Constant::CreateEmpty()
 {
     Constant constant;
-    constant.Type = TypeT::Float;
-    constant.Float = float_;
+    constant.Type = TypeT::Empty;
+    return constant;
+}
+
+Constant Constant::CreateDouble(DoubleT double_)
+{
+    Constant constant;
+    constant.Type = TypeT::Double;
+    constant.Double = double_;
     return constant;
 }
 
@@ -142,15 +148,16 @@ IdT ConstantTable::FindInt(IntT i)
     return foundIter - Constants.begin() + 1;
 }
 
-IdT ConstantTable::FindFloat(FloatT i)
+IdT ConstantTable::FindDouble(DoubleT i)
 {
-    const auto constant = Constant::CreateFloat(i);
+    const auto constant = Constant::CreateDouble(i);
     const auto foundIter =
         std::find(Constants.begin(), Constants.end(), constant);
     if (foundIter == Constants.end())
     {
         Constants.push_back(constant);
-        return Constants.end() - Constants.begin();
+        Constants.push_back(Constant::CreateEmpty());
+        return Constants.end() - Constants.begin() - 1;
     }
     return foundIter - Constants.begin() + 1;
 }
@@ -220,6 +227,12 @@ void ClassAnalyzer::attributeClass(ClassDeclarationNode *node)
 
     currentClass->thisProp = new ClassElementNode(
         "this", new TypeNode(currentClass->toDataType()), nullptr);
+
+    if (auto parent = root->findClass(currentClass->heritageName); parent)
+    {
+        currentClass->superProp = new ClassElementNode(
+            "super", new TypeNode(parent->toDataType()), nullptr);
+    }
 
     resolveClassConstructor();
     attributeMemberSignatures();
@@ -312,15 +325,16 @@ void ClassAnalyzer::attributeMemberSignatures()
         if (method->type == ClassElementNode::Type::_PROPERTY)
             continue;
 
+        method->elemClass = currentClass;
         currentMethod = method;
 
-        method->elemClass = currentClass;
-
         auto *type = toJvmDataType(method->propertyAndReturnType);
-        if (*type == RTL_ANY_TYPE)
-        {
+
+        if (*type == RTL_ANY_TYPE && method->isConstructor())
             type = new JvmDataType(JvmDataType::Type::Void);
-        }
+        else
+            type = new JvmDataType(RTL_VOID_TYPE);
+
         method->propertyAndReturnType = new TypeNode(type);
 
         method->analyzeArguments();
@@ -447,18 +461,10 @@ void ClassAnalyzer::analyzeClassConstructor()
                 "constructor.");
         }
     }
-
     constructor->elemClass = currentClass;
     currentMethod = constructor;
 
     currentScopingLevel = 1;
-
-    if (auto parent = root->findClass(currentClass->heritageName); parent)
-    {
-        auto *superVar = new VarDeclarationNode(
-            "super", new TypeNode(parent->toDataType()), nullptr);
-        currentMethod->variables.push_back(superVar);
-    }
 
     moveFunctionScopedVarsOnTop();
 
@@ -502,6 +508,37 @@ void ClassAnalyzer::analyzeClassFields()
             continue;
         }
         field->expression = analyzeExpr(field->expression);
+
+        if (field->expression)
+        {
+            if (*field->propertyAndReturnType != *field->expression->exprType)
+            {
+                errors.push_back(
+                    "Type '" + field->expression->exprType->toString() +
+                    "' is not assignable to type '" +
+                    field->propertyAndReturnType->toString() + "'.");
+                continue;
+            }
+            field->propertyAndReturnType = field->expression->exprType;
+        }
+
+        if (field->baseNode && field->baseNode->initExpression)
+        {
+            auto backup = errors;
+            auto expr = analyzeExpr(field->baseNode->initExpression);
+            errors = backup;
+
+            if (*field->propertyAndReturnType != *expr->exprType)
+            {
+                errors.push_back("Type '" + expr->exprType->toString() +
+                                 "' is not assignable to type '" +
+                                 field->propertyAndReturnType->toString() +
+                                 "'.");
+                continue;
+            }
+            field->propertyAndReturnType = expr->exprType;
+        }
+        validateTypename(field->propertyAndReturnType->jvmType);
     }
     currentField = nullptr;
 }
@@ -512,13 +549,6 @@ void ClassAnalyzer::analyzeClassMethod(ClassElementNode *node)
     currentMethod = node;
 
     currentScopingLevel = 1;
-
-    if (auto parent = root->findClass(currentClass->heritageName); parent)
-    {
-        auto *superVar = new VarDeclarationNode(
-            "super", new TypeNode(parent->toDataType()), nullptr);
-        currentMethod->variables.push_back(superVar);
-    }
 
     const auto &allMethods = currentClass->body->GetMethods();
     const auto sameMethodsCount = std::count_if(
@@ -723,7 +753,10 @@ ExpressionNode *ClassAnalyzer::analyzeExpr(ExpressionNode *node)
     if (!node)
         return nullptr;
 
-    auto changed = replaceAssignmentsOnArrayElements(node);
+    auto changed = replaceOperationsOnMethodCall(node);
+    changed->applyToAllChildren(replaceOperationsOnMethodCall);
+
+    changed = replaceAssignmentsOnArrayElements(changed);
     changed->applyToAllChildren(replaceAssignmentsOnArrayElements);
 
     analyzeFuncCall(changed);
@@ -888,7 +921,7 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
             std::find_if(allMethod.begin(), allMethod.end(),
                          [&](ClassElementNode *func) {
                              return methodName == func->name &&
-                                    callTypes == func->params->getTypes();
+                                    func->params->getTypes() == callTypes;
                          });
 
         if (foundMethod != allMethod.end())
@@ -943,7 +976,7 @@ void ClassAnalyzer::analyzeNewCall(ExpressionNode *node)
     const auto foundConstructor =
         std::find_if(allConstructors.begin(), allConstructors.end(),
                      [&](ClassElementNode *func)
-                     { return callTypes == func->params->getTypes(); });
+                     { return func->params->getTypes() == callTypes; });
 
     if (foundConstructor == allConstructors.end())
     {
@@ -964,25 +997,25 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
     if (node->type == ExpressionNode::Type::_INT_LIT)
     {
-        type = new TypeNode(new JvmDataType(JvmDataType::Type::Int));
+        type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
         node->exprType = type;
         return type;
     }
     if (node->type == ExpressionNode::Type::_FLOAT_LIT)
     {
-        type = new TypeNode(new JvmDataType(JvmDataType::Type::Float));
+        type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
         node->exprType = type;
         return type;
     }
     if (node->type == ExpressionNode::Type::_BOOLEAN_LIT)
     {
-        type = new TypeNode(new JvmDataType(JvmDataType::Type::Bool));
+        type = new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE));
         node->exprType = type;
         return type;
     }
     if (node->type == ExpressionNode::Type::_STRING_LIT)
     {
-        type = new TypeNode(new JvmDataType(JvmDataType::Type::String));
+        type = new TypeNode(new JvmDataType(RTL_STRING_TYPE));
         node->exprType = type;
         return type;
     }
@@ -1048,6 +1081,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         {
             auto *var = currentMethod->findVariableByName(
                 node->identifierString, currentScopingLevel);
+
             if (var)
             {
                 type = var->varType;
@@ -1057,12 +1091,21 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             }
         }
 
-        auto beforeNode = currentField ? currentField : nullptr;
-
         auto *var = root->mainClass->body->findPropertyByName(
-            node->identifierString, beforeNode);
+            node->identifierString, currentField);
+
         if (var)
         {
+            if (currentMethod->isMainMethod &&
+                isBlockScopeVar(var->baseNode->modifierType) &&
+                !var->isPropertyAssigned)
+            {
+                errors.push_back("Block-scoped variable '" +
+                                 node->identifierString +
+                                 "' used before its declaration.");
+            }
+
+            var->isPropertyAssigned = true;
             type = var->propertyAndReturnType;
             node->exprType = type;
             node->actualField = var;
@@ -1195,6 +1238,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
                                      "' is used before its initialization.");
                 }
 
+                foundField->isPropertyAssigned = true;
                 node->actualField = foundField;
                 node->exprType = foundField->propertyAndReturnType;
                 return node->exprType;
@@ -1267,6 +1311,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             !isUnknown(firstOperand))
         {
             node->actualField->initInConstructor = node;
+            node->actualField->isPropertyAssigned = true;
         }
 
         if (node->type == ExpressionNode::Type::_ASSIGN)
@@ -1296,7 +1341,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
         if (node->isLogical())
         {
-            type = new TypeNode(new JvmDataType(JvmDataType::Type::Bool));
+            type = new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE));
             node->exprType = type;
 
             if (*leftType == *type || *rightType == *type)
@@ -1304,7 +1349,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         }
         if (node->isComparsion())
         {
-            type = new TypeNode(new JvmDataType(JvmDataType::Type::Bool));
+            type = new TypeNode(new JvmDataType(RTL_BOOLEAN_TYPE));
             node->exprType = type;
 
             if (*leftType == *rightType)
@@ -1427,6 +1472,15 @@ ExpressionNode *ClassAnalyzer::replaceAssignmentsOnArrayElements(
 ExpressionNode *ClassAnalyzer::replaceAssignmentsOnField(ExpressionNode *node)
 {
     auto *converted = node->toAssignOnField();
+    if (converted)
+        return converted;
+    return node;
+}
+
+ExpressionNode *ClassAnalyzer::replaceOperationsOnMethodCall(
+    ExpressionNode *node)
+{
+    auto *converted = node->toRTLMethodCall();
     if (converted)
         return converted;
     return node;
@@ -1573,6 +1627,13 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     if (expr->type == ExpressionNode::Type::_INT_LIT)
     {
         Bytes bytes;
+
+        const auto numberClassId =
+            file.Constants.FindClass(RTL_NUMBER_TYPE.toTypename());
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(numberClassId));
+        append(bytes, (uint8_t)Command::dup);
+
         const auto intVal = expr->intValue;
         if (intVal >= -32768 && intVal <= 32767)
         {
@@ -1583,16 +1644,38 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         }
         else
         {
-            const auto constantId = file.Constants.FindInt(expr->intValue);
+            const auto constantId = file.Constants.FindInt(intVal);
             const auto constantIdBytes = toBytes(constantId);
             append(bytes, (uint8_t)Command::ldc_w);
             append(bytes, constantIdBytes);
         }
+
+        const auto constructorId = file.Constants.FindMethodRef(
+            RTL_NUMBER_TYPE.toTypename(), "<init>", "(I)V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorId));
         return bytes;
     }
     if (expr->type == ExpressionNode::Type::_FLOAT_LIT)
     {
-        throw std::runtime_error{"float literals is not supported yet"};
+        Bytes bytes;
+
+        const auto numberClassId =
+            file.Constants.FindClass(RTL_NUMBER_TYPE.toTypename());
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(numberClassId));
+        append(bytes, (uint8_t)Command::dup);
+
+        const auto floatLiteralId = file.Constants.FindDouble(expr->floatValue);
+        const auto constantIdBytes = toBytes(floatLiteralId);
+        append(bytes, (uint8_t)Command::ldc2_w);
+        append(bytes, constantIdBytes);
+
+        const auto constructorId = file.Constants.FindMethodRef(
+            RTL_NUMBER_TYPE.toTypename(), "<init>", "(D)V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorId));
+        return bytes;
     }
     if (expr->type == ExpressionNode::Type::_STRING_LIT)
     {
@@ -1609,7 +1692,6 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         append(bytes, (uint8_t)Command::ldc_w);
         append(bytes, toBytes(stringLiteralId));
 
-        // TODO place constructor name and descriptor to class
         const auto constructorId = file.Constants.FindMethodRef(
             RTL_STRING_TYPE.toTypename(), "<init>", "(Ljava/lang/String;)V");
         append(bytes, (uint8_t)Command::invokespecial);
@@ -1619,10 +1701,54 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     if (expr->type == ExpressionNode::Type::_BOOLEAN_LIT)
     {
         Bytes bytes;
+
+        const auto stringClassId =
+            file.Constants.FindClass(RTL_BOOLEAN_TYPE.toTypename());
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(stringClassId));
+        append(bytes, (uint8_t)Command::dup);
+
         if (expr->boolValue)
             append(bytes, (uint8_t)Command::iconst_1);
         else
             append(bytes, (uint8_t)Command::iconst_0);
+
+        const auto constructorId = file.Constants.FindMethodRef(
+            RTL_BOOLEAN_TYPE.toTypename(), "<init>", "(Z)V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorId));
+        return bytes;
+    }
+    if (expr->type == ExpressionNode::Type::_UNDEFINED_LIT)
+    {
+        Bytes bytes;
+
+        const auto stringClassId =
+            file.Constants.FindClass(RTL_UNDEFINED_TYPE.toTypename());
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(stringClassId));
+        append(bytes, (uint8_t)Command::dup);
+
+        const auto constructorId = file.Constants.FindMethodRef(
+            RTL_UNDEFINED_TYPE.toTypename(), "<init>", "()V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorId));
+        return bytes;
+    }
+    if (expr->type == ExpressionNode::Type::_NULL_LIT)
+    {
+        Bytes bytes;
+
+        const auto stringClassId =
+            file.Constants.FindClass(RTL_NULL_TYPE.toTypename());
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(stringClassId));
+        append(bytes, (uint8_t)Command::dup);
+
+        const auto constructorId = file.Constants.FindMethodRef(
+            RTL_NULL_TYPE.toTypename(), "<init>", "()V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorId));
         return bytes;
     }
 
@@ -1694,16 +1820,15 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     {
         Bytes bytes;
         for (auto *arg : expr->params->GetSeq())
-        {
             append(bytes, toBytes(arg, file));
-            const auto *method = expr->actualMethodCall;
-            const auto methodRefConstant = file.Constants.FindMethodRef(
-                method->elemClass->toDataType()->toTypename(), method->name,
-                method->toDescriptor());
-            append(bytes, (uint8_t)Command::invokestatic);
-            append(bytes, toBytes(methodRefConstant));
-            return bytes;
-        }
+
+        const auto *method = expr->actualMethodCall;
+        const auto methodRefConstant = file.Constants.FindMethodRef(
+            method->elemClass->toDataType()->toTypename(), method->name,
+            method->toDescriptor());
+        append(bytes, (uint8_t)Command::invokestatic);
+        append(bytes, toBytes(methodRefConstant));
+        return bytes;
     }
 
     if (expr->type == ExpressionNode::Type::_METHOD_CALL)
@@ -2134,9 +2259,26 @@ Bytes toBytes(const IntT n)
     return bytes;
 }
 
+Bytes toBytes(const DoubleT n)
+{
+    Bytes bytes(sizeof(n), '\0');
+
+    const unsigned char *bytePtr = reinterpret_cast<const unsigned char *>(&n);
+
+    for (std::size_t i = 0; i < bytes.size(); ++i)
+        bytes[bytes.size() - 1 - i] = bytePtr[i];
+
+    // append(bytes, 9);
+    return bytes;
+}
+
 Bytes toBytes(Constant const &constant)
 {
     Bytes bytes;
+
+    if (constant.Type == Constant::TypeT::Empty)
+        return bytes;
+
     append(bytes, static_cast<uint8_t>(constant.Type));
     switch (constant.Type)
     {
@@ -2147,8 +2289,9 @@ Bytes toBytes(Constant const &constant)
     case Constant::TypeT::Integer:
         append(bytes, toBytes(constant.Integer));
         break;
-    case Constant::TypeT::Float:
-        throw std::runtime_error{"Float is not supported"};
+    case Constant::TypeT::Double:
+        append(bytes, toBytes(constant.Double));
+        break;
     case Constant::TypeT::String:
         append(bytes, toBytes(constant.Utf8Id));
         break;

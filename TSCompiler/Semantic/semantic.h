@@ -65,6 +65,7 @@ struct Semantic
         root->add(createStringClass());
         root->add(createNullClass());
         root->add(createUndefinedClass());
+        root->add(createVoidClass());
         root->add(createConsoleClass());
 
         this->root->mainClass = createMainClass(mainClassName);
@@ -78,6 +79,7 @@ struct Semantic
     static ClassDeclarationNode *createStringClass();
     static ClassDeclarationNode *createNullClass();
     static ClassDeclarationNode *createUndefinedClass();
+    static ClassDeclarationNode *createVoidClass();
     static ClassDeclarationNode *createConsoleClass();
 
     ClassDeclarationNode *createMainClass(std::string name)

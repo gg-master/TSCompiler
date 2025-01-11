@@ -154,6 +154,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.tab.cpp" />
     <ClCompile Include="Semantic\class_analyzer.cpp" />
+    <ClCompile Include="Semantic\RTL\boolean.cpp" />
+    <ClCompile Include="Semantic\RTL\null.cpp" />
+    <ClCompile Include="Semantic\RTL\number.cpp" />
+    <ClCompile Include="Semantic\RTL\string.cpp" />
+    <ClCompile Include="Semantic\RTL\undefined.cpp" />
+    <ClCompile Include="Semantic\RTL\void.cpp" />
     <ClCompile Include="Semantic\semantic.cpp" />
     <ClCompile Include="Tree\class.cpp" />
     <ClCompile Include="Tree\expr.cpp" />
