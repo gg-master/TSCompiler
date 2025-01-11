@@ -4,6 +4,8 @@ public class String extends Any {
 
     public java.lang.String _value = "";
 
+    public String() {}
+
     public String(int value){
         this._value = java.lang.String.valueOf(value);
     }

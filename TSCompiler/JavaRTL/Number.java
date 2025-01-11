@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 public class Number extends Any {
     public double _value = 0;
 
+    public Number() {}
+
     public Number(int value) {
         this._value = value;
     }
