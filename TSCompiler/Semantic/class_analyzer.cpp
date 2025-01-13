@@ -568,7 +568,7 @@ void ClassAnalyzer::analyzeClassMethod(ClassElementNode *node)
             currentClass->thisProp->propertyAndReturnType, nullptr));
     }
 
-    if (!currentMethod->name.starts_with(root->mainClass->className))
+    if (!currentMethod->isMainMethod)
         moveFunctionScopedVarsOnTop();
 
     // todo add last stmt return of undefined
@@ -633,6 +633,8 @@ void ClassAnalyzer::analyzeStmt(StatementNode *node, StatementListNode *newSeq)
         for (auto varDecl : node->declList->GetSeq())
         {
             auto newNode = analyzeVarDeclaration(varDecl);
+            currentField = nullptr;
+
             if (newNode)
                 newSeq->add(newNode);
             else
@@ -648,6 +650,22 @@ void ClassAnalyzer::analyzeStmt(StatementNode *node, StatementListNode *newSeq)
         node->expression = analyzeExpr(node->expression);
         newSeq->add(node);
     }
+
+    if (node->type == StatementNode::Type::_BLOCK)
+    {
+        incrementScopingLevel();
+
+        auto body = new StatementListNode();
+        for (auto *stmt : node->stmtList->GetSeq())
+        {
+            analyzeStmt(stmt, body);
+        }
+        node->stmtList = body;
+
+        decrementScopingLevel();
+
+        newSeq->add(node);
+    }
 }
 
 StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
@@ -655,7 +673,7 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
     if (!node)
         return nullptr;
 
-    auto field = root->mainClass->body->findPropertyByName(node->identifierStr);
+    auto field = root->mainClass->findPropertyByName(node->identifierStr);
     if (currentMethod->isMainMethod && field)
     {
         currentField = field;
@@ -666,7 +684,8 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
     node->varType->jvmType = toJvmDataType(node->varType);
 
     if (node->initExpression &&
-        *node->varType != *node->initExpression->exprType)
+        (*node->varType != *node->initExpression->exprType ||
+         *node->varType->jvmType == RTL_ANY_TYPE))
     {
         if (*node->varType->jvmType != RTL_ANY_TYPE)
         {
@@ -683,13 +702,19 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
 
     validateTypename(node->varType->jvmType);
 
-    if (!currentMethod)
-        return nullptr;
-
     if (isFunctionScopeVar(node->modifierType))
     {
         auto found = currentMethod->findVariableByName(node->identifierStr,
                                                        currentScopingLevel);
+
+        if (!found && currentMethod->isMainMethod)
+        {
+            auto foundProp =
+                root->mainClass->body->findPropertyByName(node->identifierStr);
+
+            if (foundProp)
+                found = foundProp->baseNode;
+        }
 
         if (found)
         {
@@ -726,8 +751,11 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
     }
     else
     {
-        auto found = currentMethod->findVariableByName(node->identifierStr,
-                                                       currentScopingLevel);
+        auto found = currentMethod->findVariableByName(
+            node->identifierStr, currentScopingLevel, currentScopingLevel);
+
+        if (!found && currentField && currentScopingLevel == 2)
+            found = currentField->baseNode;
 
         if (found && found != node)
         {
@@ -740,6 +768,27 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
             errors.push_back("Duplicate identifier '" + node->identifierStr +
                              "'.");
             return nullptr;
+        }
+
+        // replace for global scoped variables in main method
+        if (currentMethod->isMainMethod && currentField &&
+            currentScopingLevel == 2)
+        {
+            currentField->isPropertyAssigned = true;
+
+            auto leftExpr = ExpressionNode::fromId(node->identifierStr);
+            auto rightExpr = ExpressionNode::fromId(node->identifierStr);
+            if (node->initExpression)
+            {
+                rightExpr = node->initExpression;
+            }
+
+            auto assignReplaceNode = ExpressionNode::fromBinaryExpr(
+                ExpressionNode::Type::_ASSIGN, leftExpr, rightExpr);
+
+            assignReplaceNode->initOfVar = node;
+
+            return StatementNode::fromExprStmt(analyzeExpr(assignReplaceNode));
         }
     }
     node->scopingLevel = currentScopingLevel;
@@ -958,8 +1007,8 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
             return;
         }
     }
-    errors.push_back("Cannot call method " + methodName + "  of " +
-                     objType->toString() + "with arguments of types " +
+    errors.push_back("Cannot call method " + methodName + " of " +
+                     objType->toString() + " with arguments of types " +
                      toString(callTypes) + ".");
     return;
 }
@@ -973,7 +1022,8 @@ void ClassAnalyzer::analyzeNewCall(ExpressionNode *node)
 
     auto *foundClass = root->findClass(node->identifierString);
 
-    if (!foundClass)
+    if (!foundClass || foundClass == root->mainClass ||
+        *foundClass->toDataType() == RTL_ANY_TYPE)
     {
         errors.push_back("Cannot find name '" + node->identifierString + "'");
         return;
@@ -1098,7 +1148,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             return type;
         }
 
-        if (currentMethod && !currentMethod->isMainMethod)
+        if (currentMethod)
         {
             auto *var = currentMethod->findVariableByName(
                 node->identifierString, currentScopingLevel);
@@ -1117,7 +1167,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
         if (var)
         {
-            if (currentMethod->isMainMethod &&
+            if (currentMethod && currentMethod->isMainMethod &&
                 isBlockScopeVar(var->baseNode->modifierType) &&
                 !var->isPropertyAssigned)
             {
@@ -1126,7 +1176,6 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
                                  "' used before its declaration.");
             }
 
-            var->isPropertyAssigned = true;
             type = var->propertyAndReturnType;
             node->exprType = type;
             node->actualField = var;
@@ -1343,6 +1392,25 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
                 errors.push_back("Cannot assign");
         }
 
+        auto var = node->firstOperand->actualVar;
+        if (var && var->modifierType == VarModifierType::_CONST &&
+            var != node->initOfVar)
+        {
+            errors.push_back("Cannot assign to '" +
+                             node->firstOperand->identifierString +
+                             "' because it is a constant.");
+        }
+
+        auto field = node->firstOperand->actualField;
+        if (field && field->baseNode &&
+            field->baseNode->modifierType == VarModifierType::_CONST &&
+            field->baseNode != node->initOfVar)
+        {
+            errors.push_back("Cannot assign to '" +
+                             node->firstOperand->identifierString +
+                             "' because it is a constant.");
+        }
+
         node->exprType = secondOperand;
         return node->exprType;
     }
@@ -1380,16 +1448,6 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         {
             type = leftType;
             node->exprType = type;
-
-            // if (node->type != ExpressionNode::Type::_PLUS ||
-            // (leftType->jvmParamType == ))
-            // {
-            //     errors.push_back(
-            //         "The operands of arithmetic operation must be of "
-            //         "type 'number'.");
-            // } else {
-
-            // }
             return type;
         }
 
@@ -1552,6 +1610,15 @@ void ClassAnalyzer::moveFunctionScopedVarsOnTop()
         {
             auto found = currentMethod->findVariableByName(
                 existVarDecl->identifierStr, currentScopingLevel);
+
+            if (!found && currentMethod->isMainMethod)
+            {
+                auto foundProp = root->mainClass->body->findPropertyByName(
+                    existVarDecl->identifierStr);
+
+                if (foundProp)
+                    found = foundProp->baseNode;
+            }
 
             if (found)
             {
@@ -2090,6 +2157,14 @@ Bytes toBytes(StatementNode *stmt, ClassFile &file)
         for (auto decl : stmt->declList->GetSeq())
         {
             append(bytes, toBytes(decl, file));
+        }
+        return bytes;
+    }
+    case StatementNode::Type::_BLOCK:
+    {
+        for (auto *blockStmt : stmt->stmtList->GetSeq())
+        {
+            append(bytes, toBytes(blockStmt, file));
         }
         return bytes;
     }

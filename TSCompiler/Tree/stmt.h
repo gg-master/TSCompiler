@@ -82,4 +82,17 @@ struct StatementListNode final : NodeList<StatementListNode, StatementNode>
     {
         return "StatementListNode";
     }
+
+    bool isStmtBeforeStmt(StatementNode *targetStmt,
+                          StatementNode *beforeStmt) const
+    {
+        for (auto *stmt : GetSeq())
+        {
+            if (stmt == targetStmt)
+                return true;
+            if (stmt == beforeStmt)
+                return false;
+        }
+        return false;
+    }
 };

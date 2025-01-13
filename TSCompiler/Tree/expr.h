@@ -95,6 +95,8 @@ struct ExpressionNode final : Node
 
     bool isLeftHand{0};
 
+    VarDeclarationNode *initOfVar{};
+
     ClassElementNode *actualMethodCall{};
     ClassElementNode *actualField{};
     VarDeclarationNode *actualVar{};

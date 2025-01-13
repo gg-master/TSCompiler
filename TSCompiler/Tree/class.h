@@ -58,7 +58,8 @@ struct ClassElementNode final : Node
           expression{expression},
           isStatic{isStatic}
     {
-        if (expression) isPropertyAssigned = true;
+        if (expression)
+            isPropertyAssigned = true;
     }
 
     ClassElementNode(const std::string name, RequiredParameterListNode *params,
@@ -121,7 +122,8 @@ struct ClassElementNode final : Node
         }
     }
 
-    VarDeclarationNode *findVariableByName(std::string name, int scopingLevel);
+    VarDeclarationNode *findVariableByName(std::string name, int scopingLevel,
+                                           int minScopingLevel = 0);
 };
 
 struct ClassElementListNode final
@@ -234,4 +236,10 @@ struct ClassDeclarationNode final : Node
     }
 
     JvmDataType *toDataType() const { return new JvmDataType(this->className); }
+
+    ClassElementNode *findPropertyByName(
+        std::string name, ClassElementNode *beforeNode = nullptr) const
+    {
+        return body->findPropertyByName(name, beforeNode);
+    }
 };

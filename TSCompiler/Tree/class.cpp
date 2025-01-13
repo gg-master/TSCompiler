@@ -1,19 +1,16 @@
 #include "class.h"
 
 VarDeclarationNode* ClassElementNode::findVariableByName(std::string name,
-                                                         int scopingLevel)
+                                                         int scopingLevel,
+                                                         int minScopingLevel)
 {
-    for (auto* variable : variables)
+    for (auto it = variables.rbegin(); it != variables.rend(); ++it)
     {
+        auto variable = *it;
         if (variable->identifierStr == name &&
-            variable->scopingLevel <= scopingLevel)
+            variable->scopingLevel <= scopingLevel &&
+            variable->scopingLevel >= minScopingLevel)
             return variable;
-    }
-    if (isMainMethod)
-    {
-        auto prop = elemClass->body->findPropertyByName(name);
-        if (prop)
-            return prop->baseNode;
     }
     return nullptr;
 }

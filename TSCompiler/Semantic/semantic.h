@@ -173,13 +173,13 @@ struct Semantic
     {
         if (!errors.empty())
             return;
-
-        ClassAnalyzer analyzer(root);
+        
         for (auto class_ : root->classes)
         {
             if (class_->className.starts_with("JavaRTL"))
                 continue;
 
+            ClassAnalyzer analyzer(root);
             analyzer.currentClass = class_;
 
             analyzer.fillTables();

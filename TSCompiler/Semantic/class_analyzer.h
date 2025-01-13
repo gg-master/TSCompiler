@@ -199,7 +199,7 @@ struct ClassAnalyzer
             for (auto *varDecl : currentMethod->variables)
             {
                 if (varDecl->scopingLevel == currentScopingLevel)
-                    varDecl->identifierStr = "";
+                    varDecl->scopingLevel = -2;  // remove from scoping
             }
             currentScopingLevel--;
         }
