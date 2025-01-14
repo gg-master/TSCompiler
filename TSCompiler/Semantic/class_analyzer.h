@@ -222,6 +222,8 @@ struct ClassAnalyzer
 
     void analyzeStmt(StatementNode *node, StatementListNode *newSeq = nullptr);
 
+    void analyzeIf(StatementNode *node);
+
     StatementNode *analyzeVarDeclaration(VarDeclarationNode *node = nullptr);
 
     ExpressionNode *analyzeExpr(ExpressionNode *node);

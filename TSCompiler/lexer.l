@@ -649,6 +649,7 @@ new         {
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_PLUS: " + std::string{yytext});
     }
+    return OPERATOR_ASSIGN_PLUS;
 }
 "++"    { 
     if ( debug ) {

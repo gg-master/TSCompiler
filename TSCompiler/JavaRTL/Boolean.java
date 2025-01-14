@@ -138,6 +138,10 @@ public class Boolean extends Any {
         return other.origValue;
     }
 
+    public boolean getValue() {
+        return this._value;
+    }
+
     @Override
     public java.lang.String toString() {
         return java.lang.String.valueOf(this._value);

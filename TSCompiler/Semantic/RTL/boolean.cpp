@@ -182,6 +182,13 @@ ClassDeclarationNode *Semantic::createBooleanClass()
         body->add(method);
     }
 
+    {
+        auto *method = new ClassElementNode(
+            "getValue", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(JvmDataType::Type::Bool)), nullptr);
+        body->add(method);
+    }
+
     auto *rtlClass = new ClassDeclarationNode("JavaRTL/Boolean", body);
     for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;

@@ -2349,11 +2349,12 @@ YY_RULE_SETUP
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_PLUS: " + std::string{yytext});
     }
+    return OPERATOR_ASSIGN_PLUS;
 }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 654 "lexer.l"
+#line 655 "lexer.l"
 { 
     if ( debug ) {
         Print("Found OPERATOR_INCREMENT: " + std::string{yytext}); 
@@ -2363,7 +2364,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 661 "lexer.l"
+#line 662 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_MINUS: " + std::string{yytext});
@@ -2373,7 +2374,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 667 "lexer.l"
+#line 668 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_MINUS: " + std::string{yytext});
@@ -2383,7 +2384,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 673 "lexer.l"
+#line 674 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_DECREMENT: " + std::string{yytext});
@@ -2393,7 +2394,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 680 "lexer.l"
+#line 681 "lexer.l"
 {
     yy_pop_state();
 
@@ -2405,7 +2406,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 688 "lexer.l"
+#line 689 "lexer.l"
 {
     yy_pop_state();
 
@@ -2417,11 +2418,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 90:
 /* rule 90 can match eol */
-#line 697 "lexer.l"
+#line 698 "lexer.l"
 case 91:
 /* rule 91 can match eol */
 YY_RULE_SETUP
-#line 697 "lexer.l"
+#line 698 "lexer.l"
 {
     yy_push_state(ENDL_OPERATOR);
 
@@ -2433,7 +2434,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 706 "lexer.l"
+#line 707 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_MULTIPLY: " + std::string{yytext});
@@ -2443,7 +2444,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 712 "lexer.l"
+#line 713 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_POWER in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2454,7 +2455,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 719 "lexer.l"
+#line 720 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_MULTIPLY: " + std::string{yytext});
@@ -2464,7 +2465,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 725 "lexer.l"
+#line 726 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_ASSIGN_POWER in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2475,7 +2476,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 733 "lexer.l"
+#line 734 "lexer.l"
 { 
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN: " + std::string{yytext}); 
@@ -2485,7 +2486,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 739 "lexer.l"
+#line 740 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_EQUAL: " + std::string{yytext});
@@ -2495,7 +2496,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 745 "lexer.l"
+#line 746 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_STRICT_EQUAL in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2506,7 +2507,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 753 "lexer.l"
+#line 754 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_NOT: " + std::string{yytext});
@@ -2516,7 +2517,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 759 "lexer.l"
+#line 760 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_NOT_EQUAL: " + std::string{yytext});
@@ -2526,7 +2527,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 765 "lexer.l"
+#line 766 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_STRICT_NOT_EQUAL in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2537,7 +2538,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 773 "lexer.l"
+#line 774 "lexer.l"
 {
     PrintError("Unsupported ARROW_FUNCTION in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2548,7 +2549,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 781 "lexer.l"
+#line 782 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_GREATER_THAN: " + std::string{yytext});
@@ -2558,7 +2559,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 787 "lexer.l"
+#line 788 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_GREATER_THAN_EQUAL: " + std::string{yytext});
@@ -2568,7 +2569,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 793 "lexer.l"
+#line 794 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_SHIFT_RIGHT in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2579,7 +2580,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 800 "lexer.l"
+#line 801 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_ASSIGN_SHIFT_RIGHT in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2590,7 +2591,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 807 "lexer.l"
+#line 808 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_UNSIGNED_SHIFT_RIGHT in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2601,7 +2602,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 814 "lexer.l"
+#line 815 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_ASSIGN_UNSIGNED_SHIFT_RIGHT in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2612,7 +2613,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 822 "lexer.l"
+#line 823 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_LESS_THAN: " + std::string{yytext});
@@ -2622,7 +2623,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 828 "lexer.l"
+#line 829 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_LESS_THAN_EQUAL: " + std::string{yytext});
@@ -2632,7 +2633,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 834 "lexer.l"
+#line 835 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_SHIFT_LEFT in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2643,7 +2644,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 841 "lexer.l"
+#line 842 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_ASSIGN_SHIFT_LEFT in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2654,7 +2655,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 849 "lexer.l"
+#line 850 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_DIVIDE: " + std::string{yytext});
@@ -2664,7 +2665,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 855 "lexer.l"
+#line 856 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_DIVIDE: " + std::string{yytext});
@@ -2674,7 +2675,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 862 "lexer.l"
+#line 863 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_BITWISE_XOR in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2685,7 +2686,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 869 "lexer.l"
+#line 870 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_ASSIGN_BITWISE_XOR in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2696,7 +2697,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 877 "lexer.l"
+#line 878 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_BITWISE_NOT in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2707,7 +2708,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 885 "lexer.l"
+#line 886 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_BITWISE_AND in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2718,7 +2719,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 892 "lexer.l"
+#line 893 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_ASSIGN_BITWISE_AND in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2729,7 +2730,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 899 "lexer.l"
+#line 900 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_LOGICAL_AND: " + std::string{yytext});
@@ -2739,7 +2740,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 905 "lexer.l"
+#line 906 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_LOGICAL_AND: " + std::string{yytext});
@@ -2749,7 +2750,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 912 "lexer.l"
+#line 913 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_BITWISE_OR in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2760,7 +2761,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 919 "lexer.l"
+#line 920 "lexer.l"
 {
     PrintError("Unsupported OPERATOR_ASSIGN_BITWISE_OR in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2771,7 +2772,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 926 "lexer.l"
+#line 927 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_LOGICAL_OR: " + std::string{yytext});
@@ -2781,7 +2782,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 932 "lexer.l"
+#line 933 "lexer.l"
 {
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_LOGICAL_OR: " + std::string{yytext});
@@ -2791,7 +2792,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 939 "lexer.l"
+#line 940 "lexer.l"
 { 
     if ( debug ) {
         Print("Found BRACKET_OPEN: " + std::string{yytext}); 
@@ -2801,7 +2802,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 945 "lexer.l"
+#line 946 "lexer.l"
 {
     yy_pop_state();
 
@@ -2814,7 +2815,7 @@ YY_RULE_SETUP
 case 128:
 /* rule 128 can match eol */
 YY_RULE_SETUP
-#line 953 "lexer.l"
+#line 954 "lexer.l"
 {
     yy_push_state(ENDL_OPERATOR);
 
@@ -2826,7 +2827,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 962 "lexer.l"
+#line 963 "lexer.l"
 { 
     if ( debug ) {
         Print("Found BRACKET_CLOSE: " + std::string{yytext}); 
@@ -2836,7 +2837,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
-#line 968 "lexer.l"
+#line 969 "lexer.l"
 { 
     if ( debug ) {
         Print("Found PARENTHESIS_OPEN: " + std::string{yytext}); 
@@ -2846,7 +2847,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
-#line 974 "lexer.l"
+#line 975 "lexer.l"
 { 
     if ( debug ) {
         Print("Found PARENTHESIS_CLOSE: " + std::string{yytext}); 
@@ -2856,7 +2857,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
-#line 980 "lexer.l"
+#line 981 "lexer.l"
 { 
     if ( debug ) {
         Print("Found BRACE_OPEN: " + std::string{yytext}); 
@@ -2866,7 +2867,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 986 "lexer.l"
+#line 987 "lexer.l"
 {
     if ( debug ) {
         Print("Found BRACE_CLOSE: " + std::string{yytext}); 
@@ -2876,7 +2877,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 134:
 YY_RULE_SETUP
-#line 993 "lexer.l"
+#line 994 "lexer.l"
 { 
     if ( debug ) {
         Print("Found COLON: " + std::string{yytext});
@@ -2886,7 +2887,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 135:
 YY_RULE_SETUP
-#line 1000 "lexer.l"
+#line 1001 "lexer.l"
 { 
     if ( debug ) {
         Print("Found COMMA: " + std::string{yytext}); 
@@ -2896,7 +2897,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
-#line 1007 "lexer.l"
+#line 1008 "lexer.l"
 {
     if ( debug ) {
         Print("Found DOT: " + std::string{yytext}); 
@@ -2906,7 +2907,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 137:
 YY_RULE_SETUP
-#line 1014 "lexer.l"
+#line 1015 "lexer.l"
 {
     PrintError("Unsupported DOTS_ELLIPSIS in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2917,7 +2918,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
-#line 1022 "lexer.l"
+#line 1023 "lexer.l"
 {
     if ( debug ) {
         Print("Found SEMICOLON: " + std::string{yytext});
@@ -2927,7 +2928,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 139:
 YY_RULE_SETUP
-#line 1029 "lexer.l"
+#line 1030 "lexer.l"
 {
     PrintError("Unsupported DECORATOR_AT in this version: " + std::string{yytext});
     if ( debug ) {
@@ -2938,7 +2939,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 140:
 YY_RULE_SETUP
-#line 1038 "lexer.l"
+#line 1039 "lexer.l"
 {
     currentString.clear();
     BEGIN(DOUBLE_STR);
@@ -2946,21 +2947,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 1042 "lexer.l"
+#line 1043 "lexer.l"
 {
     currentString += yytext;
 }
 	YY_BREAK
 case 142:
 YY_RULE_SETUP
-#line 1045 "lexer.l"
+#line 1046 "lexer.l"
 {
     PrintError("invalid hexadecimal escape sequence", yylineno);
 }
 	YY_BREAK
 case 143:
 YY_RULE_SETUP
-#line 1048 "lexer.l"
+#line 1049 "lexer.l"
 {
     std::fill(std::begin(buffer), std::end(buffer), 0);
     std::copy(yytext, yytext + yyleng, buffer);
@@ -2970,84 +2971,84 @@ YY_RULE_SETUP
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
-#line 1054 "lexer.l"
+#line 1055 "lexer.l"
 {
     currentString += "\0";
 }
 	YY_BREAK
 case 145:
 YY_RULE_SETUP
-#line 1057 "lexer.l"
+#line 1058 "lexer.l"
 {
     PrintError("octal escape sequence not allowed", yylineno);
 }
 	YY_BREAK
 case 146:
 YY_RULE_SETUP
-#line 1060 "lexer.l"
+#line 1061 "lexer.l"
 {
     PrintError("unicode escape sequence is not supported yet", yylineno);
 }
 	YY_BREAK
 case 147:
 YY_RULE_SETUP
-#line 1063 "lexer.l"
+#line 1064 "lexer.l"
 {
     currentString += "\'";
 }
 	YY_BREAK
 case 148:
 YY_RULE_SETUP
-#line 1066 "lexer.l"
+#line 1067 "lexer.l"
 {
     currentString += "\"";
 }
 	YY_BREAK
 case 149:
 YY_RULE_SETUP
-#line 1069 "lexer.l"
+#line 1070 "lexer.l"
 {
     currentString += "\\";
 }
 	YY_BREAK
 case 150:
 YY_RULE_SETUP
-#line 1072 "lexer.l"
+#line 1073 "lexer.l"
 {
     currentString += "\b";
 }
 	YY_BREAK
 case 151:
 YY_RULE_SETUP
-#line 1075 "lexer.l"
+#line 1076 "lexer.l"
 {
     currentString += "\f";
 }
 	YY_BREAK
 case 152:
 YY_RULE_SETUP
-#line 1078 "lexer.l"
+#line 1079 "lexer.l"
 {
     currentString += "\n";
 }
 	YY_BREAK
 case 153:
 YY_RULE_SETUP
-#line 1081 "lexer.l"
+#line 1082 "lexer.l"
 {
     currentString += "\r";
 }
 	YY_BREAK
 case 154:
 YY_RULE_SETUP
-#line 1084 "lexer.l"
+#line 1085 "lexer.l"
 {
     currentString += "\t";
 }
 	YY_BREAK
 case 155:
 YY_RULE_SETUP
-#line 1087 "lexer.l"
+#line 1088 "lexer.l"
 {
     currentString += "\v";
 }
@@ -3055,7 +3056,7 @@ YY_RULE_SETUP
 case 156:
 /* rule 156 can match eol */
 YY_RULE_SETUP
-#line 1090 "lexer.l"
+#line 1091 "lexer.l"
 {
     PrintError("invalid escape character", yylineno);
 }
@@ -3063,7 +3064,7 @@ YY_RULE_SETUP
 case 157:
 /* rule 157 can match eol */
 YY_RULE_SETUP
-#line 1093 "lexer.l"
+#line 1094 "lexer.l"
 {
     PrintError("unexpected appearing \n in end of a line", yylineno);
     BEGIN(INITIAL);
@@ -3072,7 +3073,7 @@ YY_RULE_SETUP
 case YY_STATE_EOF(DOUBLE_STR):
 case YY_STATE_EOF(SINGLE_STR):
 case YY_STATE_EOF(TEMPLATE_STR):
-#line 1097 "lexer.l"
+#line 1098 "lexer.l"
 {
     PrintError("unexpected appearing <<EOF>> in string literal", yylineno);
     BEGIN(INITIAL);
@@ -3080,7 +3081,7 @@ case YY_STATE_EOF(TEMPLATE_STR):
 	YY_BREAK
 case 158:
 YY_RULE_SETUP
-#line 1101 "lexer.l"
+#line 1102 "lexer.l"
 {
     PrintStringLiteral(currentString);
     yylval.stringValue = Dublicate(currentString.c_str());
@@ -3090,7 +3091,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 159:
 YY_RULE_SETUP
-#line 1108 "lexer.l"
+#line 1109 "lexer.l"
 {
     currentString.clear();
     BEGIN(SINGLE_STR);
@@ -3098,14 +3099,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 160:
 YY_RULE_SETUP
-#line 1112 "lexer.l"
+#line 1113 "lexer.l"
 {
     currentString += yytext;
 }
 	YY_BREAK
 case 161:
 YY_RULE_SETUP
-#line 1115 "lexer.l"
+#line 1116 "lexer.l"
 {
     PrintStringLiteral(currentString);
     yylval.stringValue = Dublicate(currentString.c_str());
@@ -3115,7 +3116,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 162:
 YY_RULE_SETUP
-#line 1122 "lexer.l"
+#line 1123 "lexer.l"
 {
     currentString.clear();
     BEGIN(TEMPLATE_STR);
@@ -3124,21 +3125,21 @@ YY_RULE_SETUP
 case 163:
 /* rule 163 can match eol */
 YY_RULE_SETUP
-#line 1126 "lexer.l"
+#line 1127 "lexer.l"
 {
     currentString += yytext;
 }
 	YY_BREAK
 case 164:
 YY_RULE_SETUP
-#line 1129 "lexer.l"
+#line 1130 "lexer.l"
 {
     currentString += "`";
 }
 	YY_BREAK
 case 165:
 YY_RULE_SETUP
-#line 1132 "lexer.l"
+#line 1133 "lexer.l"
 {
     PrintStringLiteral(currentString);
     yylval.stringValue = Dublicate(currentString.c_str());
@@ -3148,7 +3149,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 166:
 YY_RULE_SETUP
-#line 1140 "lexer.l"
+#line 1141 "lexer.l"
 {
     currentComment.clear();
     BEGIN(MULTILINE_COMMENT);
@@ -3157,7 +3158,7 @@ YY_RULE_SETUP
 case 167:
 /* rule 167 can match eol */
 YY_RULE_SETUP
-#line 1144 "lexer.l"
+#line 1145 "lexer.l"
 {
     currentComment += yytext;
 }
@@ -3165,21 +3166,21 @@ YY_RULE_SETUP
 case 168:
 /* rule 168 can match eol */
 YY_RULE_SETUP
-#line 1147 "lexer.l"
+#line 1148 "lexer.l"
 {
     currentComment += yytext;
 }
 	YY_BREAK
 case 169:
 YY_RULE_SETUP
-#line 1150 "lexer.l"
+#line 1151 "lexer.l"
 {
     Print("Found multiline comment: \n" + currentComment);
     BEGIN(INITIAL);
 }
 	YY_BREAK
 case YY_STATE_EOF(MULTILINE_COMMENT):
-#line 1154 "lexer.l"
+#line 1155 "lexer.l"
 {
     PrintError("no closing */ of multiline comment", yylineno);
     BEGIN(INITIAL);
@@ -3187,14 +3188,14 @@ case YY_STATE_EOF(MULTILINE_COMMENT):
 	YY_BREAK
 case 170:
 YY_RULE_SETUP
-#line 1159 "lexer.l"
+#line 1160 "lexer.l"
 { 
     Print("Found singleline comment: " + std::string{yytext + 2}); 
 }
 	YY_BREAK
 case 171:
 YY_RULE_SETUP
-#line 1163 "lexer.l"
+#line 1164 "lexer.l"
 { 
     std::string number_string = yytext;
     RemoveCharacterFromString(number_string, '_');
@@ -3206,14 +3207,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 172:
 YY_RULE_SETUP
-#line 1171 "lexer.l"
+#line 1172 "lexer.l"
 {
     PrintError("illegal underscore in decimal number", yylineno);
 }
 	YY_BREAK
 case 173:
 YY_RULE_SETUP
-#line 1175 "lexer.l"
+#line 1176 "lexer.l"
 { /* Decimal literal */
     std::string number_string = yytext;
     RemoveCharacterFromString(number_string, '_');
@@ -3225,14 +3226,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 174:
 YY_RULE_SETUP
-#line 1183 "lexer.l"
+#line 1184 "lexer.l"
 {
     PrintError("illegal underscore in decimal number", yylineno);
 }
 	YY_BREAK
 case 175:
 YY_RULE_SETUP
-#line 1187 "lexer.l"
+#line 1188 "lexer.l"
 {
     std::string number_string = yytext;
     RemoveCharacterFromString(number_string, '_');
@@ -3244,14 +3245,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 176:
 YY_RULE_SETUP
-#line 1195 "lexer.l"
+#line 1196 "lexer.l"
 {
     PrintError("illegal underscore in decimal number", yylineno);
 }
 	YY_BREAK
 case 177:
 YY_RULE_SETUP
-#line 1200 "lexer.l"
+#line 1201 "lexer.l"
 { /* Binary integer literal */
     currentInteger = 0;
     std::string number_string = yytext;
@@ -3264,21 +3265,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 178:
 YY_RULE_SETUP
-#line 1209 "lexer.l"
+#line 1210 "lexer.l"
 {
     PrintError("illegal underscore in binary number", yylineno);
 }
 	YY_BREAK
 case 179:
 YY_RULE_SETUP
-#line 1212 "lexer.l"
+#line 1213 "lexer.l"
 {
     PrintError("binary digit expected", yylineno);
 }
 	YY_BREAK
 case 180:
 YY_RULE_SETUP
-#line 1217 "lexer.l"
+#line 1218 "lexer.l"
 {  /* Octal integer literal */
     currentInteger = 0;
     std::string number_string = yytext;
@@ -3291,21 +3292,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 181:
 YY_RULE_SETUP
-#line 1226 "lexer.l"
+#line 1227 "lexer.l"
 {
     PrintError("illegal underscore in octal number", yylineno);
 }
 	YY_BREAK
 case 182:
 YY_RULE_SETUP
-#line 1229 "lexer.l"
+#line 1230 "lexer.l"
 {
     PrintError("octal digit expected", yylineno);
 }
 	YY_BREAK
 case 183:
 YY_RULE_SETUP
-#line 1234 "lexer.l"
+#line 1235 "lexer.l"
 {  /* Hexadecimal integer literal */
     currentInteger = 0;
     std::string number_string = yytext;
@@ -3318,21 +3319,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 184:
 YY_RULE_SETUP
-#line 1243 "lexer.l"
+#line 1244 "lexer.l"
 {
     PrintError("illegal underscore in hexadecimal number", yylineno);
 }
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
-#line 1246 "lexer.l"
+#line 1247 "lexer.l"
 {
     PrintError("hexadecimal digit expected", yylineno);
 }
 	YY_BREAK
 case 186:
 YY_RULE_SETUP
-#line 1251 "lexer.l"
+#line 1252 "lexer.l"
 { 
     Print("Found identifier: " + std::string{yytext}); 
     yylval.identName = Dublicate(yytext);
@@ -3341,13 +3342,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 187:
 YY_RULE_SETUP
-#line 1257 "lexer.l"
+#line 1258 "lexer.l"
 { /* ignoring spaces and tabs */ }
 	YY_BREAK
 case 188:
 /* rule 188 can match eol */
 YY_RULE_SETUP
-#line 1259 "lexer.l"
+#line 1260 "lexer.l"
 {
     Print("Found ENDL", yylineno);
     if (endlSemicolonInsertion) {
@@ -3360,7 +3361,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 189:
 YY_RULE_SETUP
-#line 1269 "lexer.l"
+#line 1270 "lexer.l"
 {
     yy_pop_state();
     if ( debug ) {
@@ -3374,27 +3375,27 @@ YY_RULE_SETUP
 	YY_BREAK
 case 190:
 YY_RULE_SETUP
-#line 1280 "lexer.l"
+#line 1281 "lexer.l"
 {
     Print("Found UNRECOGNIZED TOKEN: " + std::string{yytext}, yylineno);
     return -1;
 }
 	YY_BREAK
 case YY_STATE_EOF(DO_WHILE_ASI):
-#line 1285 "lexer.l"
+#line 1286 "lexer.l"
 YY_RULE_SETUP
 case YY_STATE_EOF(INITIAL):
-#line 1286 "lexer.l"
+#line 1287 "lexer.l"
 {
     yyterminate();
 }
 	YY_BREAK
 case 191:
 YY_RULE_SETUP
-#line 1290 "lexer.l"
+#line 1291 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 3397 "lexer.flex.cpp"
+#line 3398 "lexer.flex.cpp"
 			case YY_STATE_EOF(ENDL_OPERATOR):
 				yyterminate();
 
@@ -4430,7 +4431,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 1290 "lexer.l"
+#line 1291 "lexer.l"
 
 
 void rescanTokenString(const char * s) {

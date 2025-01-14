@@ -666,6 +666,31 @@ void ClassAnalyzer::analyzeStmt(StatementNode *node, StatementListNode *newSeq)
 
         newSeq->add(node);
     }
+
+    if (node->type == StatementNode::Type::_IFELSE)
+    {
+        analyzeIf(node);
+        newSeq->add(node);
+    }
+}
+
+void ClassAnalyzer::analyzeIf(StatementNode *node)
+{
+    if (!node)
+        return;
+
+    incrementScopingLevel();
+
+    node->expression = ExpressionNode::fromMethodCall(
+        ExpressionNode::fromNew("Boolean",
+                                new ExpressionListNode(node->expression)),
+        "getValue", ExpressionListNode::makeEmpty());
+
+    node->expression = analyzeExpr(node->expression);
+    analyzeStmt(node->ifBody);
+    analyzeStmt(node->elseBody);
+
+    decrementScopingLevel();
 }
 
 StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
@@ -2142,6 +2167,34 @@ Bytes toBytes(VarDeclarationNode *node, ClassFile &file)
     return bytes;
 }
 
+Bytes toBytes(StatementNode *stmt, ClassFile &file);
+
+Bytes toBytesIfElse(StatementNode *stmt, ClassFile &file)
+{
+    const auto hasElse = stmt->elseBody != nullptr;
+    const auto conditionBytes = toBytes(stmt->expression, file);
+    auto trueBranchBytes = toBytes(stmt->ifBody, file);
+    const auto elseBytes = toBytes(stmt->elseBody, file);
+
+    Bytes bytes;
+    append(bytes, conditionBytes);
+
+    if (hasElse)
+    {
+        const auto trueBranchOffset = toBytes((int16_t)(elseBytes.size() + 3));
+        append(trueBranchBytes, (uint8_t)Command::goto_);
+        append(trueBranchBytes, trueBranchOffset);
+    }
+
+    append(bytes, (uint8_t)Command::ifeq);
+    append(bytes, toBytes((int16_t)(trueBranchBytes.size() + 3)));
+    append(bytes, trueBranchBytes);
+    append(bytes, elseBytes);
+    append(bytes, (uint8_t)Command::nop);
+
+    return bytes;
+}
+
 Bytes toBytes(StatementNode *stmt, ClassFile &file)
 {
     if (!stmt)
@@ -2152,6 +2205,8 @@ Bytes toBytes(StatementNode *stmt, ClassFile &file)
     {
     case StatementNode::Type::_EMPTY:
         return bytes;
+    case StatementNode::Type::_EXPRESSION:
+        return toBytes(stmt->expression, file);
     case StatementNode::Type::_VAR:
     {
         for (auto decl : stmt->declList->GetSeq())
@@ -2168,22 +2223,8 @@ Bytes toBytes(StatementNode *stmt, ClassFile &file)
         }
         return bytes;
     }
-    // case StatementNode::Type::While:
-    //     return ToBytes(stmt->While, file);
-    // case StatementNode::Type::DoWhile:
-    //     return ToBytes(stmt->DoWhile, file);
-    // case StatementNode::Type::For:
-    //     return ToBytes(stmt->For, file);
-    // case StatementNode::Type::Foreach:
-    //     break;
-    // case StatementNode::Type::BlockStmt:
-    //     return ToBytes(stmt->Block, file);
-    // case StatementNode::Type::IfStmt:
-    //     return ToBytes(stmt->If, file);
-    // case StatementNode::Type::Return:
-    //     return ReturnToBytes(stmt->Expr, file);
-    case StatementNode::Type::_EXPRESSION:
-        return toBytes(stmt->expression, file);
+    case StatementNode::Type::_IFELSE:
+        return toBytesIfElse(stmt, file);
     default:;
     }
     return {};

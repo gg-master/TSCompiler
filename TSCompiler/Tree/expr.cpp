@@ -311,6 +311,37 @@ ExpressionNode *ExpressionNode::toRTLMethodCall() const
             fromNew("Boolean", new ExpressionListNode(firstOperand)), "and",
             new ExpressionListNode(
                 fromNew("Boolean", new ExpressionListNode(secondOperand))));
+
+    case Type::_ASSIGN_PLUS:
+        return fromBinaryExpr(
+            Type::_ASSIGN, firstOperand,
+            fromBinaryExpr(Type::_PLUS, firstOperand, secondOperand)
+                ->toRTLMethodCall());
+    case Type::_ASSIGN_MINUS:
+        return fromBinaryExpr(
+            Type::_ASSIGN, firstOperand,
+            fromBinaryExpr(Type::_MINUS, firstOperand, secondOperand)
+                ->toRTLMethodCall());
+    case Type::_ASSIGN_MUL:
+        return fromBinaryExpr(
+            Type::_ASSIGN, firstOperand,
+            fromBinaryExpr(Type::_MUL, firstOperand, secondOperand)
+                ->toRTLMethodCall());
+    case Type::_ASSIGN_DIV:
+        return fromBinaryExpr(
+            Type::_ASSIGN, firstOperand,
+            fromBinaryExpr(Type::_DIV, firstOperand, secondOperand)
+                ->toRTLMethodCall());
+    case Type::_ASSIGN_LOGICAL_OR:
+        return fromBinaryExpr(
+            Type::_ASSIGN, firstOperand,
+            fromBinaryExpr(Type::_LOGICAL_OR, firstOperand, secondOperand)
+                ->toRTLMethodCall());
+    case Type::_ASSIGN_LOGICAL_AND:
+        return fromBinaryExpr(
+            Type::_ASSIGN, firstOperand,
+            fromBinaryExpr(Type::_LOGICAL_AND, firstOperand, secondOperand)
+                ->toRTLMethodCall());
     default:
         break;
     }
