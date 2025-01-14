@@ -1771,10 +1771,10 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     {
         Bytes bytes;
 
-        const auto numberClassId =
+        const auto classId =
             file.Constants.FindClass(RTL_NUMBER_TYPE.toTypename());
         append(bytes, (uint8_t)Command::new_);
-        append(bytes, toBytes(numberClassId));
+        append(bytes, toBytes(classId));
         append(bytes, (uint8_t)Command::dup);
 
         const auto intVal = expr->intValue;
@@ -1803,10 +1803,10 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     {
         Bytes bytes;
 
-        const auto numberClassId =
+        const auto classId =
             file.Constants.FindClass(RTL_NUMBER_TYPE.toTypename());
         append(bytes, (uint8_t)Command::new_);
-        append(bytes, toBytes(numberClassId));
+        append(bytes, toBytes(classId));
         append(bytes, (uint8_t)Command::dup);
 
         const auto floatLiteralId = file.Constants.FindDouble(expr->floatValue);
@@ -1824,10 +1824,10 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     {
         Bytes bytes;
 
-        const auto stringClassId =
+        const auto classId =
             file.Constants.FindClass(RTL_STRING_TYPE.toTypename());
         append(bytes, (uint8_t)Command::new_);
-        append(bytes, toBytes(stringClassId));
+        append(bytes, toBytes(classId));
         append(bytes, (uint8_t)Command::dup);
 
         const auto stringLiteralId =
@@ -1845,10 +1845,10 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     {
         Bytes bytes;
 
-        const auto stringClassId =
+        const auto classId =
             file.Constants.FindClass(RTL_BOOLEAN_TYPE.toTypename());
         append(bytes, (uint8_t)Command::new_);
-        append(bytes, toBytes(stringClassId));
+        append(bytes, toBytes(classId));
         append(bytes, (uint8_t)Command::dup);
 
         if (expr->boolValue)
@@ -1866,10 +1866,10 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     {
         Bytes bytes;
 
-        const auto stringClassId =
+        const auto classId =
             file.Constants.FindClass(RTL_UNDEFINED_TYPE.toTypename());
         append(bytes, (uint8_t)Command::new_);
-        append(bytes, toBytes(stringClassId));
+        append(bytes, toBytes(classId));
         append(bytes, (uint8_t)Command::dup);
 
         const auto constructorId = file.Constants.FindMethodRef(
@@ -1882,10 +1882,10 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     {
         Bytes bytes;
 
-        const auto stringClassId =
+        const auto classId =
             file.Constants.FindClass(RTL_NULL_TYPE.toTypename());
         append(bytes, (uint8_t)Command::new_);
-        append(bytes, toBytes(stringClassId));
+        append(bytes, toBytes(classId));
         append(bytes, (uint8_t)Command::dup);
 
         const auto constructorId = file.Constants.FindMethodRef(
@@ -2276,7 +2276,18 @@ Bytes toBytes(VarDeclarationNode *node, ClassFile &file)
         }
         else if (node->varType->jvmType->isReferenceType())
         {
-            append(bytes, (uint8_t)Command::aconst_null);
+            // TODO need more testing of default undefined value
+            const auto classId =
+                file.Constants.FindClass(RTL_UNDEFINED_TYPE.toTypename());
+            append(bytes, (uint8_t)Command::new_);
+            append(bytes, toBytes(classId));
+            append(bytes, (uint8_t)Command::dup);
+
+            const auto constructorId = file.Constants.FindMethodRef(
+                RTL_UNDEFINED_TYPE.toTypename(), "<init>", "()V");
+            append(bytes, (uint8_t)Command::invokespecial);
+            append(bytes, toBytes(constructorId));
+            // append(bytes, (uint8_t)Command::aconst_null);
         }
         else
         {
