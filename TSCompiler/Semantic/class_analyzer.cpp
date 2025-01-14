@@ -672,6 +672,77 @@ void ClassAnalyzer::analyzeStmt(StatementNode *node, StatementListNode *newSeq)
         analyzeIf(node);
         newSeq->add(node);
     }
+
+    if (node->type == StatementNode::Type::_WHILE ||
+        node->type == StatementNode::Type::_DOWHILE)
+    {
+        analyzeWhileDoWhile(node);
+        newSeq->add(node);
+    }
+    if (node->type == StatementNode::Type::_FOR)
+    {
+        analyzeFor(node, newSeq);
+        newSeq->add(node);
+    }
+}
+
+void ClassAnalyzer::analyzeFor(StatementNode *node, StatementListNode *newSeq)
+{
+    if (!node)
+        return;
+
+    incrementScopingLevel();
+
+    if (node->declList)
+    {
+        auto newList = new VarDeclarationListNode();
+
+        for (auto varDecl : node->declList->GetSeq())
+        {
+            auto newNode = analyzeVarDeclaration(varDecl);
+            currentField = nullptr;
+
+            if (newNode)
+                newSeq->add(newNode);
+            else
+                newList->add(varDecl);
+        }
+        if (!newList->isEmpty())
+            newSeq->add(
+                StatementNode::fromVarStmt(node->modifierType, newList));
+        
+        node->declList = nullptr;
+    }
+
+    node->iterationExprAdd1 = ExpressionNode::fromMethodCall(
+        ExpressionNode::fromNew(
+            "Boolean", new ExpressionListNode(node->iterationExprAdd1)),
+        "getValue", ExpressionListNode::makeEmpty());
+
+    node->expression = analyzeExpr(node->expression);
+    node->iterationExprAdd1 = analyzeExpr(node->iterationExprAdd1);
+    node->iterationExprAdd2 = analyzeExpr(node->iterationExprAdd2);
+    analyzeStmt(node->iterationBody);
+
+    decrementScopingLevel();
+}
+
+void ClassAnalyzer::analyzeWhileDoWhile(StatementNode *node)
+{
+    if (!node)
+        return;
+
+    incrementScopingLevel();
+
+    node->expression = ExpressionNode::fromMethodCall(
+        ExpressionNode::fromNew("Boolean",
+                                new ExpressionListNode(node->expression)),
+        "getValue", ExpressionListNode::makeEmpty());
+
+    node->expression = analyzeExpr(node->expression);
+    analyzeStmt(node->iterationBody);
+
+    decrementScopingLevel();
 }
 
 void ClassAnalyzer::analyzeIf(StatementNode *node)
@@ -2237,13 +2308,13 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         }
         if (variable)
         {
-            auto *var = expr->firstOperand->actualVar;
-            const auto variableNumberBytes = (uint8_t)(var->positionInMethod);
-            if (var->varType->jvmType->isReferenceType())
+            const auto variableNumberBytes =
+                (uint8_t)(variable->positionInMethod);
+            if (variable->varType->jvmType->isReferenceType())
             {
                 append(bytes, (uint8_t)Command::astore);
             }
-            else if (var->varType->jvmType->isPrimitiveType())
+            else if (variable->varType->jvmType->isPrimitiveType())
             {
                 append(bytes, (uint8_t)Command::istore);
             }
@@ -2338,6 +2409,76 @@ Bytes toBytesIfElse(StatementNode *stmt, ClassFile &file)
     return bytes;
 }
 
+Bytes toBytesWhileDoWhile(StatementNode *stmt, ClassFile &file)
+{
+    Bytes bytes;
+
+    const auto conditionBytes = toBytes(stmt->expression, file);
+    const auto bodyBytes = toBytes(stmt->iterationBody, file);
+
+    constexpr auto ifeqCommandLength = 3;
+    constexpr auto gotoCommandLength = 3;
+
+    const auto gotoBytesOffset = -static_cast<int16_t>(
+        conditionBytes.size() + bodyBytes.size() + ifeqCommandLength);
+
+    const auto ifeqBytesOffset = static_cast<int16_t>(
+        bodyBytes.size() + ifeqCommandLength + gotoCommandLength);
+
+    if (stmt->type == StatementNode::Type::_DOWHILE)
+        append(bytes, bodyBytes);
+
+    append(bytes, conditionBytes);
+
+    append(bytes, (uint8_t)Command::ifeq);
+    append(bytes, toBytes(ifeqBytesOffset));
+
+    append(bytes, bodyBytes);
+
+    append(bytes, (uint8_t)Command::goto_);
+    append(bytes, toBytes((int16_t)gotoBytesOffset));
+    append(bytes, (uint8_t)Command::nop);
+
+    return bytes;
+}
+
+Bytes toBytesFor(StatementNode *node, ClassFile &file)
+{
+    Bytes bytes;
+
+    if (node->expression)
+        append(bytes, toBytes(node->expression, file));
+
+    const auto conditionBytes = toBytes(node->iterationExprAdd1, file);
+    const auto iterExprBytes = toBytes(node->iterationExprAdd2, file);
+
+    auto bodyBytes = toBytes(node->iterationBody, file);
+    append(bodyBytes, iterExprBytes);
+
+    constexpr auto ifeqCommandLength = 3;
+    constexpr auto gotoCommandLength = 3;
+
+    const auto gotoBytesOffset = -static_cast<int16_t>(
+        conditionBytes.size() + bodyBytes.size() + ifeqCommandLength);
+
+    const auto ifeqBytesOffset = static_cast<int16_t>(
+        bodyBytes.size() + ifeqCommandLength + gotoCommandLength);
+
+    append(bytes, conditionBytes);
+
+    append(bytes, (uint8_t)Command::ifeq);
+    append(bytes, toBytes(ifeqBytesOffset));
+
+    append(bytes, bodyBytes);
+
+    append(bytes, (uint8_t)Command::goto_);
+    append(bytes, toBytes((int16_t)gotoBytesOffset));
+
+    append(bytes, (uint8_t)Command::nop);
+
+    return bytes;
+}
+
 Bytes toBytes(StatementNode *stmt, ClassFile &file)
 {
     if (!stmt)
@@ -2368,6 +2509,14 @@ Bytes toBytes(StatementNode *stmt, ClassFile &file)
     }
     case StatementNode::Type::_IFELSE:
         return toBytesIfElse(stmt, file);
+
+    case StatementNode::Type::_WHILE:
+    case StatementNode::Type::_DOWHILE:
+        return toBytesWhileDoWhile(stmt, file);
+
+    case StatementNode::Type::_FOR:
+        return toBytesFor(stmt, file);
+
     default:;
     }
     return {};

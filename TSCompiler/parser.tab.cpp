@@ -2477,7 +2477,7 @@ yyreduce:
 
   case 26: /* blockStatement: '{' '}'  */
 #line 239 "parser.y"
-                            { Print("- R: '{' '}' -> blockStatement"); (yyval.stmtNode) = StatementNode::fromBlockStmt(nullptr); }
+                            { Print("- R: '{' '}' -> blockStatement"); (yyval.stmtNode) = StatementNode::fromBlockStmt(StatementListNode::makeEmpty()); }
 #line 2482 "parser.tab.cpp"
     break;
 

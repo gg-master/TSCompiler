@@ -101,6 +101,8 @@ StatementNode *StatementNode::fromClassicForWithVarDeclStmt(
     stmt->declList = declList;
     stmt->iterationExprAdd1 = expr2;
     stmt->iterationExprAdd2 = expr3;
+
+    stmt->declList->setModifierType(modifierType);
     return stmt;
 }
 StatementNode *StatementNode::fromForExprInExprStmt(ExpressionNode *expr1,
@@ -108,7 +110,7 @@ StatementNode *StatementNode::fromForExprInExprStmt(ExpressionNode *expr1,
                                                     StatementNode *body)
 {
     auto *stmt = new StatementNode{};
-    stmt->type = StatementNode::Type::_FOR;
+    stmt->type = StatementNode::Type::_FOR_EACH;
     stmt->iterationBody = body;
     stmt->expression = expr1;
     stmt->iterationExprAdd1 = expr2;
@@ -119,7 +121,7 @@ StatementNode *StatementNode::fromForVarDeclInExprStmt(
     ExpressionNode *expr, StatementNode *body)
 {
     auto *stmt = new StatementNode{};
-    stmt->type = StatementNode::Type::_FOR;
+    stmt->type = StatementNode::Type::_FOR_EACH;
     stmt->iterationBody = body;
     stmt->modifierType = modifierType;
     stmt->declList->add(decl);
@@ -133,7 +135,7 @@ std::vector<VarDeclarationNode *> StatementNode::getAllFunctionScopedVars()
 {
     std::vector<VarDeclarationNode *> variables;
 
-    if (type == StatementNode::Type::_VAR && isFunctionScopeVar(modifierType))
+    if (isFunctionScopeVar(modifierType) && declList)
     {
         variables.insert(variables.end(), declList->GetSeq().begin(),
                          declList->GetSeq().end());

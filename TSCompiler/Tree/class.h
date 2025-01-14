@@ -210,13 +210,13 @@ struct ClassDeclarationNode final : Node
     std::string className{};
     std::string heritageName{};
 
-    ClassElementListNode *body;
+    ClassElementListNode* body{};
 
     // if in constructor last stmt is return. then new class exported via that
-    ClassDeclarationNode *returnedClassFromConstructor;
+    ClassDeclarationNode* returnedClassFromConstructor{};
 
-    ClassElementNode *thisProp;
-    ClassElementNode *superProp;
+    ClassElementNode* thisProp{};
+    ClassElementNode* superProp{};
 
     ClassDeclarationNode(const std::string className,
                          ClassElementListNode *const body)

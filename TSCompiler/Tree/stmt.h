@@ -14,6 +14,7 @@ struct StatementNode final : Node
         _WHILE,
         _DOWHILE,
         _FOR,
+        _FOR_EACH,
         _RETURN,
         _BLOCK,
     } type{};

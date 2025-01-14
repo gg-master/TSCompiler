@@ -236,7 +236,7 @@ emptyStatement
     ;
 
 blockStatement
-    : '{' '}'               { Print("- R: '{' '}' -> blockStatement"); $$ = StatementNode::fromBlockStmt(nullptr); }
+    : '{' '}'               { Print("- R: '{' '}' -> blockStatement"); $$ = StatementNode::fromBlockStmt(StatementListNode::makeEmpty()); }
     | '{' statementList '}' { Print("- R: '{' statementList '}' -> blockStatement"); $$ = StatementNode::fromBlockStmt($2); }
     ;
 

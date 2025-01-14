@@ -852,6 +852,7 @@ void ToDot(StatementNode *node, std::ostream &out)
         out << MakeConnection(node->id, node->expression->id, "condition");
         break;
     case StatementNode::Type::_FOR:
+    case StatementNode::Type::_FOR_EACH:
         out << MakeNode(node->id, "ForStmtNode");
         ToDot(node->iterationBody, out);
         out << MakeConnection(node->id, node->iterationBody->id, "body");
