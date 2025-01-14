@@ -352,26 +352,54 @@ void ExpressionNode::applyToAllChildren(
     const std::function<ExpressionNode *(ExpressionNode *)> &mapFunction)
 {
     if (firstOperand)
+    {
         firstOperand = mapFunction(firstOperand);
+        firstOperand->applyToAllChildren(mapFunction);
+    }
     if (secondOperand)
+    {
         secondOperand = mapFunction(secondOperand);
+        secondOperand->applyToAllChildren(mapFunction);
+    }
     if (thirdOperand)
+    {
         thirdOperand = mapFunction(thirdOperand);
-
+        thirdOperand->applyToAllChildren(mapFunction);
+    }
     if (params)
-        for (auto &expr : params->GetSeq()) expr = mapFunction(expr);
+    {
+        for (auto &expr : params->GetSeq())
+        {
+            expr = mapFunction(expr);
+            expr->applyToAllChildren(mapFunction);
+        }
+    }
 }
 
 void ExpressionNode::callForAllChildren(
     const std::function<void(ExpressionNode *)> &function) const
 {
     if (firstOperand)
+    {
         function(firstOperand);
+        firstOperand->callForAllChildren(function);
+    }
     if (secondOperand)
+    {
         function(secondOperand);
+        secondOperand->callForAllChildren(function);
+    }
     if (thirdOperand)
+    {
         function(thirdOperand);
-
+        thirdOperand->callForAllChildren(function);
+    }
     if (params)
-        for (auto &expr : params->GetSeq()) function(expr);
+    {
+        for (auto &expr : params->GetSeq())
+        {
+            function(expr);
+            expr->callForAllChildren(function);
+        }
+    }
 }

@@ -1445,12 +1445,20 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         auto *leftType = calculateTypeForExpr(node->firstOperand);
         auto *rightType = calculateTypeForExpr(node->secondOperand);
 
+        if (node->type == ExpressionNode::Type::_COMMA)
+        {
+            type = rightType;
+            node->exprType = type;
+            return type;
+        }
+
         if (leftType->jvmType->type == JvmDataType::Type::Complex ||
             rightType->jvmType->type == JvmDataType::Type::Complex)
         {
             errors.push_back(
                 "Operator overloading is not supported in this version.");
-            return node->exprType;
+            return new TypeNode(new JvmDataType());
+            ;
         }
 
         if (node->isLogical())
@@ -1476,11 +1484,11 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             return type;
         }
 
-        if (node->type == ExpressionNode::Type::_COMMA)
+        if (node->type == ExpressionNode::Type::_INSTANCEOF ||
+            node->type == ExpressionNode::Type::_IN)
         {
-            type = rightType;
-            node->exprType = type;
-            return type;
+            errors.push_back("Operator '" + node->toStringType() +
+                             "' is not supported in this version.");
         }
 
         errors.push_back("Types '" + leftType->toString() + "' and '" +
@@ -1494,23 +1502,14 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         type = leftType;
         node->exprType = type;
 
-        if (leftType->jvmType->type == JvmDataType::Type::Complex)
-        {
-            errors.push_back(
-                "Operator overloading is not supported in this version.");
-            type = new TypeNode(new JvmDataType(RTL_ANY_TYPE));
-            node->exprType = type;
-            return type;
-        }
-
         if (node->type == ExpressionNode::Type::_POST_DECREMENT ||
             node->type == ExpressionNode::Type::_POST_INCREMENT ||
             node->type == ExpressionNode::Type::_PREF_DECREMENT ||
             node->type == ExpressionNode::Type::_PREF_INCREMENT)
         {
-            if (node->firstOperand->type != ExpressionNode::Type::_IDENTIFIER ||
+            if (node->firstOperand->type != ExpressionNode::Type::_IDENTIFIER &&
                 node->firstOperand->type !=
-                    ExpressionNode::Type::_ARRAY_ACCESS ||
+                    ExpressionNode::Type::_ARRAY_ACCESS &&
                 node->firstOperand->type != ExpressionNode::Type::_FIELD_ACCESS)
             {
                 errors.push_back(
@@ -1518,6 +1517,29 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
                     "must be "
                     "a variable or a property access.");
             }
+
+            if (RTL_NUMBER_TYPE != *leftType->jvmType &&
+                RTL_UNDEFINED_TYPE != *leftType->jvmType &&
+                RTL_NULL_TYPE != *leftType->jvmType)
+            {
+                errors.push_back("Type '" + leftType->toString() +
+                                 "' is not compatible with operation " +
+                                 node->toStringType());
+            }
+
+            if (node->exprType)
+                return node->exprType;
+
+            return new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
+        }
+
+        if (leftType->jvmType->type == JvmDataType::Type::Complex)
+        {
+            errors.push_back(
+                "Operator overloading is not supported in this version.");
+            type = new TypeNode(new JvmDataType(RTL_ANY_TYPE));
+            node->exprType = type;
+            return type;
         }
 
         if (node->type == ExpressionNode::Type::_UPLUS ||
@@ -1546,17 +1568,22 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
     if (node->type == ExpressionNode::Type::_TERNARY)
     {
+        if (node->exprType)
+            return node->exprType;
+
+        node->firstOperand = ExpressionNode::fromMethodCall(
+            ExpressionNode::fromNew("Boolean",
+                                    new ExpressionListNode(node->firstOperand)),
+            "getValue", ExpressionListNode::makeEmpty());
+
         calculateTypeForExpr(node->firstOperand);
         calculateTypeForExpr(node->secondOperand);
         calculateTypeForExpr(node->thirdOperand);
 
-        if (*node->firstOperand->exprType->jvmType !=
-                JvmDataType(JvmDataType::Type::Bool) ||
-            *node->firstOperand->exprType->jvmType !=
-                JvmDataType(RTL_BOOLEAN_TYPE))
+        if (*node->secondOperand->exprType == *node->thirdOperand->exprType)
         {
-            errors.push_back(
-                "Ternary condition must be boolean type in this version.");
+            node->exprType = node->secondOperand->exprType;
+            return node->exprType;
         }
     }
     type = new TypeNode(new JvmDataType());
@@ -2079,47 +2106,152 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
 
         return bytes;
     }
+    if (expr->type == ExpressionNode::Type::_COMMA)
+    {
+        Bytes bytes;
+        const auto leftBytes = toBytes(expr->firstOperand, file);
+        const auto rightBytes = toBytes(expr->secondOperand, file);
+        append(bytes, leftBytes);
+        append(bytes, rightBytes);
+        return bytes;
+    }
+    if (expr->type == ExpressionNode::Type::_TERNARY)
+    {
+        const auto conditionBytes = toBytes(expr->firstOperand, file);
+        auto trueBranchBytes = toBytes(expr->secondOperand, file);
+        const auto elseBytes = toBytes(expr->thirdOperand, file);
+
+        Bytes bytes;
+        append(bytes, conditionBytes);
+
+        const auto trueBranchOffset = toBytes((int16_t)(elseBytes.size() + 3));
+        append(trueBranchBytes, (uint8_t)Command::goto_);
+        append(trueBranchBytes, trueBranchOffset);
+
+        append(bytes, (uint8_t)Command::ifeq);
+        append(bytes, toBytes((int16_t)(trueBranchBytes.size() + 3)));
+        append(bytes, trueBranchBytes);
+        append(bytes, elseBytes);
+        append(bytes, (uint8_t)Command::nop);
+
+        return bytes;
+    }
+    if (expr->type == ExpressionNode::Type::_POST_INCREMENT ||
+        expr->type == ExpressionNode::Type::_POST_DECREMENT ||
+        expr->type == ExpressionNode::Type::_PREF_INCREMENT ||
+        expr->type == ExpressionNode::Type::_PREF_DECREMENT)
+    {
+        Bytes bytes;
+
+        auto *operand = expr->firstOperand;
+
+        ClassElementNode *field = operand->actualField;
+        VarDeclarationNode *variable = operand->actualVar;
+
+        if (!field && !variable)
+            throw std::runtime_error{
+                "Internal error: cant find actual field or variable"};
+
+        // create new number object
+        const auto numberClassId =
+            file.Constants.FindClass(RTL_NUMBER_TYPE.toTypename());
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(numberClassId));
+        append(bytes, (uint8_t)Command::dup);
+
+        // load value from variable or field
+        append(bytes, toBytes(operand, file));
+
+        // init wrapper object
+        const auto constructorId = file.Constants.FindMethodRef(
+            RTL_NUMBER_TYPE.toTypename(), "<init>",
+            "(" + RTL_NUMBER_TYPE.toDescriptor() + ")V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorId));
+
+        if (expr->type == ExpressionNode::Type::_POST_INCREMENT ||
+            expr->type == ExpressionNode::Type::_POST_DECREMENT)
+        {
+            // duplicate object as a result
+            append(bytes, (uint8_t)Command::dup);
+        }
+
+        // argument for plus method
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(numberClassId));
+        append(bytes, (uint8_t)Command::dup);
+
+        const auto intVal =
+            (expr->type == ExpressionNode::Type::_POST_INCREMENT ||
+             expr->type == ExpressionNode::Type::_PREF_INCREMENT)
+                ? 1
+                : -1;
+
+        const auto intBytes = toBytes((IntT)intVal);
+        bytes.push_back((uint8_t)Command::sipush);
+        bytes.push_back(intBytes[2]);
+        bytes.push_back(intBytes[3]);
+
+        const auto intConstuctorId = file.Constants.FindMethodRef(
+            RTL_NUMBER_TYPE.toTypename(), "<init>", "(I)V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(intConstuctorId));
+
+        const auto methodRefConstant = file.Constants.FindMethodRef(
+            RTL_NUMBER_TYPE.toTypename(), "plus",
+            "(" + RTL_NUMBER_TYPE.toDescriptor() + ")" +
+                RTL_NUMBER_TYPE.toDescriptor());
+
+        append(bytes, (uint8_t)Command::invokevirtual);
+        append(bytes, toBytes(methodRefConstant));
+
+        if (expr->type == ExpressionNode::Type::_PREF_INCREMENT ||
+            expr->type == ExpressionNode::Type::_PREF_DECREMENT)
+        {
+            // duplicate object as a result
+            append(bytes, (uint8_t)Command::dup);
+        }
+
+        if (field)
+        {
+            if (field->isStatic)
+            {
+                append(bytes, (uint8_t)Command::putstatic);
+            }
+            else
+            {
+                Bytes objectBytes;
+                if (expr->firstOperand)
+                    objectBytes = toBytes(expr->firstOperand, file);
+                else
+                    append(objectBytes, (uint8_t)Command::aload_0);
+                append(bytes, objectBytes);
+                append(bytes, toBytes(expr->secondOperand, file));
+                append(bytes, (uint8_t)Command::putfield);
+            }
+            const auto fieldRefId = file.Constants.FindFieldRef(
+                field->elemClass->toDataType()->toTypename(), field->name,
+                field->propertyAndReturnType->jvmType->toDescriptor());
+
+            append(bytes, toBytes(fieldRefId));
+        }
+        if (variable)
+        {
+            auto *var = expr->firstOperand->actualVar;
+            const auto variableNumberBytes = (uint8_t)(var->positionInMethod);
+            if (var->varType->jvmType->isReferenceType())
+            {
+                append(bytes, (uint8_t)Command::astore);
+            }
+            else if (var->varType->jvmType->isPrimitiveType())
+            {
+                append(bytes, (uint8_t)Command::istore);
+            }
+            append(bytes, variableNumberBytes);
+        }
+        return bytes;
+    }
     return {};
-    // TODO remove null
-    // if (expr->type == ExpressionNode::Type::_NULL_LIT)
-    // {
-    //     Bytes bytes;
-    //     append(bytes, (uint8_t)Command::aconst_null);
-    //     return bytes;
-    // }
-
-    // if (expr->type == ExpressionNode::Type::_POST_INCREMENT ||
-    //     expr->type == ExpressionNode::Type::_POST_DECREMENT)
-    // {
-    //     Bytes bytes;
-
-    //     auto *operand = expr->firstOperand;
-
-    //     ClassElementNode *field = operand->actualField;
-    //     VarDeclarationNode *variable = operand->actualVar;
-
-    //     if (!field && !variable)
-    //         throw std::runtime_error{
-    //             "Internal error: cant find actual field or variable"};
-
-    //     if (variable)
-    //     {
-    //         auto varIndex = (uint8_t)variable->positionInMethod;
-    //         // place value before changes on stack
-    //         append(bytes, (uint8_t)Command::iload);
-    //         append(bytes, varIndex);
-
-    //         append(bytes, (uint8_t)Command::iinc);
-    //         append(bytes, varIndex);
-    //         int8_t incVal =
-    //             expr->type == ExpressionNode::Type::_POST_INCREMENT ? 1 : -1;
-    //         append(bytes, incVal);
-    //     }
-    //     if (field)
-    //     {
-    //     }
-    //     return bytes;
-    // }
 
     // if (expr->type == ExpressionNode::Type::_PREF_INCREMENT ||
     //     expr->type == ExpressionNode::Type::_PREF_DECREMENT)

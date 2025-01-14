@@ -84,6 +84,9 @@ struct JvmDataType
         case JvmDataType::Type::Double:
             name += "double";
             break;
+        case JvmDataType::Type::Bool:
+            name += "bool";
+            break;
         case JvmDataType::Type::String:
             name += "string";
             break;
