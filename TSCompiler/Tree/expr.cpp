@@ -275,10 +275,10 @@ ExpressionNode *ExpressionNode::toRTLMethodCall() const
                               new ExpressionListNode(secondOperand));
     case Type::_UPLUS:
         return fromMethodCall(firstOperand, "uPlus",
-                              new ExpressionListNode(secondOperand));
+                              ExpressionListNode::makeEmpty());
     case Type::_UMINUS:
         return fromMethodCall(firstOperand, "uMinus",
-                              new ExpressionListNode(secondOperand));
+                              ExpressionListNode::makeEmpty());
     case Type::_LESS:
         return fromMethodCall(firstOperand, "less",
                               new ExpressionListNode(secondOperand));
@@ -301,16 +301,14 @@ ExpressionNode *ExpressionNode::toRTLMethodCall() const
         return fromMethodCall(
             fromNew("Boolean", new ExpressionListNode(firstOperand)), "not",
             ExpressionListNode::makeEmpty());
+
     case Type::_LOGICAL_OR:
-        return fromMethodCall(
-            fromNew("Boolean", new ExpressionListNode(firstOperand)), "or",
-            new ExpressionListNode(
-                fromNew("Boolean", new ExpressionListNode(secondOperand))));
+        return fromTernaryExpr(firstOperand, firstOperand, secondOperand);
+
     case Type::_LOGICAL_AND:
-        return fromMethodCall(
-            fromNew("Boolean", new ExpressionListNode(firstOperand)), "and",
-            new ExpressionListNode(
-                fromNew("Boolean", new ExpressionListNode(secondOperand))));
+        return fromTernaryExpr(
+            fromUnaryExpr(Type::_NOT, firstOperand)->toRTLMethodCall(),
+            firstOperand, secondOperand);
 
     case Type::_ASSIGN_PLUS:
         return fromBinaryExpr(
