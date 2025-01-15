@@ -330,10 +330,11 @@ void ClassAnalyzer::attributeMemberSignatures()
 
         auto *type = toJvmDataType(method->propertyAndReturnType);
 
-        if (*type == RTL_ANY_TYPE && method->isConstructor())
+        if ((*type == RTL_ANY_TYPE && method->isConstructor()) ||
+            method->isMainMethod)
+        {
             type = new JvmDataType(JvmDataType::Type::Void);
-        else
-            type = new JvmDataType(RTL_VOID_TYPE);
+        }
 
         method->propertyAndReturnType = new TypeNode(type);
 
@@ -375,6 +376,7 @@ void ClassAnalyzer::analyzeRequiredParam(RequiredParameterNode *param)
     varDecl->scopingLevel = currentScopingLevel;
 
     currentMethod->variables.push_back(varDecl);
+    varDecl->positionInMethod = currentMethod->variables.size() - 1;
 }
 
 void ClassAnalyzer::attributeClassProperty(ClassElementNode *node)
@@ -571,7 +573,6 @@ void ClassAnalyzer::analyzeClassMethod(ClassElementNode *node)
     if (!currentMethod->isMainMethod)
         moveFunctionScopedVarsOnTop();
 
-    // todo add last stmt return of undefined
     if (!isUnknown(currentMethod->propertyAndReturnType) &&
         currentMethod->methodBody->isEmpty())
     {
@@ -580,6 +581,24 @@ void ClassAnalyzer::analyzeClassMethod(ClassElementNode *node)
             "nor 'any' must return a value.");
         currentMethod = nullptr;
         return;
+    }
+    if (!currentMethod->methodBody->isEmpty())
+    {
+        auto *lastStmt = currentMethod->methodBody->GetSeq().back();
+        if (lastStmt->type != StatementNode::Type::_RETURN &&
+            !isUnknown(currentMethod->propertyAndReturnType))
+        {
+            errors.push_back(
+                "Function '" + currentMethod->name +
+                "' lacks ending return statement and return type does "
+                "not include 'undefined'.");
+        }
+    }
+    if (isUnknown(currentMethod->propertyAndReturnType) &&
+        !currentMethod->isMainMethod)
+    {
+        auto defaultReturn = StatementNode::fromReturnStmt(nullptr);
+        currentMethod->methodBody->add(defaultReturn);
     }
 
     incrementScopingLevel();
@@ -597,22 +616,6 @@ void ClassAnalyzer::analyzeClassMethod(ClassElementNode *node)
     {
         currentMethod = nullptr;
         return;
-    }
-
-    if (!currentMethod->methodBody->isEmpty())
-    {
-        auto *lastStmt = currentMethod->methodBody->GetSeq().back();
-        if (lastStmt->type != StatementNode::Type::_RETURN &&
-            !isUnknown(currentMethod->propertyAndReturnType))
-        {
-            errors.push_back("Last statement in method " + currentMethod->name +
-                             " must be return!");
-        }
-        else if (lastStmt->type != StatementNode::Type::_RETURN)
-        {
-            // TODO add last statement return of undefined
-            // currentMethod
-        }
     }
 
     currentMethod = nullptr;
@@ -684,11 +687,38 @@ void ClassAnalyzer::analyzeStmt(StatementNode *node, StatementListNode *newSeq)
         analyzeFor(node, newSeq);
         newSeq->add(node);
     }
+
+    if (node->type == StatementNode::Type::_RETURN)
+    {
+        analyzeReturn(node);
+        newSeq->add(node);
+    }
+}
+
+void ClassAnalyzer::analyzeReturn(StatementNode *node)
+{
+    if (!node || node->type != StatementNode::Type::_RETURN)
+        return;
+
+    if (!node->expression)
+    {
+        node->expression = ExpressionNode::fromUndefinedLit();
+    }
+
+    node->expression = analyzeExpr(node->expression);
+
+    if (*currentMethod->propertyAndReturnType != *node->expression->exprType)
+    {
+        errors.push_back("Type '" + node->expression->exprType->toString() +
+                         "' is not assignable to type '" +
+                         currentMethod->propertyAndReturnType->toString() +
+                         "'.");
+    }
 }
 
 void ClassAnalyzer::analyzeFor(StatementNode *node, StatementListNode *newSeq)
 {
-    if (!node)
+    if (!node || node->type != StatementNode::Type::_FOR)
         return;
 
     incrementScopingLevel();
@@ -710,7 +740,7 @@ void ClassAnalyzer::analyzeFor(StatementNode *node, StatementListNode *newSeq)
         if (!newList->isEmpty())
             newSeq->add(
                 StatementNode::fromVarStmt(node->modifierType, newList));
-        
+
         node->declList = nullptr;
     }
 
@@ -729,7 +759,8 @@ void ClassAnalyzer::analyzeFor(StatementNode *node, StatementListNode *newSeq)
 
 void ClassAnalyzer::analyzeWhileDoWhile(StatementNode *node)
 {
-    if (!node)
+    if (!node || node->type != StatementNode::Type::_WHILE ||
+        node->type != StatementNode::Type::_DOWHILE)
         return;
 
     incrementScopingLevel();
@@ -747,7 +778,7 @@ void ClassAnalyzer::analyzeWhileDoWhile(StatementNode *node)
 
 void ClassAnalyzer::analyzeIf(StatementNode *node)
 {
-    if (!node)
+    if (!node || node->type != StatementNode::Type::_IFELSE)
         return;
 
     incrementScopingLevel();
@@ -1006,13 +1037,13 @@ void ClassAnalyzer::analyzeFuncCall(ExpressionNode *node)
         std::find_if(allFunctions.begin(), allFunctions.end(),
                      [&](ClassElementNode *func) {
                          return funcName == func->name &&
-                                callTypes == func->params->getTypes();
+                                func->params->getTypes() == callTypes;
                      });
 
     if (foundFunc == allFunctions.end())
     {
-        errors.push_back("Cannot call function with name " + funcName +
-                         " with arguments of types " + toString(callTypes));
+        errors.push_back("Cannot call function with name '" + funcName +
+                         "' with arguments of types " + toString(callTypes));
         return;
     }
     node->exprType = (*foundFunc)->propertyAndReturnType;
@@ -2479,6 +2510,16 @@ Bytes toBytesFor(StatementNode *node, ClassFile &file)
     return bytes;
 }
 
+Bytes toBytesReturn(StatementNode *node, ClassFile &file)
+{
+    Bytes bytes;
+
+    append(bytes, toBytes(node->expression, file));
+    append(bytes, (uint8_t)Command::areturn);
+
+    return bytes;
+}
+
 Bytes toBytes(StatementNode *stmt, ClassFile &file)
 {
     if (!stmt)
@@ -2516,6 +2557,9 @@ Bytes toBytes(StatementNode *stmt, ClassFile &file)
 
     case StatementNode::Type::_FOR:
         return toBytesFor(stmt, file);
+
+    case StatementNode::Type::_RETURN:
+        return toBytesReturn(stmt, file);
 
     default:;
     }
