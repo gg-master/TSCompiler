@@ -191,6 +191,13 @@ ClassDeclarationNode *Semantic::createNumberClass()
         body->add(method);
     }
 
+    {
+        auto *method = new ClassElementNode(
+            "toInt", RequiredParameterListNode::makeEmpty(),
+            new TypeNode(new JvmDataType(JvmDataType::Type::Int)), nullptr);
+        body->add(method);
+    }
+
     auto *rtlClass = new ClassDeclarationNode("JavaRTL/Number", body);
     for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;

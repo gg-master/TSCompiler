@@ -31,6 +31,17 @@ ClassDeclarationNode *Semantic::createConsoleClass()
     }
 
     // Methods
+    // {
+    //     auto *type = new TypeNode(new JvmDataType(RTL_ANY_TYPE));
+    //     type->jvmType->arrayArity = 1;
+
+    //     auto *param = new RequiredParameterNode("other", type);
+    //     auto *method = new ClassElementNode(
+    //         "log", new RequiredParameterListNode(param),
+    //         new TypeNode(new JvmDataType(RTL_VOID_TYPE)), nullptr, true);
+    //     method->analyzeArguments();
+    //     body->add(method);
+    // }
     {
         auto *type = new TypeNode(new JvmDataType(RTL_ANY_TYPE));
         auto *param = new RequiredParameterNode("other", type);
@@ -40,6 +51,7 @@ ClassDeclarationNode *Semantic::createConsoleClass()
         method->analyzeArguments();
         body->add(method);
     }
+
     {
         auto *method = new ClassElementNode(
             "readLine", RequiredParameterListNode::makeEmpty(),

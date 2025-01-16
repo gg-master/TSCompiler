@@ -29,7 +29,7 @@ struct TypeNode final : Node
     {
     }
 
-    TypeNode(JvmDataType *type) : jvmType{type} {}
+    TypeNode(JvmDataType *type) : jvmType{type}, arrayArity{type->arrayArity} {}
 
     bool operator==(const TypeNode &other) const
     {

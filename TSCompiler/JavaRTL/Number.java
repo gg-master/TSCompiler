@@ -160,6 +160,10 @@ public class Number extends Any {
         return new JavaRTL.Boolean(false);
     }
 
+    public int toInt() {
+        return (int)this._value;
+    }
+
     @Override
     public java.lang.String toString() {
         DecimalFormat df = new DecimalFormat("#.##########");

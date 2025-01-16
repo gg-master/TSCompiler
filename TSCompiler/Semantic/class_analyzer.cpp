@@ -1223,7 +1223,8 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         node->exprType = type;
         return type;
     }
-    if (node->type == ExpressionNode::Type::_UNDEFINED_LIT)
+    if (node->type == ExpressionNode::Type::_UNDEFINED_LIT ||
+        node->type == ExpressionNode::Type::_ARRAY_EMPTY_ELEMENT)
     {
         type = new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE));
         node->exprType = type;
@@ -1241,22 +1242,21 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             {
                 calculateTypeForExpr(elem);
             }
-            auto *elemType = elements.front()->exprType->jvmType;
+            auto elemType = elements.front()->exprType->jvmType;
 
-            std::vector<JvmDataType> types(elements.size());
-            std::transform(elements.begin(), elements.end(), types.begin(),
-                           [](ExpressionNode *node)
-                           { return *node->exprType->jvmType; });
-
-            const bool allElementsHaveSameType = std::all_of(
-                types.begin(), types.end(),
-                [elemType](JvmDataType other) { return *elemType == other; });
-
-            if (!allElementsHaveSameType)
+            for (auto elem : elements)
             {
-                errors.push_back("Cannot create array with different types: " +
-                                 toString(types));
-                return new TypeNode(new JvmDataType());
+                if (elem->exprType->jvmType->arrayArity != 0)
+                {
+                    errors.push_back(
+                        "Cannot create a multi-dimensional array in "
+                        "this version.");
+                }
+
+                if (*elemType != *elem->exprType->jvmType)
+                {
+                    elemType = new JvmDataType(RTL_ANY_TYPE);
+                }
             }
             node->exprType = new TypeNode(new JvmDataType(*elemType));
             node->exprType->jvmType->arrayArity++;
@@ -1367,24 +1367,32 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
     if (node->type == ExpressionNode::Type::_ARRAY_ACCESS)
     {
         auto firstOperand = calculateTypeForExpr(node->firstOperand);
+
+        if (!node->exprType)
+        {
+            node->secondOperand = ExpressionNode::fromMethodCall(
+                node->secondOperand, "toInt", ExpressionListNode::makeEmpty());
+        }
+
         auto secondOperand = calculateTypeForExpr(node->secondOperand);
 
-        type = firstOperand;
-        node->exprType = firstOperand;
+        type = new TypeNode(new JvmDataType(*firstOperand->jvmType));
+        type->jvmType->arrayArity = firstOperand->jvmType->arrayArity - 1;
+
+        node->exprType = type;
 
         if (secondOperand->jvmType->arrayArity != 0 ||
-            (*secondOperand->jvmType != RTL_NUMBER_TYPE ||
-             *secondOperand->jvmType != JvmDataType(JvmDataType::Type::Int)))
+            *secondOperand->jvmType != JvmDataType(JvmDataType::Type::Int))
         {
             errors.push_back("Array index must be type int, not " +
                              secondOperand->toString());
             return type;
         }
 
-        if (secondOperand->jvmType->arrayArity == 0)
+        if (firstOperand->jvmType->arrayArity == 0)
         {
-            errors.push_back("Cannot use operator[] on type" +
-                             type->toString());
+            errors.push_back("Cannot use operator[] on type '" +
+                             type->toString() + "'.");
             return type;
         }
         return type;
@@ -1397,7 +1405,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         {
             node->type = ExpressionNode::Type::_ARRAY_LENGTH;
 
-            type = new TypeNode(new JvmDataType(JvmDataType::Type::Int));
+            type = new TypeNode(new JvmDataType(RTL_NUMBER_TYPE));
             node->exprType = type;
             return type;
         }
@@ -1468,20 +1476,28 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
         if (node->type == ExpressionNode::Type::_ASSIGN_TO_ARRAY_ELEMENT)
         {
+            if (!node->exprType)
+            {
+                node->secondOperand = ExpressionNode::fromMethodCall(
+                    node->secondOperand, "toInt",
+                    ExpressionListNode::makeEmpty());
+                secondOperand = calculateTypeForExpr(node->secondOperand);
+            }
+
             if (secondOperand->jvmType->arrayArity != 0 ||
-                (*secondOperand->jvmType != RTL_NUMBER_TYPE ||
-                 *secondOperand->jvmType !=
-                     JvmDataType(JvmDataType::Type::Int)))
+                *secondOperand->jvmType != JvmDataType(JvmDataType::Type::Int))
             {
                 errors.push_back("Array index must be type int, not " +
                                  secondOperand->toString());
             }
-            // node->jvmType->arrayArity -= 1;
         }
 
         if (node->type == ExpressionNode::Type::_ASSIGN_TO_ARRAY_ELEMENT)
         {
             secondOperand = thirdOperand;
+            firstOperand =
+                new TypeNode(new JvmDataType(*firstOperand->jvmType));
+            firstOperand->jvmType->arrayArity--;
         }
         if (node->type == ExpressionNode::Type::_ASSIGN_TO_FIELD)
         {
@@ -1670,13 +1686,13 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
     if (node->type == ExpressionNode::Type::_TERNARY)
     {
-        if (node->exprType)
-            return node->exprType;
-
-        node->firstOperand = ExpressionNode::fromMethodCall(
-            ExpressionNode::fromNew("Boolean",
-                                    new ExpressionListNode(node->firstOperand)),
-            "getValue", ExpressionListNode::makeEmpty());
+        if (!node->exprType)
+        {
+            node->firstOperand = ExpressionNode::fromMethodCall(
+                ExpressionNode::fromNew(
+                    "Boolean", new ExpressionListNode(node->firstOperand)),
+                "getValue", ExpressionListNode::makeEmpty());
+        }
 
         calculateTypeForExpr(node->firstOperand);
         calculateTypeForExpr(node->secondOperand);
@@ -1964,7 +1980,8 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         append(bytes, toBytes(constructorId));
         return bytes;
     }
-    if (expr->type == ExpressionNode::Type::_UNDEFINED_LIT)
+    if (expr->type == ExpressionNode::Type::_UNDEFINED_LIT ||
+        expr->type == ExpressionNode::Type::_ARRAY_EMPTY_ELEMENT)
     {
         Bytes bytes;
 
@@ -1994,6 +2011,78 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
             RTL_NULL_TYPE.toTypename(), "<init>", "()V");
         append(bytes, (uint8_t)Command::invokespecial);
         append(bytes, toBytes(constructorId));
+        return bytes;
+    }
+
+    if (expr->type == ExpressionNode::Type::_ARRAY_CREATION)
+    {
+        const auto type = expr->exprType->jvmType;
+        if (type->arrayArity > 1)
+            throw std::runtime_error{"Cannot create multidimensional array"};
+
+        Bytes bytes;
+
+        const auto intBytes = toBytes((IntT)expr->params->GetSeq().size());
+        bytes.push_back((uint8_t)Command::sipush);
+        bytes.push_back(intBytes[2]);
+        bytes.push_back(intBytes[3]);
+
+        append(bytes, (uint8_t)Command::anewarray);
+        const auto classId = file.Constants.FindClass(type->toTypename());
+        append(bytes, toBytes(classId));
+
+        for (size_t i = 0; i < expr->params->GetSeq().size(); ++i)
+        {
+            auto *elem = expr->params->GetSeq()[i];
+            append(bytes, (uint8_t)Command::dup);
+
+            const auto indexBytes = toBytes((IntT)i);
+            bytes.push_back((uint8_t)Command::sipush);
+            bytes.push_back(indexBytes[2]);
+            bytes.push_back(indexBytes[3]);
+
+            append(bytes, toBytes(elem, file));
+            append(bytes, (uint8_t)Command::aastore);
+        }
+        return bytes;
+    }
+    if (expr->type == ExpressionNode::Type::_ARRAY_LENGTH)
+    {
+        Bytes bytes;
+
+        const auto numberClassId =
+            file.Constants.FindClass(RTL_NUMBER_TYPE.toTypename());
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(numberClassId));
+        append(bytes, (uint8_t)Command::dup);
+
+        append(bytes, toBytes(expr->firstOperand, file));
+        append(bytes, (uint8_t)Command::arraylength);
+
+        const auto constructorId = file.Constants.FindMethodRef(
+            RTL_NUMBER_TYPE.toTypename(), "<init>", "(I)V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorId));
+
+        return bytes;
+    }
+    if (expr->type == ExpressionNode::Type::_ARRAY_ACCESS)
+    {
+        Bytes bytes;
+        append(bytes, toBytes(expr->firstOperand, file));
+        append(bytes, toBytes(expr->secondOperand, file));
+        append(bytes, (uint8_t)Command::aaload);
+        return bytes;
+    }
+    if (expr->type == ExpressionNode::Type::_ASSIGN_TO_ARRAY_ELEMENT)
+    {
+        Bytes bytes;
+        append(bytes, toBytes(expr->firstOperand, file));
+        append(bytes, toBytes(expr->secondOperand, file));
+        append(bytes, toBytes(expr->thirdOperand, file));
+        append(bytes, (uint8_t)Command::aastore);
+
+        append(bytes, toBytes(expr->thirdOperand, file));
         return bytes;
     }
 
@@ -2099,14 +2188,6 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
             append(bytes, (uint8_t)Command::invokestatic);
 
         append(bytes, toBytes(methodRefConstant));
-        return bytes;
-    }
-
-    if (expr->type == ExpressionNode::Type::_ARRAY_LENGTH)
-    {
-        Bytes bytes;
-        append(bytes, toBytes(expr->firstOperand, file));
-        append(bytes, (uint8_t)Command::arraylength);
         return bytes;
     }
 
@@ -2354,11 +2435,6 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         return bytes;
     }
     return {};
-
-    // if (expr->type == ExpressionNode::Type::_PREF_INCREMENT ||
-    //     expr->type == ExpressionNode::Type::_PREF_DECREMENT)
-    // {
-    // }
 }
 
 Bytes toBytes(VarDeclarationNode *node, ClassFile &file)
