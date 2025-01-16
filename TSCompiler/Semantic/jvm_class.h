@@ -106,9 +106,10 @@ struct JvmDataType
     {
         if (arrayArity > 0)
         {
-            auto subtype = *this;
-            subtype.arrayArity -= 1;
-            return "[" + subtype.toDescriptor();
+            // auto subtype = *this;
+            // subtype.arrayArity -= 1;
+            // return "[" + subtype.toDescriptor();
+            return "LJavaRTL/Array;";
         }
         switch (type)
         {
@@ -206,5 +207,11 @@ const inline JvmDataType RTL_VOID_TYPE = []
 const inline JvmDataType RTL_NULL_TYPE = []
 {
     JvmDataType type{"JavaRTL/Null"};
+    return type;
+}();
+
+const inline JvmDataType RTL_ARRAY_TYPE = []
+{
+    JvmDataType type{"JavaRTL/Array"};
     return type;
 }();

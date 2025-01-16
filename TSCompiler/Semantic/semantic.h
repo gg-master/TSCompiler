@@ -143,8 +143,9 @@ struct Semantic
                         continue;
                     }
 
-                    auto *prop = new ClassElementNode(
-                        varDecl->identifierStr, varDecl->varType, nullptr, true);
+                    auto *prop =
+                        new ClassElementNode(varDecl->identifierStr,
+                                             varDecl->varType, nullptr, true);
                     prop->baseNode = varDecl;
                     body->add(prop);
                 }
@@ -173,7 +174,7 @@ struct Semantic
     {
         if (!errors.empty())
             return;
-        
+
         for (auto class_ : root->classes)
         {
             if (class_->className.starts_with("JavaRTL"))

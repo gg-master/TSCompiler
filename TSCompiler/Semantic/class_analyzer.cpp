@@ -1844,7 +1844,7 @@ void ClassAnalyzer::fillFieldTables(ClassElementNode *node)
     if (node->isStatic)
         accessFlags = AccessFlags::Static | AccessFlags::Public;
 
-    File.Fields.push_back({nameId, typeId, accessFlags});
+    File.Fields.push_back({nameId, typeId, accessFlags, node});
 }
 
 void ClassAnalyzer::fillMethodTables(ClassElementNode *node)
@@ -2022,14 +2022,21 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
 
         Bytes bytes;
 
+        const auto classId =
+            file.Constants.FindClass(RTL_ARRAY_TYPE.toTypename());
+        append(bytes, (uint8_t)Command::new_);
+        append(bytes, toBytes(classId));
+        append(bytes, (uint8_t)Command::dup);
+
         const auto intBytes = toBytes((IntT)expr->params->GetSeq().size());
         bytes.push_back((uint8_t)Command::sipush);
         bytes.push_back(intBytes[2]);
         bytes.push_back(intBytes[3]);
 
-        append(bytes, (uint8_t)Command::anewarray);
-        const auto classId = file.Constants.FindClass(type->toTypename());
-        append(bytes, toBytes(classId));
+        const auto constructorId = file.Constants.FindMethodRef(
+            RTL_ARRAY_TYPE.toTypename(), "<init>", "(I)V");
+        append(bytes, (uint8_t)Command::invokespecial);
+        append(bytes, toBytes(constructorId));
 
         for (size_t i = 0; i < expr->params->GetSeq().size(); ++i)
         {
@@ -2042,7 +2049,13 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
             bytes.push_back(indexBytes[3]);
 
             append(bytes, toBytes(elem, file));
-            append(bytes, (uint8_t)Command::aastore);
+
+            const auto methodRefConstant =
+                file.Constants.FindMethodRef(RTL_ARRAY_TYPE.toTypename(), "set",
+                                             "(ILJavaRTL/Any;)LJavaRTL/Any;");
+            append(bytes, (uint8_t)Command::invokevirtual);
+            append(bytes, toBytes(methodRefConstant));
+            append(bytes, (uint8_t)Command::pop);
         }
         return bytes;
     }
@@ -2050,19 +2063,13 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     {
         Bytes bytes;
 
-        const auto numberClassId =
-            file.Constants.FindClass(RTL_NUMBER_TYPE.toTypename());
-        append(bytes, (uint8_t)Command::new_);
-        append(bytes, toBytes(numberClassId));
-        append(bytes, (uint8_t)Command::dup);
-
         append(bytes, toBytes(expr->firstOperand, file));
-        append(bytes, (uint8_t)Command::arraylength);
 
-        const auto constructorId = file.Constants.FindMethodRef(
-            RTL_NUMBER_TYPE.toTypename(), "<init>", "(I)V");
-        append(bytes, (uint8_t)Command::invokespecial);
-        append(bytes, toBytes(constructorId));
+        const auto methodRefConstant = file.Constants.FindMethodRef(
+            RTL_ARRAY_TYPE.toTypename(), "length", "()LJavaRTL/Number;");
+
+        append(bytes, (uint8_t)Command::invokevirtual);
+        append(bytes, toBytes(methodRefConstant));
 
         return bytes;
     }
@@ -2071,7 +2078,12 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         Bytes bytes;
         append(bytes, toBytes(expr->firstOperand, file));
         append(bytes, toBytes(expr->secondOperand, file));
-        append(bytes, (uint8_t)Command::aaload);
+
+        const auto methodRefConstant = file.Constants.FindMethodRef(
+            RTL_ARRAY_TYPE.toTypename(), "get", "(I)LJavaRTL/Any;");
+
+        append(bytes, (uint8_t)Command::invokevirtual);
+        append(bytes, toBytes(methodRefConstant));
         return bytes;
     }
     if (expr->type == ExpressionNode::Type::_ASSIGN_TO_ARRAY_ELEMENT)
@@ -2080,9 +2092,13 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         append(bytes, toBytes(expr->firstOperand, file));
         append(bytes, toBytes(expr->secondOperand, file));
         append(bytes, toBytes(expr->thirdOperand, file));
-        append(bytes, (uint8_t)Command::aastore);
 
-        append(bytes, toBytes(expr->thirdOperand, file));
+        const auto methodRefConstant =
+            file.Constants.FindMethodRef(RTL_ARRAY_TYPE.toTypename(), "set",
+                                         "(ILJavaRTL/Any;)LJavaRTL/Any;");
+
+        append(bytes, (uint8_t)Command::invokevirtual);
+        append(bytes, toBytes(methodRefConstant));
         return bytes;
     }
 
@@ -2693,10 +2709,64 @@ Bytes toBytes(JvmMethod method, ClassFile &classFile)
     constexpr auto attributesCount = (uint16_t)1;  // The only attribute is Code
     append(bytes, toBytes(attributesCount));
     append(bytes, toBytes(classFile.Constants.FindUtf8("Code")));
-    const auto codeBytes = toBytes(method.ActualMethod, classFile);
+    const auto codeBytes = toBytes(method.actualMethod, classFile);
     auto codeBytesLength = toBytes((uint32_t)codeBytes.size());
     append(bytes, codeBytesLength);
     append(bytes, codeBytes);
+    return bytes;
+}
+
+Bytes toBytesConstantConstruct(ClassFile &classFile)
+{
+    Bytes bytes;
+    append(bytes, toBytes(static_cast<uint16_t>(AccessFlags::Static)));
+    append(bytes, toBytes(classFile.Constants.FindUtf8("<clinit>")));
+    append(bytes, toBytes(classFile.Constants.FindUtf8("()V")));
+    constexpr auto attributesCount = (uint16_t)1;  // The only attribute is Code
+    append(bytes, toBytes(attributesCount));
+    append(bytes, toBytes(classFile.Constants.FindUtf8("Code")));
+
+    Bytes methodBytes;
+    append(methodBytes, toBytes((uint16_t)1000));
+    append(methodBytes, toBytes((uint16_t)0));
+
+    Bytes codeBytes;
+
+    for (auto field : classFile.Fields)
+    {
+        const auto classId =
+            classFile.Constants.FindClass(RTL_UNDEFINED_TYPE.toTypename());
+        append(codeBytes, (uint8_t)Command::new_);
+        append(codeBytes, toBytes(classId));
+        append(codeBytes, (uint8_t)Command::dup);
+
+        const auto constructorId = classFile.Constants.FindMethodRef(
+            RTL_UNDEFINED_TYPE.toTypename(), "<init>", "()V");
+        append(codeBytes, (uint8_t)Command::invokespecial);
+        append(codeBytes, toBytes(constructorId));
+
+        append(codeBytes, (uint8_t)Command::putstatic);
+
+        const auto fieldRefId = classFile.Constants.FindFieldRef(
+            field.actualField->elemClass->toDataType()->toTypename(),
+            field.actualField->name,
+            field.actualField->propertyAndReturnType->jvmType->toDescriptor());
+
+        append(codeBytes, toBytes(fieldRefId));
+    }
+    append(codeBytes, (uint8_t)Command::return_);
+
+    append(methodBytes, toBytes((uint32_t)codeBytes.size()));
+    append(methodBytes, codeBytes);
+
+    constexpr auto exceptionTableSize = (uint16_t)0;
+    constexpr auto attributesTableSize = (uint16_t)0;
+
+    append(methodBytes, toBytes(exceptionTableSize));
+    append(methodBytes, toBytes(attributesTableSize));
+
+    append(bytes, toBytes((uint32_t)methodBytes.size()));
+    append(bytes, methodBytes);
     return bytes;
 }
 
@@ -2752,12 +2822,15 @@ Bytes ClassAnalyzer::toBytes()
     std::sort(File.Methods.begin(), File.Methods.end(),
               [](auto const &lhs, auto const &rhs)
               {
-                  return (lhs.ActualMethod->type ==
+                  return (lhs.actualMethod->type ==
                           ClassElementNode::Type::_CONSTRUCTOR) >
-                         (rhs.ActualMethod->type ==
+                         (rhs.actualMethod->type ==
                           ClassElementNode::Type::_CONSTRUCTOR);
               });
-    append(bytes, ::toBytes((uint16_t)File.Methods.size()));
+    append(bytes, ::toBytes((uint16_t)(File.Methods.size() + 1)));
+
+    append(bytes, toBytesConstantConstruct(File));
+
     for (auto method : File.Methods)
     {
         append(bytes, ::toBytes(method, File));

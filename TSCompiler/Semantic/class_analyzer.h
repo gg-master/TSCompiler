@@ -148,6 +148,7 @@ struct JvmField
     IdT NameId;
     IdT TypeId;
     AccessFlags AccessFlags;
+    ClassElementNode *actualField;
 };
 
 Bytes toBytes(JvmField field);
@@ -157,7 +158,7 @@ struct JvmMethod
     IdT NameId;
     IdT TypeId;
     AccessFlags AccessFlags;
-    ClassElementNode *ActualMethod;
+    ClassElementNode *actualMethod;
 };
 
 struct ClassFile

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import java.util.Arrays;
 
 public class Console {
 
@@ -20,10 +19,6 @@ public class Console {
             System.out.println(value.toString());
         }
         return new Undefined();
-    }
-
-    public static JavaRTL.Void log(JavaRTL.Any[] value) {
-        return log(Arrays.toString(value));
     }
 
     public static JavaRTL.String readLine(){
