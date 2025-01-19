@@ -21,11 +21,10 @@ public class Boolean extends Any {
     }
 
     public Boolean(JavaRTL.Any value) {
-        this.origValue = value;
-
         if (value == null) {
-            return;
+            value = new JavaRTL.Null();
         }
+        this.origValue = value;
 
         if (value instanceof Boolean) {
             this._value = ((Boolean)value)._value;
@@ -41,6 +40,8 @@ public class Boolean extends Any {
             this._value = true;
         }
     }
+
+    // not removed because that functions may use when user write type of variable
 
     public JavaRTL.String plus(JavaRTL.String other) {
         return new String(this).plus(other);
@@ -121,21 +122,6 @@ public class Boolean extends Any {
 
     public Boolean not() {
         return new Boolean(!this._value);
-    }
-
-    public JavaRTL.Any or(Boolean other) {
-        if (this._value) {
-            return this.origValue;
-        } else {
-            return other.origValue;
-        }
-    }
-
-    public JavaRTL.Any and(Boolean other) {
-        if (!this._value) {
-            return this.origValue;
-        } 
-        return other.origValue;
     }
 
     public boolean getValue() {

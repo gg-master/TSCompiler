@@ -16,11 +16,7 @@ ClassDeclarationNode *Semantic::createNumberClass()
     std::vector<JvmDataType> types = {JvmDataType(JvmDataType::Type::Int),
                                       JvmDataType(JvmDataType::Type::Double),
                                       JvmDataType(JvmDataType::Type::String),
-                                      RTL_NUMBER_TYPE,
-                                      RTL_BOOLEAN_TYPE,
-                                      RTL_STRING_TYPE,
-                                      RTL_NULL_TYPE,
-                                      RTL_VOID_TYPE};
+                                      RTL_ANY_TYPE};
 
     for (const auto &jvmType : types)
     {
@@ -198,7 +194,7 @@ ClassDeclarationNode *Semantic::createNumberClass()
         body->add(method);
     }
 
-    auto *rtlClass = new ClassDeclarationNode("JavaRTL/Number", body);
+    auto *rtlClass = new ClassDeclarationNode("JavaRTL/Number", "Any", body);
     for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }

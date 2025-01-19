@@ -194,7 +194,7 @@ ClassDeclarationNode *Semantic::createUndefinedClass()
         body->add(method);
     }
 
-    auto *rtlClass = new ClassDeclarationNode("JavaRTL/Undefined", body);
+    auto *rtlClass = new ClassDeclarationNode("JavaRTL/Undefined", "Void", body);
     for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }

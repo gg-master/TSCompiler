@@ -102,6 +102,14 @@ public class Undefined extends JavaRTL.Void {
         return new JavaRTL.Boolean(true);
     }
 
+    // that method not adding into ASI
+    public JavaRTL.Boolean equal(Any other) {
+        if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
+            return new JavaRTL.Boolean(true);
+        }
+        return super.equal(other);
+    }
+
     public JavaRTL.Boolean notEqual(JavaRTL.Null other) {
         return new JavaRTL.Boolean(false);
     }
@@ -116,6 +124,14 @@ public class Undefined extends JavaRTL.Void {
     }
     public JavaRTL.Boolean notEqual(JavaRTL.Void other) {
         return new JavaRTL.Boolean(false);
+    }
+
+    // that method not adding into ASI
+    public JavaRTL.Boolean notEqual(Any other) {
+        if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
+            return new JavaRTL.Boolean(false);
+        }
+        return super.notEqual(other);
     }
 
     public JavaRTL.Boolean lessEqual(JavaRTL.Null other) {

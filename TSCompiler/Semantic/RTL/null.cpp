@@ -197,7 +197,7 @@ ClassDeclarationNode *Semantic::createNullClass()
         body->add(method);
     }
 
-    auto *rtlClass = new ClassDeclarationNode("JavaRTL/Null", body);
+    auto *rtlClass = new ClassDeclarationNode("JavaRTL/Null", "Any", body);
     for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }

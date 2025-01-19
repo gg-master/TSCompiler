@@ -58,6 +58,7 @@ enum class Command : uint8_t
     putstatic = 0xB3,
     instanceof = 0xC1,
     checkcast = 0xC0,
+    invokedynamic = 0xBA,
     invokevirtual = 0xB6,
     invokespecial = 0xB7,
     invokestatic = 0xB8,

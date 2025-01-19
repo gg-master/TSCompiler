@@ -3,6 +3,7 @@ package JavaRTL;
 import java.text.DecimalFormat;
 
 public class Number extends Any {
+
     public double _value = 0;
 
     public Number() {}
@@ -14,36 +15,35 @@ public class Number extends Any {
         this._value = value;
     }
     public Number(java.lang.String value) {
-        try {
-            if (value.isEmpty()) {
-                return;
-            }
-            int i = Integer.parseInt(value.trim());
-            this._value = i;
-        } catch (NumberFormatException nfe) {
-            try {
-                double d = Double.parseDouble(value.trim());
-                this._value = d;
-            } catch (NumberFormatException nfe2) {
-                this._value = java.lang.Double.NaN;
-            }
+        this._value = parseString(value);
+    }
+
+    public Number(Any value) {
+        if (value == null) {
+            value = new JavaRTL.Null();
+        }
+        if (value instanceof Number) {
+            this._value = ((Number)value)._value;
+        } else if (value instanceof JavaRTL.Boolean) {
+            this._value = ((JavaRTL.Boolean)value)._value ? 1 : 0;
+        } else if (value instanceof JavaRTL.String) {
+            this._value = Number.parseString(((JavaRTL.String)value)._value);
+        } else if (value instanceof JavaRTL.Null) {
+            this._value = 0;
+        } else if (value instanceof JavaRTL.Void) {
+            this._value = java.lang.Double.NaN;
         }
     }
 
-    public Number(Number value) {
-        this._value = value._value;
-    }
-    public Number(JavaRTL.Boolean value) {
-        this._value = value._value ? 1 : 0;
-    }
-    public Number(JavaRTL.String value) {
-        this(value._value);
-    }
-    public Number(JavaRTL.Null value) {
-        this._value = 0;
-    }
-    public Number(JavaRTL.Void value) {
-        this._value = java.lang.Double.NaN;
+    private static double parseString(java.lang.String value) {
+        try {
+            if (value.isEmpty()) {
+                return 0;
+            }
+            return Double.parseDouble(value.trim());
+        } catch (NumberFormatException nfe) {
+            return java.lang.Double.NaN;
+        }
     }
 
     public Number plus(Number other) {
@@ -80,9 +80,23 @@ public class Number extends Any {
     }
 
     public Number div(Number other) {
-        return new Number(this._value / other._value);
+        if (other._value != 0) {
+            return new Number(this._value / other._value);
+        }
+
+        if (this._value == 0) {
+            return new Number(java.lang.Double.NaN);
+        }
+        if (this._value > 0) {
+            return new Number(java.lang.Double.POSITIVE_INFINITY);
+        }
+        return new Number(java.lang.Double.NEGATIVE_INFINITY);
+        
     }
     public Number div(JavaRTL.Null other) {
+        if (this._value == 0) {
+            return new Number(java.lang.Double.NaN);
+        }
         if (this._value > 0) {
             return new Number(java.lang.Double.POSITIVE_INFINITY);
         }
@@ -166,6 +180,12 @@ public class Number extends Any {
 
     @Override
     public java.lang.String toString() {
+        if (java.lang.Double.isNaN(this._value)) {
+            return "NaN";
+        }
+        if (java.lang.Double.isInfinite(this._value)) {
+            return this._value > 0 ? "Infinity" : "-Infinity";
+        }
         DecimalFormat df = new DecimalFormat("#.##########");
         return df.format(this._value);
     }

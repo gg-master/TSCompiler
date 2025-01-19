@@ -139,7 +139,7 @@ ClassDeclarationNode *Semantic::createStringClass()
         body->add(method);
     }
 
-    auto *rtlClass = new ClassDeclarationNode("JavaRTL/String", body);
+    auto *rtlClass = new ClassDeclarationNode("JavaRTL/String", "Any", body);
     for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }

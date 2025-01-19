@@ -135,7 +135,7 @@ ClassDeclarationNode *Semantic::createVoidClass()
         body->add(method);
     }
 
-    auto *rtlClass = new ClassDeclarationNode("JavaRTL/Void", body);
+    auto *rtlClass = new ClassDeclarationNode("JavaRTL/Void", "Any", body);
     for (auto *elem : body->GetSeq()) elem->elemClass = rtlClass;
     return rtlClass;
 }
