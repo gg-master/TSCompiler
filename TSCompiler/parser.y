@@ -255,10 +255,11 @@ predefinedType
     | VOID          { Print("- R: VOID -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_VOID); }
     | NULL_KW       { Print("- R: NULL_KW -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_NULL); }
     | ID            { Print("- R: ID -> predefinedType"); $$ = new TypeNode($1); }
+    | ANY           { Print("- R: ANY -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_ANY); }
     ;
 
 typeAnnotationOpt
-    : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); $$ = new TypeNode(TypeNode::Type::_ANY);; }
+    : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); $$ = new TypeNode(TypeNode::Type::_ANY, true); }
     | typeAnnotation    { Print("- R: typeAnnotation -> typeAnnotationOpt"); $$ = $1; }
     ;
 

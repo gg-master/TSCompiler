@@ -333,6 +333,8 @@ struct ExpressionNode final : Node
     }
 };
 
+ExpressionNode* castToType(ExpressionNode* node, TypeNode* type);
+
 struct RequiredParameterListNode;
 struct ExpressionListNode final : NodeList<ExpressionListNode, ExpressionNode>
 {

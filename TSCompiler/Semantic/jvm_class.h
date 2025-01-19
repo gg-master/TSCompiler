@@ -20,6 +20,8 @@ struct JvmDataType
 
     std::vector<std::string> complex{};
 
+    bool isComputed = false;
+
     JvmDataType() : type{Type::Complex}, complex{"JavaRTL", "Any"} {}
     JvmDataType(Type type) : type{type} {}
     JvmDataType(const std::string &complexStr) : type{Type::Complex}, complex{}

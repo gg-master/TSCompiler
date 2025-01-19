@@ -401,3 +401,21 @@ void ExpressionNode::callForAllChildren(
         }
     }
 }
+
+ExpressionNode* castToType(ExpressionNode* node, TypeNode* type)
+{
+    if (!node || !type->jvmType)
+        return node;
+
+    if (RTL_NUMBER_TYPE == *type->jvmType)
+        return ExpressionNode::fromNew("Number", new ExpressionListNode(node));
+    if (RTL_BOOLEAN_TYPE == *type->jvmType)
+        return ExpressionNode::fromNew("Boolean", new ExpressionListNode(node));
+    if (RTL_STRING_TYPE == *type->jvmType)
+        return ExpressionNode::fromNew("String", new ExpressionListNode(node));
+    if (RTL_NULL_TYPE == *type->jvmType)
+        return ExpressionNode::fromNullLit();
+    if (RTL_UNDEFINED_TYPE == *type->jvmType)
+        return ExpressionNode::fromUndefinedLit();
+    return node;
+}

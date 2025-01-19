@@ -20,16 +20,26 @@ struct TypeNode final : Node
 
     std::string userTypeName;
 
+    bool isComputed = false;
+
     // semantic setp
     JvmDataType *jvmType{};
 
-    TypeNode(Type type) : type{type} {}
+    TypeNode(Type type, bool isComputed = false)
+        : type{type}, isComputed{isComputed}
+    {
+    }
     TypeNode(const std::string name)
         : type{Type::_USER_TYPE}, userTypeName{name}
     {
     }
 
-    TypeNode(JvmDataType *type) : jvmType{type}, arrayArity{type->arrayArity} {}
+    TypeNode(JvmDataType *type, bool isComputed = false)
+        : jvmType{type},
+          arrayArity{type->arrayArity},
+          isComputed{isComputed || type->isComputed}
+    {
+    }
 
     bool operator==(const TypeNode &other) const
     {
@@ -83,20 +93,29 @@ struct TypeNode final : Node
 
         for (int i = 0; i < this->arrayArity; ++i) name += "[]";
 
+        if (isComputed)
+            name += "\nCOMP";
+
         return name;
     }
 };
 
 inline JvmDataType *toJvmDataType(const TypeNode *node)
 {
+    JvmDataType *type;
+
     if (!node)
-        return new JvmDataType(RTL_ANY_TYPE);
+    {
+        type = new JvmDataType(RTL_ANY_TYPE);
+        type->isComputed = true;
+        return type;
+    }
 
     if (node->jvmType)
     {
         return node->jvmType;
     }
-    JvmDataType *type;
+
     switch (node->type)
     {
     case TypeNode::Type::_NUMBER:
@@ -122,8 +141,12 @@ inline JvmDataType *toJvmDataType(const TypeNode *node)
         break;
     default:
         type = new JvmDataType(RTL_ANY_TYPE);
+        type->isComputed = true;
         break;
     }
+
+    type->isComputed = type->isComputed || node->isComputed;
+
     type->arrayArity = node->arrayArity;
     return type;
 }
