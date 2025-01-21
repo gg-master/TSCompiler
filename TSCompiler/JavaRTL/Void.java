@@ -11,13 +11,6 @@ public class Void extends Any {
         return new JavaRTL.Number(this);
     }
 
-    public JavaRTL.Number uPlus() {
-        return new JavaRTL.Number(this);
-    }
-    public JavaRTL.Number uMinus() {
-        return new JavaRTL.Number(this);
-    }
-
     public JavaRTL.Boolean less(JavaRTL.Void other) {
         return new JavaRTL.Boolean(false);
     }

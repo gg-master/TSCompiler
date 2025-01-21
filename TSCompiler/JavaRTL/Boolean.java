@@ -53,13 +53,6 @@ public class Boolean extends Any {
         return new Number(other);
     }
 
-    public Number uPlus() {
-        return new Number(+(new Number(this))._value);
-    }
-    public Number uMinus() {
-        return new Number(-(new Number(this))._value);
-    }
-
     public Boolean less(Boolean other) {
         return (new Number(this)).less(new Number(other));
     }

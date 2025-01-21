@@ -47,13 +47,6 @@ public class Null extends Any {
         return new JavaRTL.Number(other);
     }
 
-    public JavaRTL.Number uPlus() {
-        return new JavaRTL.Number(+0);
-    }
-    public JavaRTL.Number uMinus() {
-        return new JavaRTL.Number(-0);
-    }
-
     public JavaRTL.Boolean less(Null other) {
         return new JavaRTL.Boolean(false);
     }

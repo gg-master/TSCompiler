@@ -1360,7 +1360,8 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             node->exprType->arrayArity++;
             return node->exprType;
         }
-        return new TypeNode(new JvmDataType());
+        node->exprType = new TypeNode(new JvmDataType());
+        return node->exprType;
     }
     if (node->type == ExpressionNode::Type::_IDENTIFIER)
     {
