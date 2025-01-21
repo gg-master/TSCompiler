@@ -142,7 +142,7 @@ struct ExpressionNode final : Node
     static ExpressionNode *fromNew(const std::string name,
                                    ExpressionListNode *params);
 
-    ExpressionNode *toASsignOnArrayElement() const;
+    ExpressionNode *toAssignOnArrayElement() const;
     ExpressionNode *toAssignOnField() const;
 
     ExpressionNode *toRTLMethodCall() const;
@@ -332,8 +332,6 @@ struct ExpressionNode final : Node
         return "";
     }
 };
-
-ExpressionNode* castToType(ExpressionNode* node, TypeNode* type);
 
 struct RequiredParameterListNode;
 struct ExpressionListNode final : NodeList<ExpressionListNode, ExpressionNode>

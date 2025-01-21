@@ -72,5 +72,6 @@ enum class Command : uint8_t
     castore = 0x55,
     bastore = 0x54,
     caload = 0x34,
-    baload = 0x33
+    baload = 0x33,
+    swap = 0x5f
 };

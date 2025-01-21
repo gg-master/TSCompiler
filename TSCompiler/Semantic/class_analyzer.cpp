@@ -1098,18 +1098,6 @@ void ClassAnalyzer::analyzeFuncCall(ExpressionNode *node)
                 break;
             }
         }
-
-        if (foundFunc)
-        {
-            for (size_t i = 0; i < node->params->GetSeq().size(); ++i)
-            {
-                auto *arg = node->params->GetSeq()[i];
-                arg =
-                    castToType(arg, foundFunc->params->GetSeq()[i]->paramType);
-                arg = analyzeExpr(arg);
-                node->params->GetSeq()[i] = arg;
-            }
-        }
     }
 
     if (!foundFunc)
@@ -1479,27 +1467,29 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
     if (node->type == ExpressionNode::Type::_ARRAY_ACCESS)
     {
         auto firstOperand = calculateTypeForExpr(node->firstOperand);
-
-        if (!node->exprType)
-        {
-            node->secondOperand = ExpressionNode::fromMethodCall(
-                node->secondOperand, "toInt", ExpressionListNode::makeEmpty());
-        }
-
         auto secondOperand = calculateTypeForExpr(node->secondOperand);
 
         type = new TypeNode(new JvmDataType(*firstOperand->jvmType));
         type->jvmType->arrayArity = firstOperand->jvmType->arrayArity - 1;
 
-        node->exprType = type;
-
         if (secondOperand->jvmType->arrayArity != 0 ||
-            *secondOperand->jvmType != JvmDataType(JvmDataType::Type::Int))
+            (*secondOperand->jvmType != RTL_NUMBER_TYPE &&
+             *secondOperand->jvmType != JvmDataType(JvmDataType::Type::Int)))
         {
-            errors.push_back("Array index must be type int, not " +
+            errors.push_back("Array index must be type number, not " +
                              secondOperand->toString());
+            node->exprType = type;
             return type;
         }
+
+        if (!node->exprType)
+        {
+            node->secondOperand = ExpressionNode::fromMethodCall(
+                node->secondOperand, "toInt", ExpressionListNode::makeEmpty());
+            calculateTypeForExpr(node->secondOperand);
+        }
+
+        node->exprType = type;
 
         if (firstOperand->jvmType->arrayArity == 0)
         {
@@ -1596,19 +1586,20 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
         if (node->type == ExpressionNode::Type::_ASSIGN_TO_ARRAY_ELEMENT)
         {
-            if (!node->exprType)
+            if (secondOperand->jvmType->arrayArity != 0 ||
+                (*secondOperand->jvmType != RTL_NUMBER_TYPE &&
+                 *secondOperand->jvmType !=
+                     JvmDataType(JvmDataType::Type::Int)))
+            {
+                errors.push_back("Array index must be type number, not " +
+                                 secondOperand->toString());
+            }
+            else if (!node->exprType)
             {
                 node->secondOperand = ExpressionNode::fromMethodCall(
                     node->secondOperand, "toInt",
                     ExpressionListNode::makeEmpty());
-                secondOperand = calculateTypeForExpr(node->secondOperand);
-            }
-
-            if (secondOperand->jvmType->arrayArity != 0 ||
-                *secondOperand->jvmType != JvmDataType(JvmDataType::Type::Int))
-            {
-                errors.push_back("Array index must be type int, not " +
-                                 secondOperand->toString());
+                calculateTypeForExpr(node->secondOperand);
             }
         }
 
@@ -1843,7 +1834,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 ExpressionNode *ClassAnalyzer::replaceAssignmentsOnArrayElements(
     ExpressionNode *node)
 {
-    auto *converted = node->toASsignOnArrayElement();
+    auto *converted = node->toAssignOnArrayElement();
     if (converted)
         return converted;
     return node;
@@ -2497,6 +2488,12 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         ClassElementNode *field = operand->actualField;
         VarDeclarationNode *variable = operand->actualVar;
 
+        if (operand->type == ExpressionNode::Type::_ARRAY_ACCESS)
+        {
+            field = operand->firstOperand->actualField;
+            variable = operand->firstOperand->actualVar;
+        }
+
         if (!field && !variable)
             throw std::runtime_error{
                 "Internal error: cant find actual field or variable"};
@@ -2559,6 +2556,24 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         {
             // duplicate object as a result
             append(bytes, (uint8_t)Command::dup);
+        }
+
+        if (operand->type == ExpressionNode::Type::_ARRAY_ACCESS)
+        {
+            append(bytes, toBytes(operand->firstOperand, file));
+            append(bytes, (uint8_t)Command::swap);
+            append(bytes, toBytes(operand->secondOperand, file));
+            append(bytes, (uint8_t)Command::swap);
+
+            const auto methodRefConstant =
+                file.Constants.FindMethodRef(RTL_ARRAY_TYPE.toTypename(), "set",
+                                             "(ILJavaRTL/Any;)LJavaRTL/Any;");
+
+            append(bytes, (uint8_t)Command::invokevirtual);
+            append(bytes, toBytes(methodRefConstant));
+
+            append(bytes, (uint8_t)Command::pop);
+            return bytes;
         }
 
         if (field)
