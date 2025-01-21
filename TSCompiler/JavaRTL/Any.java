@@ -14,6 +14,9 @@ public class Any {
         if (other instanceof JavaRTL.String) {
             return new JavaRTL.String(this).plus(other);
         }
+        if (this instanceof JavaRTL.Array || other instanceof JavaRTL.Array) {
+            return new JavaRTL.String(this).plus(new JavaRTL.String(other));
+        }
         return new JavaRTL.Number(this).plus(new JavaRTL.Number(other));
     }
     public JavaRTL.Number minus(Any other) {

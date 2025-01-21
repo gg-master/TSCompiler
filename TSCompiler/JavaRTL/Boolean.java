@@ -89,6 +89,12 @@ public class Boolean extends Any {
     public Boolean equal(JavaRTL.Undefined other) {
         return new Boolean(false);
     }
+    public Boolean equal(Any other) {
+        if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
+            return new JavaRTL.Boolean(false);
+        }
+        return super.equal(other);
+    }
 
     public Boolean notEqual(Boolean other) {
         return new Boolean(this._value != other._value);
@@ -98,6 +104,12 @@ public class Boolean extends Any {
     }
     public Boolean notEqual(JavaRTL.Undefined other) {
         return new Boolean(true);
+    }
+    public Boolean notEqual(Any other) {
+        if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
+            return new JavaRTL.Boolean(true);
+        }
+        return super.notEqual(other);
     }
 
     public Boolean lessEqual(Boolean other) {

@@ -27,10 +27,10 @@ public class Number extends Any {
         } else if (value instanceof JavaRTL.Boolean) {
             this._value = ((JavaRTL.Boolean)value)._value ? 1 : 0;
         } else if (value instanceof JavaRTL.String) {
-            this._value = Number.parseString(((JavaRTL.String)value)._value);
+            this._value = parseString(((JavaRTL.String)value)._value);
         } else if (value instanceof JavaRTL.Null) {
             this._value = 0;
-        } else if (value instanceof JavaRTL.Void) {
+        } else { // Void, undefined and other
             this._value = java.lang.Double.NaN;
         }
     }
@@ -83,14 +83,13 @@ public class Number extends Any {
         if (other._value != 0) {
             return new Number(this._value / other._value);
         }
-
-        if (this._value == 0) {
-            return new Number(java.lang.Double.NaN);
-        }
         if (this._value > 0) {
             return new Number(java.lang.Double.POSITIVE_INFINITY);
         }
-        return new Number(java.lang.Double.NEGATIVE_INFINITY);
+        if (this._value < 0) {
+            return new Number(java.lang.Double.NEGATIVE_INFINITY);
+        }
+        return new Number(java.lang.Double.NaN);
         
     }
     public Number div(JavaRTL.Null other) {
@@ -143,6 +142,12 @@ public class Number extends Any {
     public Boolean equal(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(false);
     }
+    public Boolean equal(Any other) {
+        if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
+            return new JavaRTL.Boolean(false);
+        }
+        return super.equal(other);
+    }
 
     public Boolean notEqual(Number other) {
         return new JavaRTL.Boolean(this._value != other._value);
@@ -152,6 +157,12 @@ public class Number extends Any {
     }
     public Boolean notEqual(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(true);
+    }
+    public Boolean notEqual(Any other) {
+        if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
+            return new JavaRTL.Boolean(true);
+        }
+        return super.notEqual(other);
     }
 
     public Boolean lessEqual(Number other) {

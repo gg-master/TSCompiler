@@ -49,6 +49,9 @@ public class String extends Any {
 
     // that method not adding into ASI
     public JavaRTL.Boolean less(Any other) {
+        if (other instanceof JavaRTL.Array) {
+            other = new String(other);
+        }
         if (other instanceof String) {
             boolean result = this._value.compareTo(((String)other)._value) < 0 ? true : false;
             return new JavaRTL.Boolean(result);
@@ -69,6 +72,9 @@ public class String extends Any {
 
     // that method not adding into ASI
     public JavaRTL.Boolean great(Any other) {
+        if (other instanceof JavaRTL.Array) {
+            other = new String(other);
+        }
         if (other instanceof String) {
             boolean result = this._value.compareTo(((String)other)._value) > 0 ? true : false;
             return new JavaRTL.Boolean(result);
@@ -81,7 +87,7 @@ public class String extends Any {
         return new JavaRTL.Boolean(result);
     }
     public JavaRTL.Boolean equal(JavaRTL.Null other) {
-        return (new JavaRTL.Number(this)).equal(new Number(other));
+        return new JavaRTL.Boolean(false);
     }
     public JavaRTL.Boolean equal(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(false);
@@ -89,9 +95,15 @@ public class String extends Any {
 
     // that method not adding into ASI
     public JavaRTL.Boolean equal(Any other) {
+        if (other instanceof JavaRTL.Array) {
+            other = new String(other);
+        }
         if (other instanceof String) {
             boolean result = this._value.compareTo(((String)other)._value) == 0 ? true : false;
             return new JavaRTL.Boolean(result);
+        }
+        if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
+            return new JavaRTL.Boolean(false);
         }
         return super.equal(other);       
     }
@@ -101,7 +113,7 @@ public class String extends Any {
         return new JavaRTL.Boolean(result);
     }
     public JavaRTL.Boolean notEqual(JavaRTL.Null other) {
-        return (new JavaRTL.Number(this)).notEqual(new Number(other));
+        return new JavaRTL.Boolean(true);
     }
     public JavaRTL.Boolean notEqual(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(true);
@@ -109,9 +121,15 @@ public class String extends Any {
 
     // that method not adding into ASI
     public JavaRTL.Boolean notEqual(Any other) {
+        if (other instanceof JavaRTL.Array) {
+            other = new String(other);
+        }
         if (other instanceof String) {
             boolean result = this._value.compareTo(((String)other)._value) != 0 ? true : false;
             return new JavaRTL.Boolean(result);
+        }
+        if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
+            return new JavaRTL.Boolean(true);
         }
         return super.notEqual(other);       
     }
@@ -129,6 +147,9 @@ public class String extends Any {
 
     // that method not adding into ASI
     public JavaRTL.Boolean lessEqual(Any other) {
+        if (other instanceof JavaRTL.Array) {
+            other = new String(other);
+        }
         if (other instanceof String) {
             boolean result = this._value.compareTo(((String)other)._value) <= 0 ? true : false;
             return new JavaRTL.Boolean(result);
@@ -149,6 +170,9 @@ public class String extends Any {
 
     // that method not adding into ASI
     public JavaRTL.Boolean greatEqual(Any other) {
+        if (other instanceof JavaRTL.Array) {
+            other = new String(other);
+        }
         if (other instanceof String) {
             boolean result = this._value.compareTo(((String)other)._value) >= 0 ? true : false;
             return new JavaRTL.Boolean(result);

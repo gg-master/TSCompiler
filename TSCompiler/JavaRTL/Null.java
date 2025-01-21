@@ -107,7 +107,7 @@ public class Null extends Any {
         if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
             return new JavaRTL.Boolean(true);
         }
-        return super.equal(other);
+        return new JavaRTL.Boolean(false);
     }
 
     public JavaRTL.Boolean notEqual(Null other) {
@@ -131,7 +131,7 @@ public class Null extends Any {
         if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
             return new JavaRTL.Boolean(false);
         }
-        return super.notEqual(other);
+        return new JavaRTL.Boolean(true);
     }
 
     public JavaRTL.Boolean lessEqual(Null other) {

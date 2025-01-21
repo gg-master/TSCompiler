@@ -69,12 +69,13 @@ public class Array extends Any {
         return result;
     }
 
-    public Number length() {
+    public Any length() {
         return new Number(this._value.length);
     }
 
     @Override
     public java.lang.String toString() {
-        return Arrays.toString(this._value);
+        java.lang.String str = Arrays.toString(this._value);
+        return str.substring(1, str.length() - 1);
     }
 }
