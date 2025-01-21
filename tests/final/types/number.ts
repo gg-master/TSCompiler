@@ -1,15 +1,15 @@
-var a = 1;
-var b = 2.4;
+var a: number = 1;
+var b: number = 2.4;
 
-var c = new Number(1)
-var c1 = new Number(1.2)
-var c2 = new Number(true)
-var c3 = new Number(false)
-var c4 = new Number("123")
-var c5 = new Number("asd")
-var c6 = new Number("1.12")
-var c7 = new Number(null)
-var c8 = new Number(undefined)
+var c: number = Number()
+var c1: number = Number(1.2)
+var c2: number = Number(true)
+var c3: number = Number(false)
+var c4: number = Number("123")
+var c5: number = Number("asd")
+var c6: number = Number("1.12")
+var c7: number = Number(null)
+var c8: number = Number(undefined)
 
 Console.log("a = " + a);
 Console.log("b = " + b);
@@ -22,3 +22,5 @@ Console.log("c5 = " + c5);
 Console.log("c6 = " + c6);
 Console.log("c7 = " + c7);
 Console.log("c8 = " + c8);
+
+Console.log(2 == (4.2 - 2.2))

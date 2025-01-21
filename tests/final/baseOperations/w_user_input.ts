@@ -1,5 +1,5 @@
-Console.log("Write a: "); var a = new Number(Console.readLine());
-Console.log("Write b: "); var b = new Number(Console.readLine());
+Console.log("Write a: "); var a = Number(Console.readLine());
+Console.log("Write b: "); var b = Number(Console.readLine());
 
 Console.log("a = " + a + "; b = " + b + ";");
 Console.log("\n\tArithmetic operations: ");
