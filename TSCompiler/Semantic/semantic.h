@@ -90,11 +90,15 @@ struct Semantic
 
         for (const auto *function : root->functions)
         {
-            if (function->funcName == mainMethodName)
+            if (function->funcName == "String" ||
+                function->funcName == "Number" ||
+                function->funcName == "Boolean" ||
+                function->funcName == mainMethodName)
             {
-                errors.insert("Duplicate identifier '" + mainMethodName + "'");
+                errors.insert("Duplicate identifier '" + function->funcName + "'");
                 continue;
             }
+
             body->add(new ClassElementNode(function));
         }
 
@@ -109,18 +113,17 @@ struct Semantic
 
                 if (existProp)
                 {
-                    if (*existProp->propertyAndReturnType !=
-                            *varStmt->varType &&
-                        !varStmt->initExpression && !existProp->expression)
-                    {
-                        errors.insert(
-                            "Subsequent variable declarations must have the "
-                            "same type. Variable '" +
-                            varStmt->identifierStr + "' must be of type '" +
-                            existProp->propertyAndReturnType->toString() +
-                            "', but here has type '" +
-                            varStmt->varType->toString() + "'");
-                    }
+                    // if (existProp->propertyAndReturnType->type !=
+                    //         varStmt->varType->type)
+                    // {
+                    //     errors.insert(
+                    //         "Subsequent variable declarations must have the "
+                    //         "same type. Variable '" +
+                    //         varStmt->identifierStr + "' must be of type '" +
+                    //         existProp->propertyAndReturnType->toString() +
+                    //         "', but here has type '" +
+                    //         varStmt->varType->toString() + "'");
+                    // }
                     continue;
                 }
 

@@ -259,8 +259,8 @@ predefinedType
     ;
 
 typeAnnotationOpt
-    : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); $$ = new TypeNode(TypeNode::Type::_ANY, true); }
-    | typeAnnotation    { Print("- R: typeAnnotation -> typeAnnotationOpt"); $$ = $1; }
+    : typeAnnotation    { Print("- R: typeAnnotation -> typeAnnotationOpt"); $$ = $1; }
+    // : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); $$ = new TypeNode(TypeNode::Type::_ANY, true); }
     ;
 
 typeAnnotation

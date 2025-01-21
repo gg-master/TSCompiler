@@ -335,11 +335,6 @@ void ClassAnalyzer::attributeMemberSignatures()
         {
             type = new JvmDataType(JvmDataType::Type::Void);
         }
-        else if (*type == RTL_ANY_TYPE)
-        {
-            type = new JvmDataType(RTL_VOID_TYPE);
-            type->isComputed = true;
-        }
 
         method->propertyAndReturnType = new TypeNode(type);
 
@@ -379,6 +374,7 @@ void ClassAnalyzer::analyzeRequiredParam(RequiredParameterNode *param)
     auto *varDecl =
         new VarDeclarationNode(param->paramName, param->paramType, nullptr);
     varDecl->scopingLevel = currentScopingLevel;
+    varDecl->isAssigned = true;
 
     currentMethod->variables.push_back(varDecl);
     varDecl->positionInMethod = currentMethod->variables.size() - 1;
@@ -764,8 +760,8 @@ void ClassAnalyzer::analyzeFor(StatementNode *node, StatementListNode *newSeq)
 
 void ClassAnalyzer::analyzeWhileDoWhile(StatementNode *node)
 {
-    if (!node || node->type != StatementNode::Type::_WHILE ||
-        node->type != StatementNode::Type::_DOWHILE)
+    if (!node || (node->type != StatementNode::Type::_WHILE &&
+                  node->type != StatementNode::Type::_DOWHILE))
         return;
 
     incrementScopingLevel();
@@ -775,8 +771,16 @@ void ClassAnalyzer::analyzeWhileDoWhile(StatementNode *node)
                                 new ExpressionListNode(node->expression)),
         "getValue", ExpressionListNode::makeEmpty());
 
-    node->expression = analyzeExpr(node->expression);
-    analyzeStmt(node->iterationBody);
+    if (node->type == StatementNode::Type::_DOWHILE)
+    {
+        analyzeStmt(node->iterationBody);
+        node->expression = analyzeExpr(node->expression);
+    }
+    else
+    {
+        node->expression = analyzeExpr(node->expression);
+        analyzeStmt(node->iterationBody);
+    }
 
     decrementScopingLevel();
 }
@@ -806,7 +810,8 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
         return nullptr;
 
     auto field = root->mainClass->findPropertyByName(node->identifierStr);
-    if (currentMethod->isMainMethod && field)
+    if (currentMethod->isMainMethod && field &&
+        (isFunctionScopeVar(node->modifierType) || currentScopingLevel == 2))
     {
         currentField = field;
     }
@@ -857,8 +862,7 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
                 return nullptr;
             }
 
-            if (*found->varType != *node->varType &&
-                *found->varType->jvmType != RTL_ANY_TYPE)
+            if (found->varType->toString() != node->varType->toString())
             {
                 errors.push_back(
                     "Subsequent variable declarations must have the "
@@ -868,6 +872,9 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
                     node->varType->toString() + "'");
                 return nullptr;
             }
+
+            node->isAssigned = true;
+
             auto leftExpr = ExpressionNode::fromId(node->identifierStr);
             auto rightExpr = ExpressionNode::fromId(node->identifierStr);
             if (node->initExpression)
@@ -878,7 +885,14 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
             auto assignReplaceNode = ExpressionNode::fromBinaryExpr(
                 ExpressionNode::Type::_ASSIGN, leftExpr, rightExpr);
 
-            return StatementNode::fromExprStmt(analyzeExpr(assignReplaceNode));
+            assignReplaceNode = analyzeExpr(assignReplaceNode);
+
+            if (!node->initExpression)
+            {
+                node->isAssigned = false;
+            }
+
+            return StatementNode::fromExprStmt(assignReplaceNode);
         }
     }
     else
@@ -907,6 +921,7 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
             currentScopingLevel == 2)
         {
             currentField->isPropertyAssigned = true;
+            node->isAssigned = true;
 
             auto leftExpr = ExpressionNode::fromId(node->identifierStr);
             auto rightExpr = ExpressionNode::fromId(node->identifierStr);
@@ -920,9 +935,20 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
 
             assignReplaceNode->initOfVar = node;
 
-            return StatementNode::fromExprStmt(analyzeExpr(assignReplaceNode));
+            assignReplaceNode = analyzeExpr(assignReplaceNode);
+
+            if (!node->initExpression)
+            {
+                node->isAssigned = false;
+            }
+
+            return StatementNode::fromExprStmt(assignReplaceNode);
         }
     }
+
+    if (node->initExpression)
+        node->isAssigned = true;
+
     node->scopingLevel = currentScopingLevel;
     currentMethod->variables.push_back(node);
     node->positionInMethod = currentMethod->variables.size() - 1;
@@ -1018,35 +1044,29 @@ void ClassAnalyzer::analyzeFuncCall(ExpressionNode *node)
     if (!node || node->type != ExpressionNode::Type::_FUNC_CALL)
         return;
 
+    const auto funcName = node->identifierString;
+
+    if (funcName == "Number" || funcName == "String" || funcName == "Boolean")
+    {
+        node->type = ExpressionNode::Type::_NEW;
+        return analyzeNewCall(node);
+    }
+
     for (auto argument : node->params->GetSeq())
         argument = analyzeExpr(argument);
 
     node->exprType = new TypeNode(new JvmDataType(RTL_ANY_TYPE));
 
-    const auto funcName = node->identifierString;
     const auto callTypes = [node, this]()
     {
         auto const &arguments = node->params->GetSeq();
         std::vector<JvmDataType> types(arguments.size());
-        std::transform(
-            arguments.begin(), arguments.end(), types.begin(),
-            [this](ExpressionNode *arg)
-            {
-                if (arg->actualVar)
-                {
-                    validateTypename(arg->actualVar->lastAssignedType->jvmType);
-                    return *arg->actualVar->lastAssignedType->jvmType;
-                }
-                if (arg->actualField)
-                {
-                    validateTypename(
-                        arg->actualField->lastAssignedType->jvmType);
-                    return *arg->actualField->lastAssignedType->jvmType;
-                }
-
-                validateTypename(arg->exprType->jvmType);
-                return *arg->exprType->jvmType;
-            });
+        std::transform(arguments.begin(), arguments.end(), types.begin(),
+                       [this](ExpressionNode *arg)
+                       {
+                           validateTypename(arg->exprType->jvmType);
+                           return *arg->exprType->jvmType;
+                       });
         return types;
     }();
 
@@ -1063,11 +1083,11 @@ void ClassAnalyzer::analyzeFuncCall(ExpressionNode *node)
         }
     }
 
-    bool isAllParamsAnyT = std::all_of(callTypes.begin(), callTypes.end(),
+    bool isAnyParamsAnyT = std::any_of(callTypes.begin(), callTypes.end(),
                                        [](JvmDataType const &type)
                                        { return type == RTL_ANY_TYPE; });
 
-    if (!foundFunc && isAllParamsAnyT)
+    if (!foundFunc && isAnyParamsAnyT)
     {
         for (auto *func : allFunctions)
         {
@@ -1213,15 +1233,21 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
 
 void ClassAnalyzer::analyzeNewCall(ExpressionNode *node)
 {
+    if (!node || node->type != ExpressionNode::Type::_NEW)
+        return;
+
     for (auto argument : node->params->GetSeq())
         argument = analyzeExpr(argument);
 
-    node->exprType = new TypeNode(new JvmDataType(node->identifierString));
+    node->exprType = new TypeNode(new JvmDataType(RTL_ANY_TYPE));
 
     auto *foundClass = root->findClass(node->identifierString);
 
     if (!foundClass || foundClass == root->mainClass ||
-        *foundClass->toDataType() == RTL_ANY_TYPE)
+        *foundClass->toDataType() == RTL_ANY_TYPE ||
+        *foundClass->toDataType() == RTL_UNDEFINED_TYPE ||
+        *foundClass->toDataType() == RTL_NULL_TYPE ||
+        *foundClass->toDataType() == RTL_VOID_TYPE)
     {
         errors.push_back("Cannot find name '" + node->identifierString + "'");
         return;
@@ -1353,6 +1379,11 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
             if (var)
             {
+                if (!var->isAssigned && !node->isLeftHand)
+                {
+                    errors.push_back("Variable '" + node->identifierString +
+                                     "' is used before being assigned.");
+                }
                 type = var->varType;
                 node->exprType = type;
                 node->actualVar = var;
@@ -1365,13 +1396,22 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
         if (var)
         {
-            if (currentMethod && currentMethod->isMainMethod &&
-                isBlockScopeVar(var->baseNode->modifierType) &&
-                !var->isPropertyAssigned)
+            if (currentMethod && currentMethod->isMainMethod)
             {
-                errors.push_back("Block-scoped variable '" +
-                                 node->identifierString +
-                                 "' used before its declaration.");
+                if (isBlockScopeVar(var->baseNode->modifierType) &&
+                    !var->isPropertyAssigned)
+                {
+                    errors.push_back("Block-scoped variable '" +
+                                     node->identifierString +
+                                     "' used before its declaration.");
+                }
+                else if (!isUnknown(var->propertyAndReturnType) &&
+                         !node->isLeftHand && var->baseNode &&
+                         !var->baseNode->isAssigned)
+                {
+                    errors.push_back("Variable '" + node->identifierString +
+                                     "' is used before being assigned.");
+                }
             }
 
             type = var->propertyAndReturnType;
@@ -1633,30 +1673,14 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
                              "' because it is a constant.");
         }
 
-        if (node->type != ExpressionNode::Type::_ASSIGN_TO_ARRAY_ELEMENT)
+        if (var)
+            var->isAssigned = true;
+
+        if (field)
         {
-            if (var)
-            {
-                if (node->secondOperand->actualVar)
-                    var->lastAssignedType =
-                        node->secondOperand->actualVar->lastAssignedType;
-                else if (node->secondOperand->actualField)
-                    var->lastAssignedType =
-                        node->secondOperand->actualField->lastAssignedType;
-                else
-                    var->lastAssignedType = secondOperand;
-            }
-            if (field)
-            {
-                if (node->secondOperand->actualVar)
-                    field->lastAssignedType =
-                        node->secondOperand->actualVar->lastAssignedType;
-                else if (node->secondOperand->actualField)
-                    field->lastAssignedType =
-                        node->secondOperand->actualField->lastAssignedType;
-                else
-                    field->lastAssignedType = secondOperand;
-            }
+            field->isPropertyAssigned = true;
+            if (field->baseNode)
+                field->baseNode->isAssigned = true;
         }
 
         node->exprType = secondOperand;
@@ -1898,7 +1922,8 @@ void ClassAnalyzer::moveFunctionScopedVarsOnTop()
 
             if (found)
             {
-                if (found->varType != existVarDecl->varType)
+                if (found->varType->toString() !=
+                    existVarDecl->varType->toString())
                 {
                     errors.push_back(
                         "Subsequent variable declarations must have the "
@@ -2172,7 +2197,7 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         append(bytes, toBytes(expr->firstOperand, file));
 
         const auto methodRefConstant = file.Constants.FindMethodRef(
-            RTL_ARRAY_TYPE.toTypename(), "length", "()LJavaRTL/Number;");
+            RTL_ANY_TYPE.toTypename(), "length", "()LJavaRTL/Any;");
 
         append(bytes, (uint8_t)Command::invokevirtual);
         append(bytes, toBytes(methodRefConstant));

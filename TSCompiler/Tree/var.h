@@ -48,9 +48,9 @@ struct VarDeclarationNode final : Node
     int scopingLevel = -1;
     VarDeclarationNode *baseNode{};
 
-    TypeNode *lastAssignedType = new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE));
-
     int positionInMethod{};
+
+    bool isAssigned = false;
 
     VarDeclarationNode(const std::string varName, TypeNode *varType,
                        ExpressionNode *initExpr)

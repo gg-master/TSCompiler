@@ -42,8 +42,6 @@ struct ClassElementNode final : Node
     bool isMainMethod = false;
     bool isStatic = false;
 
-    TypeNode *lastAssignedType = new TypeNode(new JvmDataType(RTL_UNDEFINED_TYPE));
-
     ClassElementNode(RequiredParameterListNode *params, StatementListNode *body)
         : type{Type::_CONSTRUCTOR},
           name{"<init>"},
