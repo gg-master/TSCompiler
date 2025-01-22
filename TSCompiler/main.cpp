@@ -30,6 +30,9 @@ void MakeTreeImage(std::string dotExecPath, std::string filename)
 
 int main(const int argc, char **argv)
 {
+    setlocale(LC_ALL, "ru-RU");
+    std::system("chcp 1251");
+
     std::string dotExecPath =
         (std::filesystem::current_path() / "dot\\dot.exe").string();
 

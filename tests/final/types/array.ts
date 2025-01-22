@@ -66,3 +66,18 @@ arr[a] = 3;
 Console.log(arr);
 Console.log(++arr[a]);
 Console.log(arr);
+
+
+// multidimensional experiment
+
+var a: any[] = []
+var b: any = []
+
+a[0] = b;
+a[1] = "a_array"
+
+a[0][0] = "Hello"
+a[0][1] = "World"
+
+Console.log(a);
+Console.log(b);

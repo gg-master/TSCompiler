@@ -98,6 +98,11 @@ struct JvmDataType
                arrayArity == 0;
     }
 
+    bool isAnyType() const
+    {
+        return !complex.empty() && complex.back() == "Any";
+    }
+
     std::string toString()
     {
         std::string name;

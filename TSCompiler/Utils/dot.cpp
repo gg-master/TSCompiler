@@ -7,7 +7,7 @@
 
 void RunDot(const std::string dotPath, const std::string dotFilePath)
 {
-    _spawnl(_P_NOWAIT, dotPath.data(), "dot", "-O", "-Tpng", dotFilePath.data(),
+    _spawnl(_P_NOWAIT, dotPath.data(), "dot", "-O", "-Tpng", "-Gcharset=l1", dotFilePath.data(),
             NULL);
 }
 

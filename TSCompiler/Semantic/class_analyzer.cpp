@@ -330,7 +330,7 @@ void ClassAnalyzer::attributeMemberSignatures()
 
         auto *type = toJvmDataType(method->propertyAndReturnType);
 
-        if ((*type == RTL_ANY_TYPE && method->isConstructor()) ||
+        if ((type->isAnyType() && method->isConstructor()) ||
             method->isMainMethod)
         {
             type = new JvmDataType(JvmDataType::Type::Void);
@@ -539,8 +539,8 @@ void ClassAnalyzer::analyzeClassFields()
                                  "'.");
                 continue;
             }
-            // XXX disabled couse dynamic type are not implemented in this version
-            // field->propertyAndReturnType = expr->exprType;
+            // XXX disabled couse dynamic type are not implemented in this
+            // version field->propertyAndReturnType = expr->exprType;
         }
         validateTypename(field->propertyAndReturnType->jvmType);
     }
@@ -823,9 +823,9 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
 
     if (node->initExpression &&
         (*node->varType != *node->initExpression->exprType ||
-         *node->varType->jvmType == RTL_ANY_TYPE))
+         node->varType->jvmType->isAnyType()))
     {
-        if (*node->varType->jvmType != RTL_ANY_TYPE)
+        if (!node->varType->jvmType->isAnyType())
         {
             errors.push_back("Type '" +
                              node->initExpression->exprType->toString() +
@@ -834,7 +834,7 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
         }
         else
         {
-            // XXX type deduction is disabled in this version 
+            // XXX type deduction is disabled in this version
             // node->varType = node->initExpression->exprType;
         }
     }
@@ -1085,23 +1085,6 @@ void ClassAnalyzer::analyzeFuncCall(ExpressionNode *node)
         }
     }
 
-    bool isAnyParamsAnyT = std::any_of(callTypes.begin(), callTypes.end(),
-                                       [](JvmDataType const &type)
-                                       { return type == RTL_ANY_TYPE; });
-
-    if (!foundFunc && isAnyParamsAnyT)
-    {
-        for (auto *func : allFunctions)
-        {
-            if (func->name == funcName &&
-                func->params->GetSeq().size() == callTypes.size())
-            {
-                foundFunc = func;
-                break;
-            }
-        }
-    }
-
     if (!foundFunc)
     {
         errors.push_back("Cannot call function with name '" + funcName +
@@ -1180,16 +1163,16 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
 
     if (node->convertedFrom)
     {
-        if (foundClass && *foundClass->toDataType() == RTL_ANY_TYPE &&
-            (*objType->jvmType == RTL_ANY_TYPE ||
+        if (foundClass && foundClass->toDataType()->isAnyType() &&
+            (objType->jvmType->isAnyType() ||
              (node->convertedFrom->secondOperand &&
-              *node->convertedFrom->secondOperand->exprType->jvmType ==
-                  RTL_ANY_TYPE)))
+              node->convertedFrom->secondOperand->exprType->jvmType
+                  ->isAnyType())))
         {
             return;
         }
 
-        if (foundClass && *foundClass->toDataType() != RTL_ANY_TYPE)
+        if (foundClass && !foundClass->toDataType()->isAnyType())
         {
             return;
         }
@@ -1496,7 +1479,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         node->exprType = type;
 
         if (firstOperand->jvmType->arrayArity == 0 &&
-            *firstOperand->jvmType != RTL_ANY_TYPE)
+            !firstOperand->jvmType->isAnyType())
         {
             errors.push_back("Cannot use operator[] on type '" +
                              type->toString() + "'.");
@@ -1623,7 +1606,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
         if (*firstOperand != *secondOperand)
         {
-            if (*firstOperand->jvmType == RTL_ANY_TYPE)
+            if (firstOperand->jvmType->complex.back() == "Any")
             {
                 firstOperand->jvmType = secondOperand->jvmType;
             }
@@ -1766,7 +1749,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             if (RTL_NUMBER_TYPE != *leftType->jvmType &&
                 RTL_UNDEFINED_TYPE != *leftType->jvmType &&
                 RTL_NULL_TYPE != *leftType->jvmType &&
-                RTL_ANY_TYPE != *leftType->jvmType)
+                !leftType->jvmType->isAnyType())
             {
                 errors.push_back("Type '" + leftType->toString() +
                                  "' is not compatible with operation " +
