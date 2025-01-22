@@ -522,7 +522,7 @@ void ClassAnalyzer::analyzeClassFields()
                     field->propertyAndReturnType->toString() + "'.");
                 continue;
             }
-            field->propertyAndReturnType = field->expression->exprType;
+            // field->propertyAndReturnType = field->expression->exprType;
         }
 
         if (field->baseNode && field->baseNode->initExpression)
@@ -539,7 +539,8 @@ void ClassAnalyzer::analyzeClassFields()
                                  "'.");
                 continue;
             }
-            field->propertyAndReturnType = expr->exprType;
+            // XXX disabled couse dynamic type are not implemented in this version
+            // field->propertyAndReturnType = expr->exprType;
         }
         validateTypename(field->propertyAndReturnType->jvmType);
     }
@@ -833,7 +834,8 @@ StatementNode *ClassAnalyzer::analyzeVarDeclaration(VarDeclarationNode *node)
         }
         else
         {
-            node->varType = node->initExpression->exprType;
+            // XXX type deduction is disabled in this version 
+            // node->varType = node->initExpression->exprType;
         }
     }
 
@@ -1485,7 +1487,9 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
         if (!node->exprType)
         {
             node->secondOperand = ExpressionNode::fromMethodCall(
-                node->secondOperand, "toInt", ExpressionListNode::makeEmpty());
+                ExpressionNode::fromNew(
+                    "Number", new ExpressionListNode(node->secondOperand)),
+                "toInt", ExpressionListNode::makeEmpty());
             calculateTypeForExpr(node->secondOperand);
         }
 
@@ -1598,8 +1602,9 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             else if (!node->exprType)
             {
                 node->secondOperand = ExpressionNode::fromMethodCall(
-                    node->secondOperand, "toInt",
-                    ExpressionListNode::makeEmpty());
+                    ExpressionNode::fromNew(
+                        "Number", new ExpressionListNode(node->secondOperand)),
+                    "toInt", ExpressionListNode::makeEmpty());
                 calculateTypeForExpr(node->secondOperand);
             }
         }

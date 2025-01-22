@@ -186,6 +186,11 @@ public class Number extends Any {
     }
 
     public int toInt() {
+        if (this._value == java.lang.Double.NaN
+            || this._value == java.lang.Double.NEGATIVE_INFINITY
+            || this._value == java.lang.Double.POSITIVE_INFINITY ){
+            return -1;
+        }
         return (int)this._value;
     }
 
