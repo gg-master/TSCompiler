@@ -25,13 +25,8 @@ public class Array extends Any {
     // }
     public Any get(int index) {
         try {
-            if (index < 0) {
+            if (index < 0 || index >= _value.length) {
                 return new Undefined();
-            }
-            if (index >= _value.length) {
-                for (int i = _value.length; i <= index; i++) {
-                    this.push(new Undefined());
-                }
             }
             return this._value[index];
         } catch (ArrayIndexOutOfBoundsException e) {

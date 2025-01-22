@@ -39,9 +39,32 @@ struct JvmDataType
 
     bool operator==(const JvmDataType &other) const
     {
-        bool isAnyTypeCompare =
+        bool isThisTypeAny =
             type == Type::Complex &&
             complex == std::vector<std::string>{"JavaRTL", "Any"};
+
+        bool isOtherTypeAny =
+            other.type == Type::Complex &&
+            other.complex == std::vector<std::string>{"JavaRTL", "Any"};
+
+        if (isThisTypeAny)
+        {
+            if (isOtherTypeAny)
+                return true;
+
+            if (other.arrayArity == 0 && arrayArity > 0)
+                return false;
+
+            return true;
+        }
+
+        if (isOtherTypeAny)
+        {
+            if (arrayArity < other.arrayArity)
+                return false;
+
+            return true;
+        }
 
         bool isVoidUndefinedTypesCompare =
             type == Type::Complex && other.type == Type::Complex &&
@@ -51,11 +74,11 @@ struct JvmDataType
         bool isOtherTypeCompare =
             type == other.type && complex == other.complex;
 
-        if (arrayArity != other.arrayArity && !isAnyTypeCompare)
+        if (arrayArity != other.arrayArity)
             return false;
 
-        return isAnyTypeCompare || isVoidUndefinedTypesCompare ||
-               isOtherTypeCompare;
+        return isThisTypeAny || isVoidUndefinedTypesCompare ||
+               isOtherTypeCompare || isOtherTypeAny;
     }
 
     bool operator!=(const JvmDataType &other) const

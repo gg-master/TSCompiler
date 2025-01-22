@@ -107,7 +107,7 @@ inline JvmDataType *toJvmDataType(const TypeNode *node)
     if (!node)
     {
         type = new JvmDataType(RTL_ANY_TYPE);
-        type->isComputed = true;
+        // type->isComputed = true;
         return type;
     }
 
@@ -141,11 +141,11 @@ inline JvmDataType *toJvmDataType(const TypeNode *node)
         break;
     default:
         type = new JvmDataType(RTL_ANY_TYPE);
-        type->isComputed = true;
+        // type->isComputed = node->isComputed;
         break;
     }
 
-    type->isComputed = type->isComputed || node->isComputed;
+    // type->isComputed = type->isComputed || node->isComputed;
 
     type->arrayArity = node->arrayArity;
     return type;

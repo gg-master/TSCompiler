@@ -1234,7 +1234,7 @@ void ClassAnalyzer::analyzeNewCall(ExpressionNode *node)
     auto *foundClass = root->findClass(node->identifierString);
 
     if (!foundClass || foundClass == root->mainClass ||
-        *foundClass->toDataType() == RTL_ANY_TYPE ||
+        foundClass->toDataType()->complex.back() == "Any" ||
         *foundClass->toDataType() == RTL_UNDEFINED_TYPE ||
         *foundClass->toDataType() == RTL_NULL_TYPE ||
         *foundClass->toDataType() == RTL_VOID_TYPE)
@@ -1335,9 +1335,9 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
             {
                 if (elem->exprType->jvmType->arrayArity != 0)
                 {
-                    errors.push_back(
-                        "Cannot create a multi-dimensional array in "
-                        "this version.");
+                    // errors.push_back(
+                    //     "Cannot create a multi-dimensional array in "
+                    //     "this version.");
                 }
 
                 if (*elemType != *elem->exprType->jvmType)
@@ -2146,8 +2146,8 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
     if (expr->type == ExpressionNode::Type::_ARRAY_CREATION)
     {
         const auto type = expr->exprType->jvmType;
-        if (type->arrayArity > 1)
-            throw std::runtime_error{"Cannot create multidimensional array"};
+        // if (type->arrayArity > 1)
+        //     throw std::runtime_error{"Cannot create multidimensional array"};
 
         Bytes bytes;
 
