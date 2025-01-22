@@ -98,6 +98,14 @@ public class Any {
         return new JavaRTL.Number(this).greatEqual(new JavaRTL.Number(other));
     }
 
+    public Any get(int index) {
+        return new Undefined();
+    }
+
+    public Any set(int index, Any value) {
+        return value;
+    }
+
     @Override
     public java.lang.String toString() {
         return "JavaRTL/Any";

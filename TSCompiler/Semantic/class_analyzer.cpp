@@ -1491,7 +1491,8 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
         node->exprType = type;
 
-        if (firstOperand->jvmType->arrayArity == 0)
+        if (firstOperand->jvmType->arrayArity == 0 &&
+            *firstOperand->jvmType != RTL_ANY_TYPE)
         {
             errors.push_back("Cannot use operator[] on type '" +
                              type->toString() + "'.");
@@ -2203,7 +2204,7 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         append(bytes, toBytes(expr->secondOperand, file));
 
         const auto methodRefConstant = file.Constants.FindMethodRef(
-            RTL_ARRAY_TYPE.toTypename(), "get", "(I)LJavaRTL/Any;");
+            RTL_ANY_TYPE.toTypename(), "get", "(I)LJavaRTL/Any;");
 
         append(bytes, (uint8_t)Command::invokevirtual);
         append(bytes, toBytes(methodRefConstant));
@@ -2216,9 +2217,8 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
         append(bytes, toBytes(expr->secondOperand, file));
         append(bytes, toBytes(expr->thirdOperand, file));
 
-        const auto methodRefConstant =
-            file.Constants.FindMethodRef(RTL_ARRAY_TYPE.toTypename(), "set",
-                                         "(ILJavaRTL/Any;)LJavaRTL/Any;");
+        const auto methodRefConstant = file.Constants.FindMethodRef(
+            RTL_ANY_TYPE.toTypename(), "set", "(ILJavaRTL/Any;)LJavaRTL/Any;");
 
         append(bytes, (uint8_t)Command::invokevirtual);
         append(bytes, toBytes(methodRefConstant));
@@ -2566,7 +2566,7 @@ Bytes toBytes(ExpressionNode *expr, ClassFile &file)
             append(bytes, (uint8_t)Command::swap);
 
             const auto methodRefConstant =
-                file.Constants.FindMethodRef(RTL_ARRAY_TYPE.toTypename(), "set",
+                file.Constants.FindMethodRef(RTL_ANY_TYPE.toTypename(), "set",
                                              "(ILJavaRTL/Any;)LJavaRTL/Any;");
 
             append(bytes, (uint8_t)Command::invokevirtual);

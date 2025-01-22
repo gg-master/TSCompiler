@@ -16,32 +16,48 @@ public class Array extends Any {
         this._value = value;
     }
 
-    public Any get(Number index) {
-        try {
-            return this._value[index.toInt()];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return new Undefined();
-        }
-    }
+    // public Any get(Number index) {
+    //     try {
+    //         return this._value[index.toInt()];
+    //     } catch (ArrayIndexOutOfBoundsException e) {
+    //         return new Undefined();
+    //     }
+    // }
     public Any get(int index) {
         try {
+            if (index < 0) {
+                return new Undefined();
+            }
+            if (index >= _value.length) {
+                for (int i = _value.length; i <= index; i++) {
+                    this.push(new Undefined());
+                }
+            }
             return this._value[index];
         } catch (ArrayIndexOutOfBoundsException e) {
             return new Undefined();
         }
     }
 
-    public Any set(Number index, Any value) {
-        try {
-            this._value[index.toInt()] = value;
-            return value;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return new Undefined();
-        }
-    }
+    // public Any set(Number index, Any value) {
+    //     try {
+    //         this._value[index.toInt()] = value;
+    //         return value;
+    //     } catch (ArrayIndexOutOfBoundsException e) {
+    //         return new Undefined();
+    //     }
+    // }
 
     public Any set(int index, Any value) {
         try {
+            if (index < 0) {
+                return value;
+            }
+            if (index >= _value.length) {
+                for (int i = _value.length; i <= index; i++) {
+                    this.push(new Undefined());
+                }
+            }
             this._value[index] = value;
             return value;
         } catch (ArrayIndexOutOfBoundsException e) {
