@@ -1217,7 +1217,7 @@ void ClassAnalyzer::analyzeNewCall(ExpressionNode *node)
     auto *foundClass = root->findClass(node->identifierString);
 
     if (!foundClass || foundClass == root->mainClass ||
-        foundClass->toDataType()->complex.back() == "Any" ||
+        foundClass->toDataType()->isAnyType()||
         *foundClass->toDataType() == RTL_UNDEFINED_TYPE ||
         *foundClass->toDataType() == RTL_NULL_TYPE ||
         *foundClass->toDataType() == RTL_VOID_TYPE)
@@ -1606,7 +1606,7 @@ TypeNode *ClassAnalyzer::calculateTypeForExpr(ExpressionNode *node)
 
         if (*firstOperand != *secondOperand)
         {
-            if (firstOperand->jvmType->complex.back() == "Any")
+            if (firstOperand->jvmType->isAnyType())
             {
                 firstOperand->jvmType = secondOperand->jvmType;
             }
