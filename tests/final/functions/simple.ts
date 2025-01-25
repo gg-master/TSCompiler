@@ -5,22 +5,22 @@ function typed_f(a: string, b: number[]): void {
     );
 }
 
-// let a: any, b: any;
-// typed_f(a, b);
+let a: any = 2, b: any = "asd";
+typed_f(a, b);
 // typed_f(1, [1, 2, 3,]) // semantic error
 
 function any_f(a: any, b: any): any {
     Console.log("> any_f print: a: " + a + "; b: " + b);
     typed_f(a, b);
 }
-// any_f(1, "3 undefined");
+any_f(1, "3 undefined");
 
 function any_f2(a: any, b: any[]): any {
     Console.log("> any_f print: a: " + a + "; b: " + b);
     typed_f(a, b);
 }
 
-// typed_f("asd", [1, 2, 3,])
+typed_f("asd", [1, 2, 3,])
 
 
 any_f(1, 2);

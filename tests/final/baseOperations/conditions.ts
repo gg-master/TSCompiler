@@ -13,3 +13,7 @@ else { /* never executed */}
 if (a > b) { } else if (a != b) { Console.log(" a != b"); } else {};
 
 if (c2 > c1) { Console.log("c2 > c1"); } else Console.log("c2 < c1");
+
+Console.log(true || 1 || 0)
+var or_result2: any = false || var1 || var2;
+Console.log(or_result2)
