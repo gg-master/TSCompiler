@@ -1,6 +1,10 @@
 package JavaRTL;
 
 public class Void extends Any {
+    public Any length() {
+        throw new RuntimeException("cant find length property on undefined");    
+    }
+
     public JavaRTL.String plus(JavaRTL.String other) {
         return new JavaRTL.String(this).plus(other);
     }

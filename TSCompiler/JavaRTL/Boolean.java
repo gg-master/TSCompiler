@@ -12,7 +12,7 @@ public class Boolean extends Any {
         this.origValue = this;
     }
     public Boolean(int value){
-        this._value = value == 0 ? true : false;
+        this._value = value != 0;
         this.origValue = new Number(value);
     }
     public Boolean(java.lang.String value) {
@@ -29,7 +29,7 @@ public class Boolean extends Any {
         if (value instanceof Boolean) {
             this._value = ((Boolean)value)._value;
         } else if (value instanceof JavaRTL.Number) {
-            this._value = ((JavaRTL.Number)value)._value == 0 ? false : true;
+            this._value = ((JavaRTL.Number)value)._value != 0;
         } else if (value instanceof JavaRTL.String) {
             this._value = !((JavaRTL.String)value)._value.isEmpty();
         } else if (value instanceof JavaRTL.Null) {

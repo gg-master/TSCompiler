@@ -9,6 +9,7 @@ public class Array extends Any {
     public Array() {}
 
     public Array(int length) {
+        if (length < 0) { length = 0; }
         this._value = new Any[length];
     }
 
@@ -26,11 +27,11 @@ public class Array extends Any {
     public Any get(int index) {
         try {
             if (index < 0 || index >= _value.length) {
-                return new Undefined();
+                return new JavaRTL.Undefined();
             }
             return this._value[index];
         } catch (ArrayIndexOutOfBoundsException e) {
-            return new Undefined();
+            return new JavaRTL.Undefined();
         }
     }
 
@@ -50,13 +51,13 @@ public class Array extends Any {
             }
             if (index >= _value.length) {
                 for (int i = _value.length; i <= index; i++) {
-                    this.push(new Undefined());
+                    this.push(new JavaRTL.Undefined());
                 }
             }
             this._value[index] = value;
             return value;
         } catch (ArrayIndexOutOfBoundsException e) {
-            return new Undefined();
+            return new JavaRTL.Undefined();
         }
     }
 
@@ -67,7 +68,7 @@ public class Array extends Any {
         }
         newArray[this._value.length] = value;
         this._value = newArray;
-        return new Number(this._value.length);
+        return new JavaRTL.Number(this._value.length);
     }
 
     public Any pop() {
@@ -81,7 +82,7 @@ public class Array extends Any {
     }
 
     public Any length() {
-        return new Number(this._value.length);
+        return new JavaRTL.Number(this._value.length);
     }
 
     @Override

@@ -1163,6 +1163,22 @@ void ClassAnalyzer::analyzeMethodCall(ExpressionNode *node)
 
     if (node->convertedFrom)
     {
+        if (node->firstOperand->type == ExpressionNode::Type::_ARRAY_ACCESS)
+        {
+            auto const &allMethod = root->findClass("Any")->body->GetMethods();
+            const auto foundMethod =
+                std::find_if(allMethod.begin(), allMethod.end(),
+                             [&](ClassElementNode *func) {
+                                 return methodName == func->name &&
+                                        func->params->getTypes() == callTypes;
+                             });
+            if (foundMethod != allMethod.end())
+            {
+                node->exprType = (*foundMethod)->propertyAndReturnType;
+                node->actualMethodCall = *foundMethod;
+            }
+        }
+
         if (foundClass && foundClass->toDataType()->isAnyType() &&
             (objType->jvmType->isAnyType() ||
              (node->convertedFrom->secondOperand &&
@@ -1217,7 +1233,7 @@ void ClassAnalyzer::analyzeNewCall(ExpressionNode *node)
     auto *foundClass = root->findClass(node->identifierString);
 
     if (!foundClass || foundClass == root->mainClass ||
-        foundClass->toDataType()->isAnyType()||
+        foundClass->toDataType()->isAnyType() ||
         *foundClass->toDataType() == RTL_UNDEFINED_TYPE ||
         *foundClass->toDataType() == RTL_NULL_TYPE ||
         *foundClass->toDataType() == RTL_VOID_TYPE)

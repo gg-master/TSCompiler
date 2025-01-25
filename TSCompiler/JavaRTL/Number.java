@@ -113,75 +113,75 @@ public class Number extends Any {
         return new Number(-this._value);
     }
 
-    public Boolean less(Number other) {
+    public JavaRTL.Boolean less(Number other) {
         return new JavaRTL.Boolean(this._value < other._value);
     }
-    public Boolean less(JavaRTL.Null other) {
+    public JavaRTL.Boolean less(JavaRTL.Null other) {
         return new JavaRTL.Boolean(this._value < 0);
     }
-    public Boolean less(JavaRTL.Undefined other) {
+    public JavaRTL.Boolean less(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(false);
     }
 
-    public Boolean great(Number other) {
+    public JavaRTL.Boolean great(Number other) {
         return new JavaRTL.Boolean(this._value > other._value);
     }
-    public Boolean great(JavaRTL.Null other) {
+    public JavaRTL.Boolean great(JavaRTL.Null other) {
         return new JavaRTL.Boolean(this._value > 0);
     }
-    public Boolean great(JavaRTL.Undefined other) {
+    public JavaRTL.Boolean great(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(false);
     }
 
-    public Boolean equal(Number other) {
+    public JavaRTL.Boolean equal(Number other) {
         return new JavaRTL.Boolean(this._value == other._value);
     }
-    public Boolean equal(JavaRTL.Null other) {
+    public JavaRTL.Boolean equal(JavaRTL.Null other) {
         return new JavaRTL.Boolean(false);
     }
-    public Boolean equal(JavaRTL.Undefined other) {
+    public JavaRTL.Boolean equal(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(false);
     }
-    public Boolean equal(Any other) {
+    public JavaRTL.Boolean equal(Any other) {
         if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
             return new JavaRTL.Boolean(false);
         }
         return super.equal(other);
     }
 
-    public Boolean notEqual(Number other) {
+    public JavaRTL.Boolean notEqual(Number other) {
         return new JavaRTL.Boolean(this._value != other._value);
     }
-    public Boolean notEqual(JavaRTL.Null other) {
+    public JavaRTL.Boolean notEqual(JavaRTL.Null other) {
         return new JavaRTL.Boolean(true);
     }
-    public Boolean notEqual(JavaRTL.Undefined other) {
+    public JavaRTL.Boolean notEqual(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(true);
     }
-    public Boolean notEqual(Any other) {
+    public JavaRTL.Boolean notEqual(Any other) {
         if (other instanceof JavaRTL.Void || other instanceof JavaRTL.Null) {
             return new JavaRTL.Boolean(true);
         }
         return super.notEqual(other);
     }
 
-    public Boolean lessEqual(Number other) {
+    public JavaRTL.Boolean lessEqual(Number other) {
         return new JavaRTL.Boolean(this._value <= other._value);
     }
-    public Boolean lessEqual(JavaRTL.Null other) {
+    public JavaRTL.Boolean lessEqual(JavaRTL.Null other) {
         return new JavaRTL.Boolean(this._value <= 0);
     }
-    public Boolean lessEqual(JavaRTL.Undefined other) {
+    public JavaRTL.Boolean lessEqual(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(false);
     }
 
-    public Boolean greatEqual(Number other) {
+    public JavaRTL.Boolean greatEqual(Number other) {
         return new JavaRTL.Boolean(this._value >= other._value);
     }
-    public Boolean greatEqual(JavaRTL.Null other) {
+    public JavaRTL.Boolean greatEqual(JavaRTL.Null other) {
         return new JavaRTL.Boolean(this._value >= 0);
     }
-    public Boolean greatEqual(JavaRTL.Undefined other) {
+    public JavaRTL.Boolean greatEqual(JavaRTL.Undefined other) {
         return new JavaRTL.Boolean(false);
     }
 
