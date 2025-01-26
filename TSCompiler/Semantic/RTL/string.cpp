@@ -14,14 +14,8 @@ ClassDeclarationNode *Semantic::createStringClass()
             new TypeNode(new JvmDataType(JvmDataType::Type::Void));
     }
 
-    std::vector<JvmDataType> types = {JvmDataType(JvmDataType::Type::Double),
-                                      JvmDataType(JvmDataType::Type::Int),
-                                      JvmDataType(JvmDataType::Type::String),
-                                      RTL_ANY_TYPE};
-
-    for (const auto &jvmType : types)
     {
-        auto *type = new TypeNode(new JvmDataType(jvmType));
+        auto *type = new TypeNode(new JvmDataType(RTL_ANY_TYPE));
         auto *param = new RequiredParameterNode("value", type);
         auto *clsConstructor =
             new ClassElementNode(new RequiredParameterListNode(param), nullptr);

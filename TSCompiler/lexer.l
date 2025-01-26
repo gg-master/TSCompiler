@@ -193,7 +193,6 @@ as          {
 }
 
 any         {
-    PrintError("Unsupported TYPE_ANY in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found TYPE_ANY: " + std::string{yytext});
     }
