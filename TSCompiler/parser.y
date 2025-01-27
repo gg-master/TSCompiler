@@ -3,8 +3,7 @@
 #include <iostream>
 
 #include "Utils/utils.h"
-#include "Tree/parsing_tree.h"
-#include "Tree/nodes.h"
+#include "Tree/ts_script.h"
 
 int debug = 1;
 extern FILE* yyin;
@@ -23,6 +22,8 @@ int yyfilter(int yychar, int yyn, int yystate, short *yyssp);
 int isASIActivated = 0;
 int isInFunctionBody = 0; // need for return stmt
 int isInForHeader = 0;
+
+int isConstDeclarated = 0;
 
 int syntaxErrorCounter = 0;
 %}
@@ -59,7 +60,6 @@ int syntaxErrorCounter = 0;
     struct ExpressionNode* exprNode;
 
     struct TypeNode* typeNode;
-    struct TupleTypeNode* tupleTypeNode;
 
     enum class VarModifierType varModifierType;
 
@@ -80,7 +80,7 @@ int syntaxErrorCounter = 0;
 %token <identName> ID
 
 %nonassoc TEMPLATE_LIT
-%nonassoc OPERATOR_INCREMENT OPERATOR_DECREMENT ENDL_OPERATOR_INCREMENT ENDL_OPERATOR_DECREMENT
+%nonassoc ENDL_OPERATOR_INCREMENT ENDL_OPERATOR_DECREMENT
 
 %precedence IF_ONLY_PREC
 %left IF ELSE
@@ -95,7 +95,7 @@ int syntaxErrorCounter = 0;
 %left '|'
 %left '^'
 %left '&'
-%left OPERATOR_EQUAL OPERATOR_NOT_EQUAL OPERATOR_STRICT_EQUAL OPERATOR_STRICT_NOT_EQUAL
+%left OPERATOR_EQUAL OPERATOR_NOT_EQUAL
 %left  '>' '<' OPERATOR_GREATER_THAN_EQUAL OPERATOR_LESS_THAN_EQUAL INSTANCEOF IN
 
 %left '+' '-'
@@ -103,7 +103,7 @@ int syntaxErrorCounter = 0;
 
 %right '!' '~' UMINUS UPLUS PREF_INCREMENT PREF_DECREMENT VOID
 
-%nonassoc POST_INCREMENT POST_DECREMENT
+%nonassoc POST_INCREMENT POST_DECREMENT OPERATOR_INCREMENT OPERATOR_DECREMENT
 
 %right NEW
 
@@ -112,10 +112,6 @@ int syntaxErrorCounter = 0;
 %nonassoc '(' ')'
   
 %start script
-
-%type <tsscriptNode>script
-%type <tsscriptElementListNode>scriptElementList
-%type <tsscriptElementNode>scriptElement
 
 %type <classDeclNode>classDeclaration
 %type <classElementListNode>classTail
@@ -153,7 +149,6 @@ int syntaxErrorCounter = 0;
 %type <typeNode>predefinedType
 %type <typeNode>typeAnnotation
 %type <typeNode>typeAnnotationOpt
-%type <tupleTypeNode>tupleTypeElements
 
 %type <varModifierType>varModifier
 %type <varDeclNode>varDeclaration
@@ -173,26 +168,26 @@ script
                 exit(1);
             }
             Print("- R: scriptElementList -> script"); 
-        
-            $$ = root = createTSScriptNode($1);
         }
     ;
 
 scriptElementList
-    : scriptElement                     { Print("- R: scriptElement -> scriptElementList"); $$ = createTSElementListNode($1); }
-    | scriptElementList scriptElement   { Print("- R: scriptElementList scriptElement -> scriptElementList"); $$ = addTSElementNodeToList($1, $2); }
+    : scriptElement
+        { Print("- R: scriptElement -> scriptElementList"); }
+    | scriptElementList scriptElement
+        { Print("- R: scriptElementList scriptElement -> scriptElementList"); }
     ;
 
 scriptElement
-    : statementListItem     { Print("- R: statementListItem -> scriptElement"); $$ = createElementFromStatement($1); }
-    | functionDeclaration   { Print("- R: functionDeclaration -> scriptElement"); $$ = createElementFromFuncDeclaration($1); }
-    | classDeclaration      { Print("- R: classDeclaration -> scriptElement"); $$ = createElementFromClassDeclaration($1); }
+    : statementListItem     { Print("- R: statementListItem -> scriptElement"); root -> add($1); }
+    | functionDeclaration   { Print("- R: functionDeclaration -> scriptElement"); root -> add($1); }
+    | classDeclaration      { Print("- R: classDeclaration -> scriptElement"); root -> add($1); }
     | error
     ;
 
 statementList
-    : statementListItem                 { Print("- R: statementListItem -> statementList"); $$ = createStatementListNode($1); }
-    | statementList statementListItem   { Print("- R: statementList statementListItem -> statementList"); $$ = addStatementToStatementList($1, $2); }
+    : statementListItem                 { Print("- R: statementListItem -> statementList"); $$ = new StatementListNode($1); }
+    | statementList statementListItem   { Print("- R: statementList statementListItem -> statementList"); $$ -> add($2); }
     ;
 
 statementListItem
@@ -236,44 +231,36 @@ emptyStatement
                 yyerror(("syntax error on token: " + text).c_str()); YYERROR;
             }
             Print("- R: ';' -> emptyStatement");
-            $$ = createEmptyStatementNode();
+            $$ = StatementNode::fromEmptyStmt();
         }
     ;
 
 blockStatement
-    : '{' '}'               { Print("- R: '{' '}' -> blockStatement"); $$ = createBlockStatementNode(nullptr); }
-    | '{' statementList '}' { Print("- R: '{' statementList '}' -> blockStatement"); $$ = createBlockStatementNode($2); }
+    : '{' '}'               { Print("- R: '{' '}' -> blockStatement"); $$ = StatementNode::fromBlockStmt(StatementListNode::makeEmpty()); }
+    | '{' statementList '}' { Print("- R: '{' statementList '}' -> blockStatement"); $$ = StatementNode::fromBlockStmt($2); }
     ;
 
     // ====== TYPES ======
 
 type
-    : '(' type ')'                              { Print("- R: '(' type ')' -> type"); $$ = $2; }
-    | predefinedType                            { Print("- R: predefinedType -> type"); $$ = $1; }
-    | type '[' ']'                              { Print("- R: type '[' ']' -> type"); $$ = createArrayTypeNode($1); }
-    | '[' tupleTypeElements ']'                 { Print("- R: '[' tupleTypeElements ']' -> type"); $$ = createTypeFromTupleType($2); }
-    | ENDL_BRACKET_OPEN tupleTypeElements ']'   { Print("- R: '[' tupleTypeElements ']' -> type"); $$ = createTypeFromTupleType($2); }
-    ;
-
-tupleTypeElements
-    : /* empty */                   { Print("- R: #empty# -> tupleTypeElements"); $$ = createTupleTypeNode(nullptr); }
-    | type                          { Print("- R: type -> tupleTypeElements"); $$ = createTupleTypeNode($1); }
-    | tupleTypeElements ',' type    { Print("- R: tupleTypeElements ',' type -> tupleTypeElements"); $$ = addTypeToTupleType($1, $3); }
+    : predefinedType { Print("- R: predefinedType -> type"); $$ = $1; }
+    | type '[' ']'   { Print("- R: type '[' ']' -> type"); $$ -> arrayArity++; }
     ;
 
 predefinedType
-    : NUMBER        { Print("- R: NUMBER -> predefinedType"); $$ = createNumberTypeNode(); }
-    | STRING        { Print("- R: STRING -> predefinedType"); $$ = createStringTypeNode(); }
-    | BOOLEAN       { Print("- R: BOOLEAN -> predefinedType"); $$ = createBooleanTypeNode(); }
-    | UNDEFINED     { Print("- R: UNDEFINED -> predefinedType"); $$ = createUndefinedTypeNode(); }
-    | VOID          { Print("- R: VOID -> predefinedType"); $$ = createVoidTypeNode(); }
-    | NULL_KW       { Print("- R: NULL_KW -> predefinedType"); $$ = createNullTypeNode(); }
-    | ID            { Print("- R: ID -> predefinedType"); $$ = createUserTypeNode($1); }
+    : NUMBER        { Print("- R: NUMBER -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_NUMBER); }
+    | STRING        { Print("- R: STRING -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_STRING); }
+    | BOOLEAN       { Print("- R: BOOLEAN -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_BOOLEAN); }
+    | UNDEFINED     { Print("- R: UNDEFINED -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_UNDEFINED); }
+    | VOID          { Print("- R: VOID -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_VOID); }
+    | NULL_KW       { Print("- R: NULL_KW -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_NULL); }
+    | ID            { Print("- R: ID -> predefinedType"); $$ = new TypeNode($1); }
+    | ANY           { Print("- R: ANY -> predefinedType"); $$ = new TypeNode(TypeNode::Type::_ANY); }
     ;
 
 typeAnnotationOpt
-    : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); $$ = nullptr; }
-    | typeAnnotation    { Print("- R: typeAnnotation -> typeAnnotationOpt"); $$ = $1; }
+    : typeAnnotation    { Print("- R: typeAnnotation -> typeAnnotationOpt"); $$ = $1; }
+    // : /* empty */       { Print("- R: # empty # -> typeAnnotationOpt"); $$ = new TypeNode(TypeNode::Type::_ANY, true); }
     ;
 
 typeAnnotation
@@ -282,28 +269,34 @@ typeAnnotation
 
 // JavaScript supports arrasys like [,,1,2,,].
 arrayLiteral
-    : '[' elementList ']'               { Print("- R: '[' elementList ']' -> arrayLiteral"); $$ = createArrayLiteralFromExpressionList($2); }
-    | ENDL_BRACKET_OPEN elementList ']' { Print("- R: ENDL_BRACKET_OPEN elementList ']' -> arrayLiteral"); $$ = createArrayLiteralFromExpressionList($2); }
+    : '[' elementList ']'               
+        { Print("- R: '[' elementList ']' -> arrayLiteral"); $$ = ExpressionNode::fromArrayLiteral($2); }
+    | ENDL_BRACKET_OPEN elementList ']' 
+        { Print("- R: ENDL_BRACKET_OPEN elementList ']' -> arrayLiteral"); $$ = ExpressionNode::fromArrayLiteral($2); }
     ;
 
 elementList
     : elementListItem 
-        { Print("- R: elementListItem -> elementList"); $$ = createExpressionListFromExpression($1); }
+        { Print("- R: elementListItem -> elementList"); $$ = ExpressionListNode::fromExpression($1); }
     | elementList ',' elementListItem %prec COMMA_SEPARATOR 
-        { Print("- R: elementList ',' elementListItem -> elementList"); $$ = addExpressionListToExpressionList($1, createExpressionListFromExpression($3)); }
+        { Print("- R: elementList ',' elementListItem -> elementList"); $$ -> merge(ExpressionListNode::fromExpression($3)); }
     ;
 
 elementListItem
-    : /* empty */ { Print("- R: #empty# -> elementListItem"); $$ = createEmptyArrayElementExpressionNode(); }
+    : /* empty */ { Print("- R: #empty# -> elementListItem"); $$ = ExpressionNode::fromEmptyArrayElementExpr(); }
     | singleExpression { Print("- R: singleExpression -> elementListItem"); $$ = $1; }
     | singleExpression ',' 
-        { Print("- R: singleExpression ',' -> elementListItem"); $$ = createCommaExpressionNode($1, createEmptyArrayElementExpressionNode()); }
+        { 
+            Print("- R: singleExpression ',' -> elementListItem");
+            ExpressionNode *node = ExpressionNode::fromEmptyArrayElementExpr();
+            $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_COMMA, $1, node);
+        }
     ;
 
     // ====== EXPRESSIONS ======
 
 expressionStatement
-    : singleExpression ';' { Print("- R: expressionList ';' -> expressionStatement"); $$ = createExpressionStatementNode($1); }
+    : singleExpression ';' { Print("- R: expressionList ';' -> expressionStatement"); $$ = StatementNode::fromExprStmt($1); }
     ;
 
 singleExpressionOpt
@@ -312,145 +305,171 @@ singleExpressionOpt
     ;
 
 singleExpression
-    : identifier    { Print("- R: identifier -> singleExpression"); $$ = createIDExpressionNode($1); }
-    | THIS          { Print("- R: THIS -> singleExpression"); $$ = createThisExpressionNode(); }
-    | TRUE_KW       { Print("- R: TRUE_LITERAL -> singleExpression"); $$ = createTrueLiteralExpressionNode(); }
-    | FALSE_KW      { Print("- R: FALSE_LITERAL -> singleExpression"); $$ = createFalseLiteralExpressionNode(); }
-    | NULL_KW       { Print("- R: NULL_LITERAL -> singleExpression"); $$ = createNullLiteralExpressionNode(); }
+    : identifier    { Print("- R: identifier -> singleExpression"); $$ = ExpressionNode::fromId($1); }
+    | THIS          { Print("- R: THIS -> singleExpression"); $$ = ExpressionNode::fromThis(); }
+    | TRUE_KW       { Print("- R: TRUE_LITERAL -> singleExpression"); $$ = ExpressionNode::fromTrueLit(); }
+    | FALSE_KW      { Print("- R: FALSE_LITERAL -> singleExpression"); $$ = ExpressionNode::fromFalseLit(); }
+    | NULL_KW       { Print("- R: NULL_LITERAL -> singleExpression"); $$ = ExpressionNode::fromNullLit(); }
+    | UNDEFINED     { Print("- R: NULL_LITERAL -> singleExpression"); $$ = ExpressionNode::fromUndefinedLit(); }
 
-    | STRING_LIT    { Print("- R: STRING_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
-    | TEMPLATE_LIT  { Print("- R: TEMPLATE_LIT -> singleExpression"); $$ = createStringLiteralExpressionNode($1); }
-    | INT_LIT       { Print("- R: INT_LIT -> singleExpression"); $$ = createIntLiteralExpressionNode($1); }
-    | FLOAT_LIT     { Print("- R: FLOAT_LIT -> singleExpression"); $$ = createFloatLiteralExpressionNode($1); }
+    | STRING_LIT    { Print("- R: STRING_LIT -> singleExpression"); $$ = ExpressionNode::fromStringLit($1); }
+    | TEMPLATE_LIT  { Print("- R: TEMPLATE_LIT -> singleExpression"); $$ = ExpressionNode::fromStringLit($1); }
+    | INT_LIT       { Print("- R: INT_LIT -> singleExpression"); $$ = ExpressionNode::fromIntLit($1); }
+    | FLOAT_LIT     { Print("- R: FLOAT_LIT -> singleExpression"); $$ = ExpressionNode::fromFloatLit($1); }
 
-    | '-' singleExpression %prec UMINUS { Print("- R: '-' singleExpression -> singleExpression"); $$ = createUMinusExpressionNode($2); }
-    | '+' singleExpression %prec UPLUS  { Print("- R: '+' singleExpression -> singleExpression"); $$ = createUPlusExpressionNode($2); }
+    | '-' singleExpression %prec UMINUS 
+        { Print("- R: '-' singleExpression -> singleExpression"); $$ = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_UMINUS, $2); }
+    | '+' singleExpression %prec UPLUS  
+        { Print("- R: '+' singleExpression -> singleExpression"); $$ = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_UPLUS, $2); }
 
-    | '!' singleExpression { Print("- R: '!' singleExpression -> singleExpression"); $$ = createLogNotExpressionNode($2); }
+    | '!' singleExpression 
+        { Print("- R: '!' singleExpression -> singleExpression"); $$ = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_NOT, $2); }
 
-    | singleExpression OPERATOR_INCREMENT %prec POST_INCREMENT 
-        { Print("- R: singleExpression OPERATOR_INCREMENT -> singleExpression"); $$ = createPostIncrementExpressionNode($1); }
-    | singleExpression OPERATOR_DECREMENT %prec POST_DECREMENT 
-        { Print("- R: singleExpression OPERATOR_DECREMENT -> singleExpression"); $$ = createPostDecrementExpressionNode($1); }
+    | singleExpression OPERATOR_INCREMENT %prec POST_INCREMENT
+        { Print("- R: singleExpression OPERATOR_INCREMENT -> singleExpression"); $$ = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_POST_INCREMENT, $1); }
+    | singleExpression OPERATOR_DECREMENT %prec POST_DECREMENT
+        { Print("- R: singleExpression OPERATOR_DECREMENT -> singleExpression"); $$ = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_POST_DECREMENT, $1); }
 
-    | ENDL_OPERATOR_INCREMENT singleExpression %prec PREF_INCREMENT 
-        { Print("- R: ENDL_OPERATOR_INCREMENT singleExpression -> singleExpression"); $$ = createPrefIncrementExpressionNode($2); }
-    | ENDL_OPERATOR_DECREMENT singleExpression %prec PREF_DECREMENT 
-        { Print("- R: ENDL_OPERATOR_DECREMENT singleExpression -> singleExpression"); $$ = createPrefDecrementExpressionNode($2); }
-    | OPERATOR_INCREMENT singleExpression %prec PREF_INCREMENT 
-        { Print("- R: OPERATOR_INCREMENT singleExpression -> singleExpression"); $$ = createPrefIncrementExpressionNode($2); }
-    | OPERATOR_DECREMENT singleExpression %prec PREF_DECREMENT 
-        { Print("- R: OPERATOR_DECREMENT singleExpression -> singleExpression"); $$ = createPrefDecrementExpressionNode($2); }
+    | ENDL_OPERATOR_INCREMENT singleExpression %prec PREF_INCREMENT
+        { Print("- R: ENDL_OPERATOR_INCREMENT singleExpression -> singleExpression"); $$ = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_PREF_INCREMENT, $2); }
+    | ENDL_OPERATOR_DECREMENT singleExpression %prec PREF_DECREMENT
+        { Print("- R: ENDL_OPERATOR_DECREMENT singleExpression -> singleExpression"); $$ = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_PREF_DECREMENT, $2); }
+    | OPERATOR_INCREMENT singleExpression %prec PREF_INCREMENT
+        { Print("- R: OPERATOR_INCREMENT singleExpression -> singleExpression"); $$ = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_PREF_INCREMENT, $2); }
+    | OPERATOR_DECREMENT singleExpression %prec PREF_DECREMENT
+        { Print("- R: OPERATOR_DECREMENT singleExpression -> singleExpression"); $$ = ExpressionNode::fromUnaryExpr(ExpressionNode::Type::_PREF_DECREMENT, $2); }
 
-    | singleExpression '+' singleExpression { Print("- R: singleExpression '+' singleExpression -> singleExpression"); $$ = createPlusExpressionNode($1, $3); }
-    | singleExpression '-' singleExpression { Print("- R: singleExpression '-' singleExpression -> singleExpression"); $$ = createMinusExpressionNode($1, $3); }
-    | singleExpression '*' singleExpression { Print("- R: singleExpression '*' singleExpression -> singleExpression"); $$ = createMulExpressionNode($1, $3); }
-    | singleExpression '/' singleExpression { Print("- R: singleExpression '/' singleExpression -> singleExpression"); $$ = createDivExpressionNode($1, $3); }
-    | singleExpression '<' singleExpression { Print("- R: singleExpression '<' singleExpression -> singleExpression"); $$ = createLessExpressionNode($1, $3); }
-    | singleExpression '>' singleExpression { Print("- R: singleExpression '>' singleExpression -> singleExpression"); $$ = createGreatExpressionNode($1, $3); }
+    | singleExpression '+' singleExpression
+        { Print("- R: singleExpression '+' singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_PLUS, $1, $3); }
+    | singleExpression '-' singleExpression
+        { Print("- R: singleExpression '-' singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_MINUS, $1, $3); }
+    | singleExpression '*' singleExpression
+        { Print("- R: singleExpression '*' singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_MUL, $1, $3); }
+    | singleExpression '/' singleExpression
+        { Print("- R: singleExpression '/' singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_DIV, $1, $3); }
+    | singleExpression '<' singleExpression
+        { Print("- R: singleExpression '<' singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_LESS, $1, $3); }
+    | singleExpression '>' singleExpression
+        { Print("- R: singleExpression '>' singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_GREAT, $1, $3); }
 
     | singleExpression OPERATOR_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_EQUAL singleExpression -> singleExpression"); $$ = createEqualExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_EQUAL singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_EQUAL, $1, $3); }
     | singleExpression OPERATOR_NOT_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_NOT_EQUAL singleExpression -> singleExpression"); $$ = createNotEqualExpressionNode($1, $3); }
-    | singleExpression OPERATOR_STRICT_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_STRICT_EQUAL singleExpression -> singleExpression"); $$ = createStrictEqualExpressionNode($1, $3); }
-    | singleExpression OPERATOR_STRICT_NOT_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_STRICT_NOT_EQUAL singleExpression -> singleExpression"); $$ = createStrictNotEqualExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_NOT_EQUAL singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_NOT_EQUAL, $1, $3); }
     | singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression -> singleExpression"); $$ = createLessEqualExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_LESS_THAN_EQUAL singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_LESS_EQUAL, $1, $3); }
     | singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression
-        { Print("- R: singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression -> singleExpression"); $$ = createGreaterEqualExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_GREATER_THAN_EQUAL singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_GREAT_EQUAL, $1, $3); }
 
     | singleExpression '=' singleExpression
-        { Print("- R: singleExpression '=' singleExpression -> singleExpression"); $$ = createAssignExpressionNode($1, $3); }
+        { Print("- R: singleExpression '=' singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN, $1, $3); }
     | singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression -> singleExpression"); $$ = createAssignMulExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_ASSIGN_MULTIPLY singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_MUL, $1, $3); }
     | singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression -> singleExpression"); $$ = createAssignDivExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_ASSIGN_DIVIDE singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_DIV, $1, $3); }
     | singleExpression OPERATOR_ASSIGN_PLUS singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_PLUS singleExpression -> singleExpression"); $$ = createAssignPlusExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_ASSIGN_PLUS singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_PLUS, $1, $3); }
     | singleExpression OPERATOR_ASSIGN_MINUS singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_MINUS singleExpression -> singleExpression"); $$ = createAssignMinusExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_ASSIGN_MINUS singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_MINUS, $1, $3); }
     | singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression -> singleExpression"); $$ = createAssignLogAndExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_AND singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_LOGICAL_AND, $1, $3); }
     | singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression
-        { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression -> singleExpression"); $$ = createAssignLogOrExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_ASSIGN_LOGICAL_OR singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_ASSIGN_LOGICAL_OR, $1, $3); }
 
     | singleExpression OPERATOR_LOGICAL_OR singleExpression
-        { Print("- R: singleExpression OPERATOR_LOGICAL_OR singleExpression -> singleExpression"); $$ = createLogOrExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_LOGICAL_OR singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_LOGICAL_OR, $1, $3); }
     | singleExpression OPERATOR_LOGICAL_AND singleExpression
-        { Print("- R: singleExpression OPERATOR_LOGICAL_AND singleExpression -> singleExpression"); $$ = createLogAndExpressionNode($1, $3); }
+        { Print("- R: singleExpression OPERATOR_LOGICAL_AND singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_LOGICAL_AND, $1, $3); }
 
-    | singleExpression INSTANCEOF singleExpression  { Print("- R: singleExpression INSTANCEOF singleExpression -> singleExpression"); $$ = createInstanceOfExpressionNode($1, $3); }
-    | singleExpression IN singleExpression          { Print("- R: singleExpression IN singleExpression -> singleExpression"); $$ = createInExpressionNode($1, $3); }
+    | singleExpression INSTANCEOF singleExpression  
+        { Print("- R: singleExpression INSTANCEOF singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_INSTANCEOF, $1, $3); }
+    | singleExpression IN singleExpression          
+        { Print("- R: singleExpression IN singleExpression -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_IN, $1, $3); }
 
     | singleExpression '?' singleExpression ':' singleExpression 
-        { Print("- R: singleExpression '?' singleExpression ':' singleExpression -> singleExpression"); $$ = createTernaryExpressionNode($1, $3, $5); }
+        { Print("- R: singleExpression '?' singleExpression ':' singleExpression -> singleExpression"); $$ = ExpressionNode::fromTernaryExpr($1, $3, $5); }
 
     | singleExpression ',' singleExpression %prec COMMA_OPERATOR
-        { Print("- R: singleExpression ',' singleExpressionn -> singleExpression"); $$ = createCommaExpressionNode($1, $3); }
+        { Print("- R: singleExpression ',' singleExpressionn -> singleExpression"); $$ = ExpressionNode::fromBinaryExpr(ExpressionNode::Type::_COMMA, $1, $3); }
 
     | '(' singleExpression ')' 
         { Print("- R: '(' singleExpression ')' -> singleExpression"); $$ = $2; }
 
-    | SUPER '(' ')'                         { Print("- R: SUPER '(' ')' -> singleExpression"); $$ = createSuperCallExpressionNode(createExpressionListFromExpression(nullptr)); }
-    | SUPER '(' singleExpression ')'        { Print("- R: SUPER '(' singleExpression ')' -> singleExpression"); $$ = createSuperCallExpressionNode(createExpressionListFromExpression($3)); }
-    | SUPER '(' singleExpression ',' ')'    { Print("- R: SUPER '(' singleExpression ',' ')' -> singleExpression"); $$ = createSuperCallExpressionNode(createExpressionListFromExpression($3)); } 
+    | SUPER
+        { Print("- R: SUPER -> singleExpression"); $$ = ExpressionNode::fromSuper(); }
+    | SUPER '(' ')'
+        { Print("- R: SUPER '(' ')' -> singleExpression"); $$ = ExpressionNode::fromSuperCall(ExpressionListNode::makeEmpty()); }
+    | SUPER '(' singleExpression ')'
+        { Print("- R: SUPER '(' singleExpression ')' -> singleExpression"); $$ = ExpressionNode::fromSuperCall(ExpressionListNode::fromExpression($3)); }
+    | SUPER '(' singleExpression ',' ')'
+        { Print("- R: SUPER '(' singleExpression ',' ')' -> singleExpression"); $$ = ExpressionNode::fromSuperCall(ExpressionListNode::fromExpression($3)); } 
 
     // XXX: dissallow syntax exrp '(' optParams ')' cause this grammar dont have func types
     | identifier '(' ')' 
-        { Print("- R: identifier '(' ')' -> singleExpression"); $$ = createFuncCallExpressionNode($1, createExpressionListNode(nullptr)); }
+        { Print("- R: identifier '(' ')' -> singleExpression"); $$ = ExpressionNode::fromFuncCall($1, ExpressionListNode::makeEmpty()); }
     | identifier '(' singleExpression ')' 
-        { Print("- R: identifier '(' singleExpression ')' -> singleExpression"); $$ = createFuncCallExpressionNode($1, createExpressionListFromExpression($3)); }
+        { Print("- R: identifier '(' singleExpression ')' -> singleExpression"); $$ = ExpressionNode::fromFuncCall($1, ExpressionListNode::fromExpression($3)); }
 
     | identifier '(' singleExpression ',' ')' 
-        { Print("- R: identifier '(' singleExpression ',' ')' -> singleExpression"); $$ = createFuncCallExpressionNode($1, createExpressionListFromExpression($3)); }
+        { Print("- R: identifier '(' singleExpression ',' ')' -> singleExpression"); $$ = ExpressionNode::fromFuncCall($1, ExpressionListNode::fromExpression($3)); }
 
     // XXX: dissallow syntax expr.exrp with '(' optParams ')' cause this grammar dont have func types
     | singleExpression '.' identifier 
-        { Print("- R: singleExpression '.' identifier -> singleExpression"); $$ = createFieldAccessExpressionNode($1, $3); }
+        { Print("- R: singleExpression '.' identifier -> singleExpression"); $$ = ExpressionNode::fromFieldAccess($1, $3); }
     | singleExpression '.' identifier '(' ')' 
-        { Print("- R: singleExpression '.' identifier '(' ')' -> singleExpression"); $$ = createMethodAccessExpressionNode($1, $3, createExpressionListNode(nullptr)); }
+        { Print("- R: singleExpression '.' identifier '(' ')' -> singleExpression"); $$ = ExpressionNode::fromMethodCall($1, $3, ExpressionListNode::makeEmpty()); }
     | singleExpression '.' identifier '(' singleExpression ')' 
-        { Print("- R: singleExpression '.' identifier '(' singleExpression ')' -> singleExpression"); $$ = createMethodAccessExpressionNode($1, $3, createExpressionListFromExpression($5)); }
+        { Print("- R: singleExpression '.' identifier '(' singleExpression ')' -> singleExpression"); $$ = ExpressionNode::fromMethodCall($1, $3, ExpressionListNode::fromExpression($5)); }
     | singleExpression '.' identifier '(' singleExpression ',' ')' 
-        { Print("- R: singleExpression '.' identifier '(' singleExpression ',' ')' -> singleExpression"); $$ = createMethodAccessExpressionNode($1, $3, createExpressionListFromExpression($5)); }
+        { Print("- R: singleExpression '.' identifier '(' singleExpression ',' ')' -> singleExpression"); $$ = ExpressionNode::fromMethodCall($1, $3, ExpressionListNode::fromExpression($5)); }
 
-    | arrayLiteral                                            { Print("- R: arrayLiteral -> singleExpression"); $$ = $1; }
-    | singleExpression '[' singleExpression ']'               { Print("- R: singleExpression '[' singleExpression ']' -> singleExpression"); $$ = createArrayAccessExpressionNode($1, $3); }
-    | singleExpression ENDL_BRACKET_OPEN singleExpression ']' { Print("- R: singleExpression ENDL_BRACKET_OPEN singleExpression ']' -> singleExpression"); $$ = createArrayAccessExpressionNode($1, $3); }
+    | arrayLiteral { Print("- R: arrayLiteral -> singleExpression"); $$ = $1; }
 
-    | NEW singleExpression { Print("- R: NEW singleExpression -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListNode(nullptr)); }
-    | NEW singleExpression '(' ')' { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListNode(nullptr)); }
-    | NEW singleExpression '(' singleExpression ')'  { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); $$ = createNewExpressionNode($2, createExpressionListFromExpression($4)); }
+    | singleExpression '[' singleExpression ']'
+        { Print("- R: singleExpression '[' singleExpression ']' -> singleExpression"); $$ = ExpressionNode::fromArrayAccessExpr($1, $3); }
+    | singleExpression ENDL_BRACKET_OPEN singleExpression ']' 
+        { Print("- R: singleExpression ENDL_BRACKET_OPEN singleExpression ']' -> singleExpression"); $$ = ExpressionNode::fromArrayAccessExpr($1, $3); }
+
+    | NEW identifier
+        { Print("- R: NEW singleExpression -> singleExpression"); $$ = ExpressionNode::fromNew($2, ExpressionListNode::makeEmpty()); }
+    | NEW identifier '(' ')'
+        { Print("- R: NEW singleExpression '(' ')' -> singleExpression"); $$ = ExpressionNode::fromNew($2, ExpressionListNode::makeEmpty()); }
+    | NEW identifier '(' singleExpression ')'
+        { Print("- R: NEW singleExpression '(' singleExpression ')' -> singleExpression"); $$ = ExpressionNode::fromNew($2, ExpressionListNode::fromExpression($4)); }
     ;
 
     // ====== Variables ======
 
 varStatement
-    : varModifier varDeclarationList ';' { Print("- R: varModifier varDeclarationList ';' -> varStatement"); $$ = createVarStatementNode($1, $2); }
-    | varModifier error ';'
+    : varModifier varDeclarationList ';' 
+        { Print("- R: varModifier varDeclarationList ';' -> varStatement"); $$ = StatementNode::fromVarStmt($1, $2); isConstDeclarated = 0; }
+    | varModifier error ';' { isConstDeclarated = 0; }
     ;
 
 varDeclarationList
     : varDeclaration                       
-        { Print("- R: varDeclaration -> varDeclarationList"); $$ = createVarDeclarationListNode($1); }
+        { Print("- R: varDeclaration -> varDeclarationList"); $$ = new VarDeclarationListNode($1); }
     | varDeclarationList ',' varDeclaration 
-        { Print("- R: varDeclarationList ',' varDeclaration -> varDeclarationList"); $$ = addVarDeclarationToVarDeclarationList($1, $3); }
+        { Print("- R: varDeclarationList ',' varDeclaration -> varDeclarationList"); $$ -> add($3); }
     ;
 
 varDeclaration
     : identifier typeAnnotationOpt                         
-        { Print("- R: identifier typeAnnotationOpt -> varDeclaration"); $$ = createVarDeclarationNode($1, $2, nullptr); }
+        { 
+            if (isConstDeclarated) {
+                yyerror("const variable must be initialized.");
+                YYERROR;
+            }
+            Print("- R: identifier typeAnnotationOpt -> varDeclaration"); $$ = new VarDeclarationNode($1, $2, nullptr);
+        }
     | identifier typeAnnotationOpt '=' singleExpression    
-        { Print("- R: identifier typeAnnotationOpt '=' singleExpression -> varDeclaration"); $$ = createVarDeclarationNode($1, $2, $4); }
+        { Print("- R: identifier typeAnnotationOpt '=' singleExpression -> varDeclaration"); $$ = new VarDeclarationNode($1, $2, $4); }
     ;
 
 varModifier
     : VAR   { Print("- R: VAR -> varModifier"); $$ = VarModifierType::_VAR; }
     | LET   { Print("- R: LET -> varModifier"); $$ = VarModifierType::_LET; }
-    | CONST { Print("- R: CONST -> varModifier"); $$ = VarModifierType::_CONST; }
+    | CONST { Print("- R: CONST -> varModifier"); $$ = VarModifierType::_CONST; isConstDeclarated = 1; }
     ;
 
     // ====== Conditions ====== 
@@ -459,13 +478,13 @@ ifStatement
     : IF '(' singleExpression ')' statementListItemWithoutEmptyStatement %prec IF_ONLY_PREC 
         { 
             Print("- R: IF '(' expressionList ')' statementListItem -> ifStatement");
-            $$ = createIfElseStatementNode($3, $5, nullptr);
+            $$ = StatementNode::fromIfElseStmt($3, $5, nullptr);
         }
 
     | IF '(' singleExpression ')' statementListItemWithoutEmptyStatement ELSE statementListItem 
         { 
             Print("- R: IF '(' expressionList ')' statementListItem ELSE statementListItem -> ifStatement");
-            $$ = createIfElseStatementNode($3, $5, $7);
+            $$ = StatementNode::fromIfElseStmt($3, $5, $7);
         }
     ;
 
@@ -475,37 +494,37 @@ iterationStatement
     : DO statementListItem WHILE '(' singleExpression ')' { doWhileASI(); } ';'                           
         { 
             Print("- R: DO statementListItem WHILE '(' expressionList ')' ';' -> iterationStatement");
-            $$ = createDoWhileStatementNode($2, $5);
+            $$ = StatementNode::fromDoWhileStmt($2, $5);
         }
 
     | WHILE '(' singleExpression ')' statementListItem                                                             
         { 
             Print("- R: WHILE '(' expressionList ')' statementListItem -> iterationStatement");
-            $$ = createWhileStatementNode($3, $5);
+            $$ = StatementNode::fromWhileStmt($3, $5);
         }
 
     | forHeader singleExpressionOpt ';' singleExpressionOpt ';' singleExpressionOpt ')' { isInForHeader = 0; } statementListItem                
         { 
             Print("- R: FOR '(' singleExpressionOpt ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement");
-            $$ = createClassicForStatementNode($2, $4, $6, $9);
+            $$ = StatementNode::fromClassicForStmt($2, $4, $6, $9);
         }
 
     | forHeader varModifier varDeclarationList ';' singleExpressionOpt ';' singleExpressionOpt ')' { isInForHeader = 0; } statementListItem   
         {
             Print("- R: FOR '(' varModifier varDeclarationList ';' singleExpressionOpt ';' singleExpressionOpt ')' statementListItem -> iterationStatement");
-            $$ = createClassicForWithVarDeclStatementNode($2, $3, $5, $7, $10);
+            $$ = StatementNode::fromClassicForWithVarDeclStmt($2, $3, $5, $7, $10);
         }
 
     | forHeader singleExpression IN singleExpression ')' { isInForHeader = 0; } statementListItem                                         
         {
             Print("- R: FOR '(' singleExpression IN singleExpression ')' statementListItem -> iterationStatement");
-            $$ = createForExprInExprStatementNode($2, $4, $7);
+            $$ = StatementNode::fromForExprInExprStmt($2, $4, $7);
         }
 
     | forHeader varModifier varDeclaration IN singleExpression ')' { isInForHeader = 0; } statementListItem                                 
         {
             Print("- R: FOR '(' varModifier varDeclaration IN expressionList ')' statementListItem -> iterationStatement");
-            $$ = createForVarDeclInExprStatementNode($2, $3, $5, $8);
+            $$ = StatementNode::fromForVarDeclInExprStmt($2, $3, $5, $8);
         }
     ;
 
@@ -516,20 +535,20 @@ forHeader
     // === Functions ===
 
 returnStatement
-    : RETURN ';'                    { Print("- R: RETURN ';' -> returnStatement"); $$ = createReturnStatementNode(nullptr); }
-    | RETURN singleExpression ';'   { Print("- R: RETURN singleExpression ';' -> returnStatement"); $$ = createReturnStatementNode($2); }
+    : RETURN ';'                    { Print("- R: RETURN ';' -> returnStatement"); $$ = StatementNode::fromReturnStmt(nullptr); }
+    | RETURN singleExpression ';'   { Print("- R: RETURN singleExpression ';' -> returnStatement"); $$ = StatementNode::fromReturnStmt($2); }
     ;
 
 functionDeclaration
     : FUNCTION identifier '(' parameterList ')' typeAnnotationOpt functionBody 
         {
             Print("- R: FUNCTION ID '(' parameterList ')' typeAnnotation functionBody -> functionDeclaration");
-            $$ = createFunctionDeclarationNode($2, $4, $6, $7);
+            $$ = new FunctionDeclarationNode($2, $4, $6, $7);
         }
     ;
 
 functionBody
-    : '{' '}' { Print("- R: '{' '}' -> functionBody"); $$ = createStatementListNode(nullptr); }
+    : '{' '}' { Print("- R: '{' '}' -> functionBody"); $$ = StatementListNode::makeEmpty(); }
     | '{' { isInFunctionBody = 1; } statementList '}'   
         { 
             isInFunctionBody = 0; 
@@ -539,7 +558,7 @@ functionBody
     ;
 
 parameterList
-    : /* empty */               { Print("- R: #empty# -> parameterList"); $$ = createRequiredParameterListNode(nullptr); }
+    : /* empty */               { Print("- R: #empty# -> parameterList"); $$ = RequiredParameterListNode::makeEmpty(); }
     | requiredParameterList     { Print("- R: requiredParameterList -> parameterList"); $$ = $1; }
     | requiredParameterList ',' { Print("- R: requiredParameterList ',' -> parameterList"); $$ = $1; }
     ;
@@ -548,12 +567,12 @@ requiredParameterList
     : requiredParameter                             
         {
             Print("- R: requiredParameter -> requiredParameterList");
-            $$ = createRequiredParameterListNode($1);
+            $$ = new RequiredParameterListNode($1);
         }
     | requiredParameterList ',' requiredParameter   
         {
             Print("- R: requiredParameterList ',' requiredParameter -> requiredParameterList");
-            $$ = addRequiredParameterToRequiredParameterList($1, $3);
+            $$ -> add($3);
         }
     ;
 
@@ -561,7 +580,7 @@ requiredParameter
     : identifier typeAnnotationOpt 
         { 
             Print("- R: ID typeAnnotationOpt -> requiredParameter");
-            $$ = createRequiredParameterNode($1, $2);
+            $$ = new RequiredParameterNode($1, $2);
         }
     ;
 
@@ -571,12 +590,12 @@ classDeclaration
     : CLASS identifier classTail                
         {
             Print("- R: CLASS identifier classTail -> classDeclaration");
-            $$ = createClassDeclarationNode($2, nullptr, $3);
+            $$ = new ClassDeclarationNode($2, $3);
         }
     | CLASS identifier classHeritage classTail  
         {
             Print("- R: CLASS identifier classHeritage classTail -> classDeclaration");
-            $$ = createClassDeclarationNode($2, $3, $4);
+            $$ = new ClassDeclarationNode($2, $3, $4);
         }
     ;
 
@@ -585,51 +604,51 @@ classHeritage
     ; 
 
 classTail
-    : '{' '}'                   { Print("- R: '{' '}' -> classTail"); $$ = createClassElementListNode(nullptr); }
+    : '{' '}'                   { Print("- R: '{' '}' -> classTail"); $$ = ClassElementListNode::makeEmpty(); }
     | '{' classElementList '}'  { Print("- R: '{' classElementList '}' -> classTail"); $$ = $2; }
     ;
 
 classElementList
-    : classElement                  { Print("- R: classElement -> classElementList"); $$ = createClassElementListNode($1); }
-    | classElementList classElement { Print("- R: classElementList classElement -> classElementList"); $$ = addClassElementToClassElementList($1, $2); }
+    : classElement                  { Print("- R: classElement -> classElementList"); $$ = new ClassElementListNode($1); }
+    | classElementList classElement { Print("- R: classElementList classElement -> classElementList"); $$ ->add($2); }
     ;
 
 classElement
     : CONSTRUCTOR '(' parameterList ')' functionBody 
         {
             Print("- R: CONSTRUCTOR '(' parameterList ')' functionBody -> classElement");
-            $$ = createClassConstructor($3, $5);
+            $$ = new ClassElementNode($3, $5);
         }
 
     // PropertyDeclarationExpression 
     | propertyName typeAnnotationOpt ';'
         {
             Print("- R: propertyName typeAnnotationOpt ';' -> classElement");
-            $$ = createClassProperty($1, $2, nullptr);
+            $$ = new ClassElementNode($1, $2, nullptr);
         }
     | propertyName typeAnnotationOpt '=' singleExpression ';' 
         {
             Print("- R: propertyName typeAnnotationOpt '=' singleExpression ';' -> classElement");
-            $$ = createClassProperty($1, $2, $4);
+            $$ = new ClassElementNode($1, $2, $4);
         }
 
     // MethodDeclarationExpression 
     | propertyName '(' parameterList ')' typeAnnotationOpt functionBody
         {
             Print("- R: propertyName '(' parameterList ')' typeAnnotationOpt functionBody -> classElement");
-            $$ = createClassMethod($1, $3, $5, $6);
+            $$ = new ClassElementNode($1, $3, $5, $6);
         }
 
     // GetterSetterDeclarationExpression 
     | GET propertyName '(' ')' typeAnnotationOpt functionBody
         {
             Print("- R: GET propertyName '(' ')' typeAnnotationOpt functionBody -> classElement");
-            $$ = createClassGetter($2, $5, $6);
+            $$ = new ClassElementNode($2, nullptr, $5, $6);
         }
     | SET propertyName '(' parameterList ')' functionBody
         {
             Print("- R: SET propertyName callSignature functionBody -> classElement");
-            $$ = createClassSetter($2, $4, $6);
+            $$ = new ClassElementNode($2, $4, nullptr, $6);
         }
     ;
 
@@ -639,23 +658,22 @@ propertyName
 
 identifier
     : ID        { Print("- R: ID -> identifier"); $$ = $1; }
-    | ASYNC     { Print("- R: ASYNC -> identifier"); $$ = strdup("async"); }
-    | AS        { Print("- R: AS -> identifier"); $$ = strdup("as"); }
-    | FROM      { Print("- R: FROM -> identifier"); $$ = strdup("from"); }
-    | YIELD     { Print("- R: YIELD -> identifier"); $$ = strdup("yield"); }
-    | ANY       { Print("- R: ANY -> identifier"); $$ = strdup("any"); }
-    | NUMBER    { Print("- R: NUMBER -> identifier"); $$ = strdup("number"); }
-    | BOOLEAN   { Print("- R: BOOLEAN -> identifier"); $$ = strdup("boolean"); }
-    | STRING    { Print("- R: STRING -> identifier"); $$ = strdup("string"); }
-    | UNIQUE    { Print("- R: UNIQUE -> identifier"); $$ = strdup("unique"); }
-    | SYMBOL    { Print("- R: SYMBOL -> identifier"); $$ = strdup("symbol"); }
-    | NEVER     { Print("- R: NEVER -> identifier"); $$ = strdup("never"); }
-    | UNDEFINED { Print("- R: UNDEFINED -> identifier"); $$ = strdup("undefined"); }
-    | OBJECT    { Print("- R: OBJECT -> identifier"); $$ = strdup("object"); }
-    | KEYOF     { Print("- R: KEYOF -> identifier"); $$ = strdup("keyof"); }
-    | NAMESPACE { Print("- R: NAMESPACE -> identifier"); $$ = strdup("namespace"); }
-    | ABSTRACT  { Print("- R: ABSTRACT -> identifier"); $$ = strdup("abstract"); }
-    | REQUIRE   { Print("- R: REQUIRE -> identifier"); $$ = strdup("require"); }
+    | ASYNC     { Print("- R: ASYNC -> identifier"); $$ = _strdup("async"); }
+    | AS        { Print("- R: AS -> identifier"); $$ = _strdup("as"); }
+    | FROM      { Print("- R: FROM -> identifier"); $$ = _strdup("from"); }
+    | YIELD     { Print("- R: YIELD -> identifier"); $$ = _strdup("yield"); }
+    | ANY       { Print("- R: ANY -> identifier"); $$ = _strdup("any"); }
+    | NUMBER    { Print("- R: NUMBER -> identifier"); $$ = _strdup("number"); }
+    | BOOLEAN   { Print("- R: BOOLEAN -> identifier"); $$ = _strdup("boolean"); }
+    | STRING    { Print("- R: STRING -> identifier"); $$ = _strdup("string"); }
+    | UNIQUE    { Print("- R: UNIQUE -> identifier"); $$ = _strdup("unique"); }
+    | SYMBOL    { Print("- R: SYMBOL -> identifier"); $$ = _strdup("symbol"); }
+    | NEVER     { Print("- R: NEVER -> identifier"); $$ = _strdup("never"); }
+    | OBJECT    { Print("- R: OBJECT -> identifier"); $$ = _strdup("object"); }
+    | KEYOF     { Print("- R: KEYOF -> identifier"); $$ = _strdup("keyof"); }
+    | NAMESPACE { Print("- R: NAMESPACE -> identifier"); $$ = _strdup("namespace"); }
+    | ABSTRACT  { Print("- R: ABSTRACT -> identifier"); $$ = _strdup("abstract"); }
+    | REQUIRE   { Print("- R: REQUIRE -> identifier"); $$ = _strdup("require"); }
     ;
 
 %%

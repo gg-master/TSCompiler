@@ -19,6 +19,27 @@
     <Filter Include="generated_files">
       <UniqueIdentifier>{97621fa3-5958-4595-81e1-4ad336c121e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Utils">
+      <UniqueIdentifier>{b0bbf238-a82d-421f-901c-531a824e8690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Tree">
+      <UniqueIdentifier>{427dd017-6ed9-4f13-b5c7-f0417ea37a8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Semantic">
+      <UniqueIdentifier>{659f771c-fa7b-47ea-a51d-efa10ac76344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Tree">
+      <UniqueIdentifier>{acead84d-c955-473b-95ec-18ef5edf9d8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Semantic">
+      <UniqueIdentifier>{f9d7ed7f-81b8-4d60-a84d-1c761eac7ae3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Utils">
+      <UniqueIdentifier>{7b435f9d-7a58-4a26-91cc-4f4c806da24a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Semantic\RTL">
+      <UniqueIdentifier>{3424d2f2-1c17-44a4-bb35-51b095b4f48e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Flex Include="lexer.l">
@@ -35,14 +56,47 @@
     <ClCompile Include="parser.tab.cpp">
       <Filter>generated_files</Filter>
     </ClCompile>
-    <ClCompile Include="Tree\parsing_tree.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Utils\dot.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Utils\utils.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Tree\expr.cpp">
+      <Filter>Исходные файлы\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Tree\stmt.cpp">
+      <Filter>Исходные файлы\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Tree\parsing_tree.cpp">
+      <Filter>Исходные файлы\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\semantic.cpp">
+      <Filter>Исходные файлы\Semantic</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\class_analyzer.cpp">
+      <Filter>Исходные файлы\Semantic</Filter>
+    </ClCompile>
+    <ClCompile Include="Tree\class.cpp">
+      <Filter>Исходные файлы\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\boolean.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\null.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\number.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\string.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\undefined.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\RTL\void.cpp">
+      <Filter>Исходные файлы\Semantic\RTL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -51,20 +105,56 @@
     </Bison>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="parser.tab.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Tree\class.h">
+      <Filter>Файлы заголовков\Tree</Filter>
     </ClInclude>
-    <ClInclude Include="Tree\parsing_tree.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Tree\expr.h">
+      <Filter>Файлы заголовков\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree\func.h">
+      <Filter>Файлы заголовков\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree\node.h">
+      <Filter>Файлы заголовков\Tree</Filter>
     </ClInclude>
     <ClInclude Include="Tree\nodes.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree\type.h">
+      <Filter>Файлы заголовков\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree\var.h">
+      <Filter>Файлы заголовков\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree\ts_script.h">
+      <Filter>Файлы заголовков\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree\stmt.h">
+      <Filter>Файлы заголовков\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Semantic\class_analyzer.h">
+      <Filter>Файлы заголовков\Semantic</Filter>
+    </ClInclude>
+    <ClInclude Include="Semantic\commands.h">
+      <Filter>Файлы заголовков\Semantic</Filter>
+    </ClInclude>
+    <ClInclude Include="Semantic\jvm_class.h">
+      <Filter>Файлы заголовков\Semantic</Filter>
+    </ClInclude>
+    <ClInclude Include="Semantic\semantic.h">
+      <Filter>Файлы заголовков\Semantic</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree\parsing_tree.h">
+      <Filter>Файлы заголовков\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="parser.tab.h">
+      <Filter>Файлы заголовков\Tree</Filter>
     </ClInclude>
     <ClInclude Include="Utils\dot.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\utils.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

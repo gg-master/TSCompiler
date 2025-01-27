@@ -99,36 +99,34 @@ extern int yydebug;
     INT_LIT = 300,                 /* INT_LIT  */
     FLOAT_LIT = 301,               /* FLOAT_LIT  */
     ID = 302,                      /* ID  */
-    OPERATOR_INCREMENT = 303,      /* OPERATOR_INCREMENT  */
-    OPERATOR_DECREMENT = 304,      /* OPERATOR_DECREMENT  */
-    ENDL_OPERATOR_INCREMENT = 305, /* ENDL_OPERATOR_INCREMENT  */
-    ENDL_OPERATOR_DECREMENT = 306, /* ENDL_OPERATOR_DECREMENT  */
-    IF_ONLY_PREC = 307,            /* IF_ONLY_PREC  */
-    COMMA_OPERATOR = 308,          /* COMMA_OPERATOR  */
-    COMMA_SEPARATOR = 309,         /* COMMA_SEPARATOR  */
-    OPERATOR_ASSIGN_PLUS = 310,    /* OPERATOR_ASSIGN_PLUS  */
-    OPERATOR_ASSIGN_MINUS = 311,   /* OPERATOR_ASSIGN_MINUS  */
-    OPERATOR_ASSIGN_MULTIPLY = 312, /* OPERATOR_ASSIGN_MULTIPLY  */
-    OPERATOR_ASSIGN_DIVIDE = 313,  /* OPERATOR_ASSIGN_DIVIDE  */
-    OPERATOR_ASSIGN_LOGICAL_AND = 314, /* OPERATOR_ASSIGN_LOGICAL_AND  */
-    OPERATOR_ASSIGN_LOGICAL_OR = 315, /* OPERATOR_ASSIGN_LOGICAL_OR  */
-    OPERATOR_LOGICAL_OR = 316,     /* OPERATOR_LOGICAL_OR  */
-    OPERATOR_LOGICAL_AND = 317,    /* OPERATOR_LOGICAL_AND  */
-    OPERATOR_EQUAL = 318,          /* OPERATOR_EQUAL  */
-    OPERATOR_NOT_EQUAL = 319,      /* OPERATOR_NOT_EQUAL  */
-    OPERATOR_STRICT_EQUAL = 320,   /* OPERATOR_STRICT_EQUAL  */
-    OPERATOR_STRICT_NOT_EQUAL = 321, /* OPERATOR_STRICT_NOT_EQUAL  */
-    OPERATOR_GREATER_THAN_EQUAL = 322, /* OPERATOR_GREATER_THAN_EQUAL  */
-    OPERATOR_LESS_THAN_EQUAL = 323, /* OPERATOR_LESS_THAN_EQUAL  */
-    INSTANCEOF = 324,              /* INSTANCEOF  */
-    IN = 325,                      /* IN  */
-    UMINUS = 326,                  /* UMINUS  */
-    UPLUS = 327,                   /* UPLUS  */
-    PREF_INCREMENT = 328,          /* PREF_INCREMENT  */
-    PREF_DECREMENT = 329,          /* PREF_DECREMENT  */
-    POST_INCREMENT = 330,          /* POST_INCREMENT  */
-    POST_DECREMENT = 331,          /* POST_DECREMENT  */
-    ENDL_BRACKET_OPEN = 332        /* ENDL_BRACKET_OPEN  */
+    ENDL_OPERATOR_INCREMENT = 303, /* ENDL_OPERATOR_INCREMENT  */
+    ENDL_OPERATOR_DECREMENT = 304, /* ENDL_OPERATOR_DECREMENT  */
+    IF_ONLY_PREC = 305,            /* IF_ONLY_PREC  */
+    COMMA_OPERATOR = 306,          /* COMMA_OPERATOR  */
+    COMMA_SEPARATOR = 307,         /* COMMA_SEPARATOR  */
+    OPERATOR_ASSIGN_PLUS = 308,    /* OPERATOR_ASSIGN_PLUS  */
+    OPERATOR_ASSIGN_MINUS = 309,   /* OPERATOR_ASSIGN_MINUS  */
+    OPERATOR_ASSIGN_MULTIPLY = 310, /* OPERATOR_ASSIGN_MULTIPLY  */
+    OPERATOR_ASSIGN_DIVIDE = 311,  /* OPERATOR_ASSIGN_DIVIDE  */
+    OPERATOR_ASSIGN_LOGICAL_AND = 312, /* OPERATOR_ASSIGN_LOGICAL_AND  */
+    OPERATOR_ASSIGN_LOGICAL_OR = 313, /* OPERATOR_ASSIGN_LOGICAL_OR  */
+    OPERATOR_LOGICAL_OR = 314,     /* OPERATOR_LOGICAL_OR  */
+    OPERATOR_LOGICAL_AND = 315,    /* OPERATOR_LOGICAL_AND  */
+    OPERATOR_EQUAL = 316,          /* OPERATOR_EQUAL  */
+    OPERATOR_NOT_EQUAL = 317,      /* OPERATOR_NOT_EQUAL  */
+    OPERATOR_GREATER_THAN_EQUAL = 318, /* OPERATOR_GREATER_THAN_EQUAL  */
+    OPERATOR_LESS_THAN_EQUAL = 319, /* OPERATOR_LESS_THAN_EQUAL  */
+    INSTANCEOF = 320,              /* INSTANCEOF  */
+    IN = 321,                      /* IN  */
+    UMINUS = 322,                  /* UMINUS  */
+    UPLUS = 323,                   /* UPLUS  */
+    PREF_INCREMENT = 324,          /* PREF_INCREMENT  */
+    PREF_DECREMENT = 325,          /* PREF_DECREMENT  */
+    POST_INCREMENT = 326,          /* POST_INCREMENT  */
+    POST_DECREMENT = 327,          /* POST_DECREMENT  */
+    OPERATOR_INCREMENT = 328,      /* OPERATOR_INCREMENT  */
+    OPERATOR_DECREMENT = 329,      /* OPERATOR_DECREMENT  */
+    ENDL_BRACKET_OPEN = 330        /* ENDL_BRACKET_OPEN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -137,7 +135,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 36 "parser.y"
+#line 37 "parser.y"
 
     int integerValue;
     char* stringValue;
@@ -164,14 +162,13 @@ union YYSTYPE
     struct ExpressionNode* exprNode;
 
     struct TypeNode* typeNode;
-    struct TupleTypeNode* tupleTypeNode;
 
     enum class VarModifierType varModifierType;
 
     struct VarDeclarationNode* varDeclNode;
     struct VarDeclarationListNode* varDeclListNode;
 
-#line 175 "parser.tab.h"
+#line 172 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

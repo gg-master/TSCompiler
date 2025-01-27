@@ -1,356 +1,352 @@
-#pragma once
-#include <string>
-
-	// ====== Expression ====== //
+// #pragma once
+// #include <string>
+
+// // ====== Expression ====== //
+
+// enum class ExpressionType
+// {
+//     _IDENTIFIER,
+//     _THIS,
+
+//     _INT_LIT,
+//     _FLOAT_LIT,
+//     _STRING_LIT,
+//     _BOOLEAN_LIT,
+//     _NULL_LIT,
+//     _UNDEFINED_LIT,
+
+//     _PREF_INCREMENT,
+//     _PREF_DECREMENT,
+//     _POST_INCREMENT,
+//     _POST_DECREMENT,
+
+//     _PLUS,
+//     _MINUS,
+//     _MUL,
+//     _DIV,
+
+//     _UPLUS,
+//     _UMINUS,
+
+//     _NOT,
+//     _LOGICAL_OR,
+//     _LOGICAL_AND,
+
+//     _ASSIGN,
+//     _ASSIGN_PLUS,
+//     _ASSIGN_MINUS,
+//     _ASSIGN_MUL,
+//     _ASSIGN_DIV,
+//     _ASSIGN_LOGICAL_OR,
+//     _ASSIGN_LOGICAL_AND,
+
+//     _LESS,
+//     _GREAT,
+//     _EQUAL,
+//     _NOT_EQUAL,
+//     _STRICT_EQUAL,
+//     _STRICT_NOT_EQUAL,
+//     _LESS_EQUAL,
+//     _GREAT_EQUAL,
+
+//     _COMMA,
+//     _TERNARY,
+//     _INSTANCEOF,
+//     _IN,
+
+//     _BRACKETS,
+
+//     _ARRAY_EMPTY_ELEMENT,
+//     _ARRAY_CREATION,
+//     _ARRAY_ACCESS,
+
+//     _FUNC_CALL,
+
+//     _SUPER_CALL,
+
+//     _FIELD_ACCESS,
+//     _METHOD_CALL,
+//     _NEW,
+// };
+
+// enum class BaseLiteral
+// {
+//     _FROM_INT,
+//     _FROM_FLOAT,
+//     _FROM_BOOLEAN,
+//     _FROM_STRING,
+//     _FROM_NULL,
+//     _FROM_UNDEFINED
+// };
+
+// struct ExpressionNode
+// {
+//     int id;
+
+//     int intValue;
+//     int boolValue;
+//     double floatValue;
+//     char *stringValue;
+
+//     // using for function, methods and variables
+//     char *identifierString;
+
+//     enum ExpressionType type;
+
+//     struct ExpressionNode *firstOperand;
+//     struct ExpressionNode *secondOperand;
+//     struct ExpressionNode *thirdOperand;
+
+//     struct ExpressionListNode *params;
+
+//     enum BaseLiteral fromLit;
+//     // using for ExpressionListNode
+//     struct ExpressionNode *next;
+// };
+
+// struct ExpressionListNode
+// {
+//     int id;
+
+//     struct ExpressionNode *first;
+//     struct ExpressionNode *last;
+// };
+
+// // ====== Types ====== //
+
+// enum class TypeType
+// {
+//     _NUMBER,
+//     _STRING,
+//     _BOOLEAN,
+//     _UNDEFINED,
+//     _VOID,
+//     _NULL,
+
+//     _ARRAY,
+
+//     _USER_TYPE,
+// };
+
+// struct TypeNode
+// {
+//     int id;
+
+//     enum TypeType type;
+
+//     struct TypeNode *arrayType;
+
+//     char *userTypeName;
+
+//     // using for TupleType
+//     struct TypeNode *next;
+// };
+
+// // ====== VarDeclaration ====== //
+
+// enum class VarModifierType
+// {
+//     _LET,
+//     _VAR,
+//     _CONST,
+// };
+
+// inline std::string toString(VarModifierType type)
+// {
+//     switch (type)
+//     {
+//     case VarModifierType::_LET:
+//         return "let";
+//     case VarModifierType::_VAR:
+//         return "var";
+//     case VarModifierType::_CONST:
+//         return "const";
+//     default:
+//         return "";
+//     }
+// }
+
+// struct VarDeclarationNode
+// {
+//     int id;
+
+//     char *identifierStr;
+//     struct TypeNode *varType;
+//     struct ExpressionNode *initExpression;
 
-enum class ExpressionType 
-{
-	_IDENTIFIER,
-	_THIS,
-
-	_INT_LIT,
-	_FLOAT_LIT,
-	_STRING_LIT,
-	_BOOLEAN_LIT,
-	_NULL_LIT,
-
-	_PREF_INCREMENT,
-	_PREF_DECREMENT,
-	_POST_INCREMENT,
-	_POST_DECREMENT,
+//     struct VarDeclarationNode *next;
+// };
+
+// struct VarDeclarationListNode
+// {
+//     int id;
+
+//     struct VarDeclarationNode *first;
+//     struct VarDeclarationNode *last;
+// };
+
+// // ====== Statement ====== //
 
-	_PLUS,
-	_MINUS,
-	_MUL,
-	_DIV,
-	_LESS,
-	_GREAT,
+// enum class StatementType
+// {
+//     _EMPTY,
+//     _EXPRESSION,
+//     _VAR,
+//     _IFELSE,
+//     _WHILE,
+//     _DOWHILE,
+//     _FOR,
+//     _RETURN,
+//     _BLOCK,
+// };
 
-	_UPLUS,
-	_UMINUS,
+// struct StatementListNode;
 
-	_NOT,
-	_LOGICAL_OR,
-	_LOGICAL_AND,
+// struct StatementNode
+// {
+//     int id;
 
-	_ASSIGN,
-	_ASSIGN_PLUS,
-	_ASSIGN_MINUS,
-	_ASSIGN_MUL,
-	_ASSIGN_DIV,
-	_ASSIGN_LOGICAL_OR,
-	_ASSIGN_LOGICAL_AND,
+//     enum StatementType type;
 
-	_EQUAL,
-	_NOT_EQUAL,
-	_STRICT_EQUAL,
-	_STRICT_NOT_EQUAL,
-	_LESS_EQUAL,
-	_GREAT_EQUAL,
+//     // exprStmt, returnStmt, conditшon-head
+//     struct ExpressionNode *expression;
 
-	_COMMA,
-	_TERNARY,
-	_INSTANCEOF,
-	_IN,
+//     // varStmt, iterations
+//     enum class VarModifierType modifierType;
+//     struct VarDeclarationListNode *declList;
+//     struct VarDeclarationNode *decl;
 
-	_BRACKETS,
+//     // blockStmt
+//     struct StatementListNode *stmtList;
 
-	_ARRAY_EMPTY_ELEMENT,
-	_ARRAY_CREATION,
-	_ARRAY_ACCESS,
+//     // condition
+//     struct StatementNode *ifBody;
+//     struct StatementNode *elseBody;
 
-	_FUNC_CALL,
+//     // iterations
+//     struct StatementNode *iterationBody;
+//     struct ExpressionNode *iterationExprAdd1;
+//     struct ExpressionNode *iterationExprAdd2;
 
-	_SUPER_CALL,
+//     struct StatementNode *next;
+// };
 
-	_FIELD_ACCESS,
-	_METHOD_ACCESS,
-	_NEW,
-};
-
-struct ExpressionNode
-{
-	int id;
-
-	int intValue;
-	int boolValue;
-	double floatValue;
-	char* stringValue;
-
-	// using for function, methods and variables
-	char* identifierString;
-
-	enum ExpressionType type;
-
-	struct ExpressionNode* firstOperand;
-	struct ExpressionNode* secondOperand;
-	struct ExpressionNode* thirdOperand;
+// struct StatementListNode
+// {
+//     int id;
 
-	struct ExpressionListNode* params;
+//     struct StatementNode *first;
+//     struct StatementNode *last;
+// };
 
-	// using for ExpressionListNode
-	struct ExpressionNode* next;
-};
-
-struct ExpressionListNode
-{
-	int id;
-
-	struct ExpressionNode* first;
-	struct ExpressionNode* last;
-};
-
-
-	// ====== Types ====== //
+// // ====== Function declaration ====== //
 
-enum class TypeType
-{
-	_NUMBER,
-	_STRING,
-	_BOOLEAN,
-	_UNDEFINED,
-	_VOID,
-	_NULL,
-
-	_ARRAY,
-	_TUPLE,
-
-	_USER_TYPE,
-};
-
-struct TupleTypeNode;
-
-struct TypeNode
-{
-	int id;
-
-	enum TypeType type;
-
-	struct TypeNode* arrayType;
-	struct TupleTypeNode* tupleNode;
-
-	char* userTypeName;
+// struct FunctionDeclarationNode
+// {
+//     int id;
 
-	// using for TupleType
-	struct TypeNode* next;
-};
+//     char *funcName;
+//     struct RequiredParameterListNode *params;
+//     struct TypeNode *returnType;
 
-struct TupleTypeNode
-{
-	int id;
+//     struct StatementListNode *body;
+// };
 
-	struct TypeNode* first;
-	struct TypeNode* last;
-};
+// struct RequiredParameterNode
+// {
+//     int id;
 
+//     char *paramName;
+//     struct TypeNode *paramType;
 
-	// ====== VarDeclaration ====== //
+//     struct RequiredParameterNode *next;
+// };
 
-enum class VarModifierType
-{
-	_LET,
-	_VAR,
-	_CONST,
-};
+// struct RequiredParameterListNode
+// {
+//     int id;
 
-inline std::string ToString(VarModifierType type) {
-	switch (type)
-	{
-	case VarModifierType::_LET: return "let";
-	case VarModifierType::_VAR: return "var";
-	case VarModifierType::_CONST: return "const";
-	default:
-		return "";
-	}
-}
+//     struct RequiredParameterNode *first;
+//     struct RequiredParameterNode *last;
+// };
 
-struct VarDeclarationNode
-{
-	int id;
+// // ====== Class declaration ====== //
 
-	char* identifierStr;
-	struct TypeNode* varType;
-	struct ExpressionNode* initExpression;
-	
-	struct VarDeclarationNode* next;
-};
+// enum class ClassElementType
+// {
+//     _CONSTRUCTOR,
+//     _PROPERTY,
+//     _METHOD
+// };
 
-struct VarDeclarationListNode
-{
-	int id;
+// struct ClassElementNode
+// {
+//     int id;
 
-	struct VarDeclarationNode* first;
-	struct VarDeclarationNode* last;
-};
+//     enum ClassElementType type;
 
+//     char *name;
+//     struct TypeNode *propertyAndReturnType;
 
-	// ====== Statement ====== //
+//     struct ExpressionNode *expression;
 
-enum class StatementType
-{
-	_EMPTY,
-	_EXPRESSION,
-	_VAR,
-	_IFELSE,
-	_WHILE,
-	_DOWHILE,
-	_FOR,
-	_RETURN,
-	_BLOCK,
-};
+//     struct RequiredParameterListNode *params;
+//     struct StatementListNode *methodBody;
 
-struct StatementListNode;
+//     struct ClassElementNode *next;
+// };
 
-struct StatementNode
-{
-	int id;
+// struct ClassElementListNode
+// {
+//     int id;
 
-	enum StatementType type;
-	
-	// exprStmt, returnStmt, conditшon-head
-	struct ExpressionNode* expression;
+//     struct ClassElementNode *first;
+//     struct ClassElementNode *last;
+// };
 
-	// varStmt, iterations
-	enum class VarModifierType modifierType;
-	struct VarDeclarationListNode* declList;
-	struct VarDeclarationNode* decl;
+// struct ClassDeclarationNode
+// {
+//     int id;
 
-	// blockStmt
-	struct StatementListNode* stmtList;
+//     char *className;
+//     char *heritageName;
 
-	// condition
-	struct StatementNode* ifBody;
-	struct StatementNode* elseBody;
+//     struct ClassElementListNode *body;
+// };
 
-	// iterations
-	struct StatementNode* iterationBody;
-	struct ExpressionNode* iterationExprAdd1;
-	struct ExpressionNode* iterationExprAdd2;
+// // ====== TS Script ====== //
 
-	struct StatementNode* next;
-};
+// enum class TSElementType
+// {
+//     _CLASS,
+//     _FUNCTION,
+//     _STATEMENT,
+// };
 
-struct StatementListNode
-{
-	int id;
+// struct TSElementNode
+// {
+//     int id;
 
-	struct StatementNode* first;
-	struct StatementNode* last;
-};
+//     enum TSElementType type;
 
+//     struct StatementNode *stmt;
+//     struct FunctionDeclarationNode *funcDecl;
+//     struct ClassDeclarationNode *classDecl;
 
-	// ====== Function declaration ====== //
+//     struct TSElementNode *next;
+// };
 
-struct FunctionDeclarationNode
-{
-	int id;
+// struct TSElementListNode
+// {
+//     int id;
 
-	char* funcName;
-	struct RequiredParameterListNode* params;
-	struct TypeNode* returnType;
+//     struct TSElementNode *first;
+//     struct TSElementNode *last;
+// };
 
-	struct StatementListNode* body;
-};
+// struct TSScriptNode
+// {
+//     int id;
 
-struct RequiredParameterNode
-{
-	int id;
-
-	char* paramName;
-	struct TypeNode* paramType;
-
-	struct RequiredParameterNode* next;
-};
-
-struct RequiredParameterListNode
-{
-	int id;
-
-	struct RequiredParameterNode* first;
-	struct RequiredParameterNode* last;
-};
-
-
-	// ====== Class declaration ====== //
-
-enum class ClassElementType
-{
-	_CONSTRUCTOR,
-	_PROPERTY,
-	_METHOD,
-	_GETTER,
-	_SETTER,
-};
-
-struct ClassElementNode
-{
-	int id;
-
-	enum ClassElementType type;
-
-	char* name;
-	struct TypeNode* propertyAndReturnType;
-
-	struct ExpressionNode* expression;
-
-	struct RequiredParameterListNode* params;
-	struct StatementListNode* methodBody;
-
-	struct ClassElementNode* next;
-};
-
-struct ClassElementListNode
-{
-	int id;
-
-	struct ClassElementNode* first;
-	struct ClassElementNode* last;
-};
-
-struct ClassDeclarationNode
-{
-	int id;
-
-	char* className;
-	char* heritageName;
-
-	struct ClassElementListNode* body;
-};
-
-
-	// ====== TS Script ====== //
-
-enum class TSElementType
-{
-	_CLASS,
-	_FUNCTION,
-	_STATEMENT_LIST,
-};
-
-struct TSElementNode
-{
-	int id;
-
-	enum TSElementType type;
-
-	struct StatementNode* stmt;
-	struct FunctionDeclarationNode* funcDecl;
-	struct ClassDeclarationNode* classDecl;
-
-	struct TSElementNode* next;
-};
-
-struct TSElementListNode
-{
-	int id;
-
-	struct TSElementNode* first;
-	struct TSElementNode* last;
-};
-
-struct TSScriptNode
-{
-	int id;
-
-	struct TSElementListNode* elemList;
-};
+//     struct TSElementListNode *elemList;
+// };

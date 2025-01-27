@@ -193,7 +193,6 @@ as          {
 }
 
 any         {
-    PrintError("Unsupported TYPE_ANY in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found TYPE_ANY: " + std::string{yytext});
     }
@@ -649,6 +648,7 @@ new         {
     if ( debug ) {
         Print("Found OPERATOR_ASSIGN_PLUS: " + std::string{yytext});
     }
+    return OPERATOR_ASSIGN_PLUS;
 }
 "++"    { 
     if ( debug ) {
@@ -742,10 +742,11 @@ new         {
     return OPERATOR_EQUAL;
 }
 "==="   {
+    PrintError("Unsupported OPERATOR_STRICT_EQUAL in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_STRICT_EQUAL: " + std::string{yytext});
     }
-    return OPERATOR_STRICT_EQUAL;
+    return -1;
 }
 
 "!"     {
@@ -761,10 +762,11 @@ new         {
     return OPERATOR_NOT_EQUAL;
 }
 "!=="   {
+    PrintError("Unsupported OPERATOR_STRICT_NOT_EQUAL in this version: " + std::string{yytext});
     if ( debug ) {
         Print("Found OPERATOR_STRICT_NOT_EQUAL: " + std::string{yytext});
     }
-    return OPERATOR_STRICT_NOT_EQUAL;
+    return -1;
 }
 
 "=>"    {
