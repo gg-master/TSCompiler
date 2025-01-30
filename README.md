@@ -23,7 +23,7 @@ Opportunities:
 8) do-while, while, for loops;
 9) Arrays;
 10) Functions;
-11) Special statistical input / output functions from the Console class (not available in TypeScript)
+11) Special statiс input / output functions from the Console class (not available in TypeScript)
 
 Some examples you can find [here](https://github.com/gg-master/TSCompiler/tree/compiler-impl/tests/final).
 
